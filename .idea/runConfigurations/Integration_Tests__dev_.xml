@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Integration Tests [dev]" type="JUnit" factoryName="JUnit">
+    <module name="keycloak-geo-ip-filter" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="pattern" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$/src/test" />
+    <patterns>
+      <pattern testClass=".*IT" />
+    </patterns>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

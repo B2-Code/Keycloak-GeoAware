@@ -1,0 +1,31 @@
+{
+  "realm": "master",
+  "users": [
+    {
+      "id": "a541df91-9e43-4ca5-afdc-9c30f25d17b8",
+      "username": "admin",
+      "email": "admin@keycloak-geo-ip-filter.de",
+      "emailVerified": false,
+      "createdTimestamp": 1710795968665,
+      "enabled": true,
+      "totp": false,
+      "credentials": [
+        {
+          "id": "b9240935-4ec7-4ba6-b20f-0fd835b2d85d",
+          "type": "password",
+          "createdDate": 1710795969414,
+          "secretData": "{\"value\":\"aBzh/osbPE39IlrtlNv6v1oNhtpl12CDF4KPAnDT8s8HAhWPRuRESt9KMK8fp9vtG20A/h1CiUguNlw2trV1jQ==\",\"salt\":\"4UBvcXXdbmczLySl0OwS9Q==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-master",
+        "admin"
+      ],
+      "notBefore": 0,
+      "groups": []
+    }
+  ]
+}

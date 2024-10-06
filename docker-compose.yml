@@ -1,0 +1,81 @@
+services:
+  keycloak:
+    container_name: keycloak
+    hostname: keycloak
+    image: quay.io/keycloak/keycloak:26.0.0
+    depends_on:
+      - postgres
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      DEBUG_PORT: '*:8787'
+      DEBUG: 'true'
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USER: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_LOG_CONSOLE_COLOR: 'true'
+      KC_LOG_LEVEL: INFO,org.b2code:DEBUG
+    command: [ 'start-dev', '--debug', '--db', 'postgres' ]
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "8787:8787"
+    volumes:
+      - ./target/keycloak-geoaware-jar-with-dependencies.jar:/opt/keycloak/providers/extension.jar
+      - ./src/main/resources/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ./src/main/resources/geoip-databases:/opt/keycloak/data/geoip-databases
+
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  maildev:
+    image: maildev/maildev
+    environment:
+      - MAILDEV_WEB_PORT=8081
+      - MAILDEV_SMTP_PORT=8025
+    ports:
+      - "8081:8081"
+      - "8025:8025"
+
+  export-keycloak-realm:
+    container_name: keycloak-export
+    image: quay.io/keycloak/keycloak:26.0.0
+    profiles:
+      - export-realm
+    depends_on:
+      - postgres
+    environment:
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USER: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_LOG_CONSOLE_COLOR: 'true'
+    command: [ 'export', '--dir', '/opt/keycloak/data/export', '--db', 'postgres', '--users', 'same_file', '--realm', 'test' ]
+    volumes:
+      - ./src/test/resources/realms:/opt/keycloak/data/export
+
+  import-keycloak-realm:
+    container_name: keycloak-import
+    image: quay.io/keycloak/keycloak:26.0.0
+    profiles:
+      - import-realm
+    depends_on:
+      - postgres
+    environment:
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USER: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_LOG_CONSOLE_COLOR: 'true'
+    command: [ 'import', '--dir', '/opt/keycloak/data/import', '--db', 'postgres' ]
+    volumes:
+      - ./src/test/resources/realms:/opt/keycloak/data/import
+
+volumes:
+  postgres-data:

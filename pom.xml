@@ -20,40 +20,41 @@
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.0</version.validation-api>
 
+        <version.junit>5.10.2</version.junit>
+        <version.testcontainers>1.20.1</version.testcontainers>
+        <version.testcontainers-keycloak>3.5.1</version.testcontainers-keycloak>
+        <version.restassured>5.5.0</version.restassured>
+
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.github.dasniko</groupId>
-                <artifactId>keycloak-spi-bom</artifactId>
-                <version>${version.keycloak}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!-- Keycloak -->
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
+            <version>${version.keycloak}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi</artifactId>
+            <version>${version.keycloak}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi-private</artifactId>
+            <version>${version.keycloak}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-services</artifactId>
+            <version>${version.keycloak}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- GeoIP2 -->
@@ -74,13 +75,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-
+            <version>${version.lombok}</version>
         </dependency>
 
         <!-- AutoService -->
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
+            <version>${version.auto-service}</version>
         </dependency>
 
         <!-- Validation -->
@@ -94,18 +96,22 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${version.junit}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${version.testcontainers}</version>
         </dependency>
         <dependency>
             <groupId>com.github.dasniko</groupId>
             <artifactId>testcontainers-keycloak</artifactId>
+            <version>${version.testcontainers-keycloak}</version>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
+            <version>${version.restassured}</version>
         </dependency>
     </dependencies>
 

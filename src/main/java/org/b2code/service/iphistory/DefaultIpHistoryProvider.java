@@ -82,18 +82,23 @@ public class DefaultIpHistoryProvider implements IpHistoryProvider {
     private List<LastIpRecord> getLastIps(UserModel user) {
         String lastIpsJson = user.getFirstAttribute(USER_ATTRIBUTE_LAST_IPS);
         if (lastIpsJson != null) {
+            log.debugf("Parsing user attribute %s = %s", USER_ATTRIBUTE_LAST_IPS, lastIpsJson);
             try {
                 return objectMapper.readValue(lastIpsJson, recordListType);
             } catch (JsonProcessingException e) {
                 log.errorf("Failed to parse last IPs: %s", e.getMessage());
             }
+        } else {
+            log.debugf("No user attribute %s", USER_ATTRIBUTE_LAST_IPS);
         }
         return new ArrayList<>();
     }
 
     private void setLastIps(UserModel user, List<LastIpRecord> lastIps) {
         try {
-            user.setSingleAttribute(USER_ATTRIBUTE_LAST_IPS, objectMapper.writeValueAsString(lastIps));
+            String newValue = objectMapper.writeValueAsString(lastIps);
+            log.debugf("Writing user attribute %s = %s", USER_ATTRIBUTE_LAST_IPS, newValue);
+            user.setSingleAttribute(USER_ATTRIBUTE_LAST_IPS, newValue);
         } catch (JsonProcessingException e) {
             log.errorf("Failed to write last IPs: %s", e.getMessage());
         }

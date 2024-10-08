@@ -20,26 +20,25 @@ public class MaxmindDatabaseAccessProvider implements GeoipDatabaseAccessProvide
     }
 
     public GeoIpInfo getIpInfo(String ipAddress) {
-        if (reader == null) {
+        if (reader != null) {
+            try {
+                CityResponse maxmindInfo = this.reader.city(InetAddress.getByName(ipAddress));
+                return GeoIpInfo.builder()
+                        .ip(ipAddress)
+                        .city(maxmindInfo.getCity().getName())
+                        .postalCode(maxmindInfo.getPostal().getCode())
+                        .country(maxmindInfo.getCountry().getName())
+                        .countryIsoCode(maxmindInfo.getCountry().getIsoCode())
+                        .build();
+            } catch (IOException e) {
+                log.error("Error while reading Maxmind database file", e);
+            } catch (GeoIp2Exception e) {
+                log.warnf("Failed to get GeoIP info: %s", e.getMessage());
+            }
+        } else {
             log.error("Maxmind database reader is not initialized");
-            return new GeoIpInfo();
         }
-        try {
-            CityResponse maxmindInfo = this.reader.city(InetAddress.getByName(ipAddress));
-            return GeoIpInfo.builder()
-                    .ip(ipAddress)
-                    .city(maxmindInfo.getCity().getName())
-                    .postalCode(maxmindInfo.getPostal().getCode())
-                    .country(maxmindInfo.getCountry().getName())
-                    .countryIsoCode(maxmindInfo.getCountry().getIsoCode())
-                    .build();
-        } catch (IOException e) {
-            log.error("Error while reading Maxmind database file", e);
-            return new GeoIpInfo();
-        } catch (GeoIp2Exception e) {
-            log.warnf("Failed to get GeoIP info: %s", e.getMessage());
-            return GeoIpInfo.builder().ip(ipAddress).build();
-        }
+        return GeoIpInfo.builder().ip(ipAddress).build();
     }
 
     @Override

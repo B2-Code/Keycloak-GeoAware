@@ -13,9 +13,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.keycloak>25.0.0</version.keycloak>
+        <version.keycloak>26.0.0</version.keycloak>
         <version.log4j>2.23.1</version.log4j>
-        <version.geoip2>2.15.0</version.geoip2>
+        <version.geoip2>4.2.1</version.geoip2>
         <version.browscap>1.4.4</version.browscap>
         <version.lombok>1.18.34</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>

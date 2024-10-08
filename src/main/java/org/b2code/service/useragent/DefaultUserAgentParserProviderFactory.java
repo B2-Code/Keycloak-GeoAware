@@ -15,20 +15,25 @@ import java.io.IOException;
 @AutoService(UserAgentParserProviderFactory.class)
 public class DefaultUserAgentParserProviderFactory implements UserAgentParserProviderFactory {
 
+    private UserAgentParser userAgentParser;
+
     @Override
     public DefaultUserAgentParserProvider create(KeycloakSession keycloakSession) {
         return new DefaultUserAgentParserProvider(getParser());
     }
 
     private UserAgentParser getParser() {
-        try {
-            return new UserAgentService().loadParser();
-        } catch (IOException e) {
-            log.error("Failed to load UserAgentParser due to an I/O error", e);
-        } catch (ParseException e) {
-            log.error("Failed to load UserAgentParser due to a parsing error", e);
+        if (userAgentParser == null) {
+            try {
+                userAgentParser = new UserAgentService().loadParser();
+                log.debug("Loaded UserAgentParser");
+            } catch (IOException e) {
+                log.error("Failed to load UserAgentParser due to an I/O error", e);
+            } catch (ParseException e) {
+                log.error("Failed to load UserAgentParser due to a parsing error", e);
+            }
         }
-        return null;
+        return userAgentParser;
     }
 
     @Override

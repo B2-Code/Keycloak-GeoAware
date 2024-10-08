@@ -6,10 +6,10 @@ services:
     depends_on:
       - postgres
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
       DEBUG_PORT: '*:8787'
       DEBUG: 'true'
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USER: keycloak
       KC_DB_PASSWORD: keycloak
@@ -28,7 +28,7 @@ services:
   postgres:
     container_name: postgres
     hostname: postgres
-    image: postgres
+    image: postgres:16
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak

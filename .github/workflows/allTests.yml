@@ -19,9 +19,7 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Build
-        run: mvn -B clean install -Dmaven.test.skip
-      - name: Run unit tests
-        run: mvn -B test
+        run: mvn -B -U -DskipITs=true clean package --file pom.xml
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -39,4 +37,4 @@ jobs:
           java-version: 21
           cache: maven
       - name: Run integration tests
-        run: mvn -B -U clean test-compile failsafe:integration-test failsafe:verify --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}
+        run: mvn -B -U -DskipUTs=true clean package failsafe:integration-test failsafe:verify --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}

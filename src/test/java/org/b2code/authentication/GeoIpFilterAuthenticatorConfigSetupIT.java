@@ -1,7 +1,6 @@
 package org.b2code.authentication;
 
 import org.b2code.IntegrationTestBase;
-import org.b2code.KeycloakTestContainer;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
@@ -21,7 +20,7 @@ class GeoIpFilterAuthenticatorConfigSetupIT extends IntegrationTestBase {
 
         AuthenticationManagementResource flowResource = keycloak.getKeycloakAdminClient()
                 .realms()
-                .realm(KeycloakTestContainer.TEST_REALM)
+                .realm(TEST_REALM)
                 .flows();
         List<AuthenticatorConfigRepresentation> authenticatorConfigs = flowResource
                 .getExecutions("browser-with-geo-ip-block")

@@ -15,7 +15,7 @@ services:
       KC_DB_PASSWORD: keycloak
       KC_LOG_CONSOLE_COLOR: 'true'
       KC_LOG_LEVEL: INFO,org.b2code:DEBUG
-    command: [ 'start-dev', '--debug', '--db', 'postgres' ]
+    command: [ 'start-dev', '--debug', '--db', 'postgres', '--features', 'opentelemetry', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -36,7 +36,16 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  jaeger:
+    container_name: jaeger
+    hostname: jaeger
+    image: jaegertracing/all-in-one
+    ports:
+      - "16686:16686"
+
   maildev:
+    container_name: maildev
+    hostname: maildev
     image: maildev/maildev
     environment:
       - MAILDEV_WEB_PORT=8081

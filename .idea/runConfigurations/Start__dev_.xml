@@ -7,6 +7,7 @@
           <list>
             <option value="keycloak" />
             <option value="maildev" />
+            <option value="jaeger" />
           </list>
         </option>
         <option name="sourceFilePath" value="docker-compose.yml" />

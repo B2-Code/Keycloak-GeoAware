@@ -41,7 +41,13 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
         log.trace("Creating new Maxmind database reader");
         try {
             File database = new File(databasePath);
-            return new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
+            DatabaseReader newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
+            if (!newReader.getMetadata().getDatabaseType().contains("City")) {
+                log.error("Maxmind database is not a City database");
+                return null;
+            }
+            log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+            return newReader;
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;

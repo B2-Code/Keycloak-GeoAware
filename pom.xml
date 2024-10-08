@@ -21,7 +21,7 @@
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.0</version.validation-api>
         <!-- Tests -->
-        <version.testcontainers.keycloak>3.4.0</version.testcontainers.keycloak>
+        <version.testcontainers.keycloak>3.5.1</version.testcontainers.keycloak>
         <version.testcontainers>1.19.7</version.testcontainers>
         <version.junit>5.10.2</version.junit>
         <version.mockito>5.11.0</version.mockito>
@@ -140,17 +140,6 @@
             <version>${version.mockito}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>

@@ -18,10 +18,7 @@ class GeoIpFilterAuthenticatorConfigSetupIT extends IntegrationTestBase {
         String newIpRange = "1.3.3.7/42";
         authenticatorConfig.setAllowedIpRange(newIpRange);
 
-        AuthenticationManagementResource flowResource = keycloak.getKeycloakAdminClient()
-                .realms()
-                .realm(TEST_REALM)
-                .flows();
+        AuthenticationManagementResource flowResource = realm.flows();
         List<AuthenticatorConfigRepresentation> authenticatorConfigs = flowResource
                 .getExecutions("browser-with-geo-ip-block")
                 .stream()

@@ -22,19 +22,19 @@ class KeycloakTestContainerSetupIT extends IntegrationTestBase {
 
     @Test
     void testRealmIsImported() {
-        boolean realmExists = keycloak.getKeycloakAdminClient().realms().findAll().stream().anyMatch(r -> r.getRealm().equals(TEST_REALM));
+        boolean realmExists = client.realms().findAll().stream().anyMatch(r -> r.getRealm().equals(TEST_REALM));
         assertTrue(realmExists);
     }
 
     @Test
     void testUsersAreImported() {
-        boolean userExist = keycloak.getKeycloakAdminClient().realm(TEST_REALM).users().count() > 0;
+        boolean userExist = realm.users().count() > 0;
         assertTrue(userExist);
     }
 
     @Test
     void testRealmHasAuthenticatorProvider() {
-        boolean authenticatorExists = keycloak.getKeycloakAdminClient()
+        boolean authenticatorExists = client
                 .realms()
                 .realm(TEST_REALM)
                 .flows().getAuthenticatorProviders()
@@ -45,7 +45,7 @@ class KeycloakTestContainerSetupIT extends IntegrationTestBase {
 
     @Test
     void testBrowserFlowIsPresent() {
-        List<AuthenticationFlowRepresentation> flows = keycloak.getKeycloakAdminClient()
+        List<AuthenticationFlowRepresentation> flows = client
                 .realms()
                 .realm(TEST_REALM)
                 .flows()

@@ -21,14 +21,37 @@
         <version.validation-api>3.1.0</version.validation-api>
 
         <version.junit>5.10.2</version.junit>
+        <version.log4j>2.23.1</version.log4j>
         <version.testcontainers>1.20.1</version.testcontainers>
         <version.testcontainers-keycloak>3.5.1</version.testcontainers-keycloak>
         <version.restassured>5.5.0</version.restassured>
+        <version.jboss.slf4j-logmanager>2.0.1.Final</version.jboss.slf4j-logmanager>
 
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
         <skipUTs>${skipTests}</skipUTs>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Tests -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.junit}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${version.log4j}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Keycloak -->
@@ -97,7 +120,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -118,6 +140,28 @@
             <version>${version.restassured}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.slf4j</groupId>
+            <artifactId>slf4j-jboss-logmanager</artifactId>
+            <version>${version.jboss.slf4j-logmanager}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

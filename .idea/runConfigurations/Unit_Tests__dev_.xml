@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests [dev]" type="JUnit" factoryName="JUnit">
-    <module name="keycloak-geo-ip-filter" />
+    <module name="keycloak-geoaware" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="pattern" />

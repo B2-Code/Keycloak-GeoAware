@@ -19,16 +19,14 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Build
-        run: mvn -B clean install -Dmaven.test.skip
-      - name: Run unit tests
-        run: mvn -B test
+        run: mvn -B -U -DskipITs=true clean package --file pom.xml
 
   integration-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        keycloak_version: [ 24.0.0, 24.0.1, 24.0.2, 24.0.3, 24.0.4, 24.0.5, 25.0.0, 25.0.1, 25.0.2, 25.0.3, 25.0.4, 25.0.5, 25.0.6, 26.0.0 ]
+        keycloak_version: [ 24.0.0, 24.0.1, 24.0.2, 24.0.3, 24.0.4, 24.0.5, 25.0.0, 25.0.1, 25.0.2, 25.0.4, 25.0.5, 25.0.6, 26.0.0 ]
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
@@ -39,4 +37,4 @@ jobs:
           java-version: 21
           cache: maven
       - name: Run integration tests
-        run: mvn -B -U clean test-compile failsafe:integration-test failsafe:verify --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}
+        run: mvn -B -U -DskipUTs=true clean package failsafe:integration-test failsafe:verify --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}

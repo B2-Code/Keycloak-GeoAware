@@ -1,6 +1,6 @@
 package org.b2code.authentication;
 
-import org.b2code.KeycloakTestContainer;
+import org.b2code.IntegrationTestBase;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
@@ -31,7 +31,7 @@ public class GeoIpFilterAuthenticatorConfigTestHelper {
     }
 
     private void updateAuthenticatorConfig(Consumer<AuthenticatorConfigRepresentation> configurer) {
-        AuthenticationManagementResource flowRessource = keycloak.realm(KeycloakTestContainer.TEST_REALM).flows();
+        AuthenticationManagementResource flowRessource = keycloak.realm(IntegrationTestBase.TEST_REALM).flows();
         List<AuthenticationExecutionInfoRepresentation> executions = flowRessource.getFlows().stream()
                 .flatMap(f -> flowRessource.getExecutions(f.getAlias()).stream())
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(GeoIpFilterAuthenticatorFactory.PROVIDER_ID))

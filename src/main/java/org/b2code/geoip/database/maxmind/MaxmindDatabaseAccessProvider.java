@@ -1,5 +1,6 @@
 package org.b2code.geoip.database.maxmind;
 
+import com.google.common.base.Stopwatch;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
@@ -22,7 +23,9 @@ public class MaxmindDatabaseAccessProvider implements GeoipDatabaseAccessProvide
     public GeoIpInfo getIpInfo(String ipAddress) {
         if (reader != null) {
             try {
+                Stopwatch stopwatch = Stopwatch.createStarted();
                 CityResponse maxmindInfo = this.reader.city(InetAddress.getByName(ipAddress));
+                log.debugf("Maxmind GeopIP lookup took %s", stopwatch.stop());
                 return GeoIpInfo.builder()
                         .ip(ipAddress)
                         .city(maxmindInfo.getCity().getName())

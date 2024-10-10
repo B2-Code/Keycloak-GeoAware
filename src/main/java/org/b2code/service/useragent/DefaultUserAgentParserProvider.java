@@ -3,6 +3,7 @@ package org.b2code.service.useragent;
 
 import com.blueconic.browscap.Capabilities;
 import com.blueconic.browscap.UserAgentParser;
+import com.google.common.base.Stopwatch;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -18,7 +19,9 @@ public class DefaultUserAgentParserProvider implements UserAgentParserProvider {
         if (userAgentParser == null) {
             return new UserAgentInfo();
         }
+        Stopwatch stopwatch = Stopwatch.createStarted();
         Capabilities parsedUserAgent = userAgentParser.parse(userAgent);
+        log.debugf("User agent parsing took %s", stopwatch.stop());
         return UserAgentInfo.builder()
                 .browser(parsedUserAgent.getBrowser())
                 .browserType(parsedUserAgent.getBrowserType())

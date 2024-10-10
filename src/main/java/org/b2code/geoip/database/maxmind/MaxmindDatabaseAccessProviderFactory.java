@@ -1,6 +1,7 @@
 package org.b2code.geoip.database.maxmind;
 
 import com.google.auto.service.AutoService;
+import com.google.common.base.Stopwatch;
 import com.maxmind.db.CHMCache;
 import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
@@ -32,26 +33,39 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
         }
         log.tracef("Creating new %s", MaxmindDatabaseAccessProvider.class.getSimpleName());
         if (reader == null) {
-            reader = createReader(config.get(DATABASE_PATH));
+            reader = createReader();
         }
         return new MaxmindDatabaseAccessProvider(reader);
     }
 
-    private DatabaseReader createReader(String databasePath) {
+    private DatabaseReader createReader() {
         log.trace("Creating new Maxmind database reader");
+        String databasePath = config.get(DATABASE_PATH);
+
+        File database;
         try {
-            File database = new File(databasePath);
-            DatabaseReader newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
-            if (!newReader.getMetadata().getDatabaseType().contains("City")) {
-                log.error("Maxmind database is not a City database");
-                return null;
-            }
-            log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
-            return newReader;
+            database = new File(databasePath);
+        } catch (NullPointerException e) {
+            log.errorf("No Maxmind database file found at '%s'", databasePath, e);
+            return null;
+        }
+
+        DatabaseReader newReader;
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try {
+            newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;
         }
+
+        log.debugf("Maxmind database reader created in %s", stopwatch.stop());
+        if (!newReader.getMetadata().getDatabaseType().contains("City")) {
+            log.error("Maxmind database is not a City database");
+            return null;
+        }
+        log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+        return newReader;
     }
 
     @Override
@@ -61,7 +75,9 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        // NOOP
+        if (reader == null) {
+            reader = createReader();
+        }
     }
 
     @Override

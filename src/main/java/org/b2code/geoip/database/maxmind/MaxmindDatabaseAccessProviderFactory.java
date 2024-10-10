@@ -41,21 +41,31 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
     private DatabaseReader createReader() {
         log.trace("Creating new Maxmind database reader");
         String databasePath = config.get(DATABASE_PATH);
+
+        File database;
         try {
-            File database = new File(databasePath);
-            Stopwatch stopwatch = Stopwatch.createStarted();
-            DatabaseReader newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
-            log.debugf("Maxmind database reader created in %s", stopwatch.stop());
-            if (!newReader.getMetadata().getDatabaseType().contains("City")) {
-                log.error("Maxmind database is not a City database");
-                return null;
-            }
-            log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
-            return newReader;
+            database = new File(databasePath);
+        } catch (NullPointerException e) {
+            log.errorf("No Maxmind database file found at '%s'", databasePath, e);
+            return null;
+        }
+
+        DatabaseReader newReader;
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try {
+            newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;
         }
+
+        log.debugf("Maxmind database reader created in %s", stopwatch.stop());
+        if (!newReader.getMetadata().getDatabaseType().contains("City")) {
+            log.error("Maxmind database is not a City database");
+            return null;
+        }
+        log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+        return newReader;
     }
 
     @Override

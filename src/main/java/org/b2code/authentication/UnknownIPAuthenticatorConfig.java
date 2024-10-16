@@ -4,7 +4,7 @@ import org.keycloak.models.AuthenticatorConfigModel;
 
 public class UnknownIPAuthenticatorConfig {
 
-    public static final String MODUS = "modus";
+    public static final String EMAIL_MODUS = "email-modus";
 
     private final AuthenticatorConfigModel authenticatorConfigModel;
 

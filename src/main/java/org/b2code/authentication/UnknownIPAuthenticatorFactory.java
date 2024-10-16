@@ -9,12 +9,14 @@ import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.provider.ServerInfoAwareProviderFactory;
 
 import java.util.List;
+import java.util.Map;
 
 @JBossLog
 @AutoService(AuthenticatorFactory.class)
-public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory {
+public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
 
     public static final String PROVIDER_ID = "unknown-ip";
     public static final String DISPLAY_TYPE = "Unknown-IP";
@@ -57,7 +59,7 @@ public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        return null;
+        return new UnknownIPAuthenticator(session);
     }
 
     @Override
@@ -78,5 +80,14 @@ public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory {
     @Override
     public String getId() {
         return PROVIDER_ID;
+    }
+
+    @Override
+    public Map<String, String> getOperationalInfo() {
+        String version = getClass().getPackage().getImplementationVersion();
+        if (version == null) {
+            version = "dev";
+        }
+        return Map.of("Version", version);
     }
 }

@@ -17,28 +17,22 @@ public class UnknownIPAuthenticator implements Authenticator {
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        UnknownIPAuthenticationFlowContext unknownIPAuthenticationFlowContext = new UnknownIPAuthenticationFlowContext(context);
         String ipAddress = context.getConnection().getRemoteAddr();
         log.debugf("IP address: %s", ipAddress);
 
-
-        log.debugf(getEmailModus(context));
-
-        if (true) {
-            context.success();
-            trackIp(ipAddress, context.getUser().getId());
-        } else {
-        }
+        String emailModus = getEmailModus(context);
+        log.debugf("Email modus: %s", emailModus);
 
         context.success();
+        trackIp(ipAddress, context.getUser().getId(), emailModus);
     }
 
-    protected String getEmailModus(AuthenticationFlowContext context) {
+    private String getEmailModus(AuthenticationFlowContext context) {
         return context.getAuthenticatorConfig().getConfig().get(UnknownIPAuthenticatorConfig.EMAIL_MODUS);
     }
 
-    private void trackIp(String ip, String userId) {
-        session.getProvider(IpHistoryProvider.class).track(ip, userId);
+    private void trackIp(String ip, String userId, String emailModus) {
+        session.getProvider(IpHistoryProvider.class).track(ip, userId, emailModus);
     }
 
     @Override

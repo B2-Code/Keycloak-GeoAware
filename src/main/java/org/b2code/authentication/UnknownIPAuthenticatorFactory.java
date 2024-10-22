@@ -19,7 +19,7 @@ import java.util.Map;
 public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
 
     public static final String PROVIDER_ID = "unknown-ip";
-    public static final String DISPLAY_TYPE = "Unknown-IP";
+    public static final String DISPLAY_TYPE = "Unknown IP";
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
     @Override

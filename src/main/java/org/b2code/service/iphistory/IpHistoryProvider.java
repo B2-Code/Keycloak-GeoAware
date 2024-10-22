@@ -5,5 +5,5 @@ import org.keycloak.provider.Provider;
 
 public interface IpHistoryProvider extends Provider {
 
-    void track(@NotNull String ip, @NotNull String userId);
+    void track(@NotNull String ip, @NotNull String userId, @NotNull String emailModus);
 }

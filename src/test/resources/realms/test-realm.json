@@ -1023,8 +1023,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "AUTH_TIME",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "auth_time",
         "jsonType.label" : "long"
@@ -1167,7 +1168,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "oidc-address-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-address-mapper", "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper" ]
       }
     }, {
       "id" : "ceb1751b-1d32-44e6-85af-f9899248be43",
@@ -1176,7 +1177,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-role-list-mapper", "oidc-address-mapper", "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "saml-user-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper" ]
       }
     }, {
       "id" : "3bd47845-52d5-442a-8720-a82e7e6d4dfd",
@@ -1525,11 +1526,11 @@
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
     }, {
-      "authenticatorConfig" : "Geo-IP-Filter",
-      "authenticator" : "geo-ip-filter",
+      "authenticatorConfig" : "unknown-ip",
+      "authenticator" : "unknown-ip",
       "authenticatorFlow" : false,
       "requirement" : "REQUIRED",
-      "priority" : 31,
+      "priority" : 32,
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
     } ]
@@ -1763,12 +1764,6 @@
     } ]
   } ],
   "authenticatorConfig" : [ {
-    "id" : "1d659489-914c-4105-b2cd-7b9dc1b63532",
-    "alias" : "Geo-IP-Filter",
-    "config" : {
-      "allowedIpRange" : "10.0.0.0/24"
-    }
-  }, {
     "id" : "7cd1b0be-7f0c-4f9d-a287-e6f26315619c",
     "alias" : "create unique user config",
     "config" : {
@@ -1779,6 +1774,12 @@
     "alias" : "review profile config",
     "config" : {
       "update.profile.on.first.login" : "missing"
+    }
+  }, {
+    "id" : "ee7532ee-7894-4e69-bc61-cab620b3302e",
+    "alias" : "unknown-ip",
+    "config" : {
+      "email-modus" : "Always"
     }
   } ],
   "requiredActions" : [ {
@@ -1891,6 +1892,7 @@
     "parRequestUriLifespan" : "60",
     "clientSessionMaxLifespan" : "0",
     "frontendUrl" : "",
+    "organizationsEnabled" : "false",
     "acr.loa.map" : "{}"
   },
   "keycloakVersion" : "26.0.0",

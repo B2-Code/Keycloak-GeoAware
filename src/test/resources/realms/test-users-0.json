@@ -7,6 +7,9 @@
     "lastName" : "Testmann",
     "email" : "test@test.tld",
     "emailVerified" : false,
+    "attributes" : {
+      "ip_history" : [ "[{\"ip\":\"172.18.0.1\",\"time\":1729598207859}]" ]
+    },
     "createdTimestamp" : 1727022800540,
     "enabled" : true,
     "totp" : false,

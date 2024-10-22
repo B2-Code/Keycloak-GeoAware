@@ -1,6 +1,6 @@
 package org.b2code;
 
-import org.b2code.authentication.GeoIpFilterAuthenticatorFactory;
+import org.b2code.authentication.UnknownIPAuthenticatorFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,12 +9,12 @@ class PluginConsistencyTest {
 
     @Test
     void testProviderIdHasNotChanged() {
-        assertEquals("geo-ip-filter", new GeoIpFilterAuthenticatorFactory().getId());
+        assertEquals("unknown-ip", new UnknownIPAuthenticatorFactory().getId());
     }
 
     @Test
     void testDisplayTypeHasNotChanged() {
-        assertEquals("Geo-IP-Filter", new GeoIpFilterAuthenticatorFactory().getDisplayType());
+        assertEquals("Unknown IP", new UnknownIPAuthenticatorFactory().getDisplayType());
     }
 
 }

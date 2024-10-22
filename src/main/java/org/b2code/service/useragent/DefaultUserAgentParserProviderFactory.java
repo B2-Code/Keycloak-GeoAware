@@ -4,6 +4,7 @@ import com.blueconic.browscap.ParseException;
 import com.blueconic.browscap.UserAgentParser;
 import com.blueconic.browscap.UserAgentService;
 import com.google.auto.service.AutoService;
+import com.google.common.base.Stopwatch;
 import lombok.extern.jbosslog.JBossLog;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
@@ -25,12 +26,13 @@ public class DefaultUserAgentParserProviderFactory implements UserAgentParserPro
     private UserAgentParser getParser() {
         if (userAgentParser == null) {
             try {
+                Stopwatch stopwatch = Stopwatch.createStarted();
                 userAgentParser = new UserAgentService().loadParser();
-                log.debug("Loaded UserAgentParser");
+                log.debugf("UserAgentParser loaded in %s", stopwatch.stop());
             } catch (IOException e) {
                 log.error("Failed to load UserAgentParser due to an I/O error", e);
             } catch (ParseException e) {
-                log.error("Failed to load UserAgentParser due to a parsing error", e);
+                log.error("Failed to load UserAgentParser due to an parsing error", e);
             }
         }
         return userAgentParser;
@@ -43,7 +45,9 @@ public class DefaultUserAgentParserProviderFactory implements UserAgentParserPro
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        // NOOP
+        if (userAgentParser == null) {
+            userAgentParser = getParser();
+        }
     }
 
     @Override

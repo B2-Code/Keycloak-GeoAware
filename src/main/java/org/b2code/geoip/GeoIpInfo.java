@@ -16,5 +16,5 @@ public class GeoIpInfo {
     private String country;
     private String countryIsoCode;
     private String continent;
-    private int confidence;
+    private Integer confidence;
 }

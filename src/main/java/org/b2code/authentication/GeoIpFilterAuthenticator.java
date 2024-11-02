@@ -30,7 +30,7 @@ public class GeoIpFilterAuthenticator implements Authenticator {
 
         if (true) {
             authenticationFlowContext.success();
-            trackIp(ipAddress, authenticationFlowContext.getUser().getId());
+            trackIp();
         } else {
             denyAccess(authenticationFlowContext);
         }
@@ -46,8 +46,8 @@ public class GeoIpFilterAuthenticator implements Authenticator {
         return session.getProvider(GeoipDatabaseAccessProvider.class).getIpInfo(context.getConnection().getRemoteAddr());
     }
 
-    private void trackIp(String ip, String userId) {
-        session.getProvider(IpHistoryProvider.class).track(ip, userId);
+    private void trackIp() {
+        session.getProvider(IpHistoryProvider.class).track();
     }
 
     @Override

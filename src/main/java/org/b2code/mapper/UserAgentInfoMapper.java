@@ -1,10 +1,8 @@
 package org.b2code.mapper;
 
 import com.google.auto.service.AutoService;
-import jakarta.ws.rs.core.HttpHeaders;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.service.useragent.UserAgentInfo;
-import org.b2code.service.useragent.UserAgentParserProvider;
+import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
@@ -34,9 +32,8 @@ public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements A
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
         log.tracef("Mapping UserAgent info to claim '%s'", mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME));
-        UserAgentParserProvider userAgentParserProvider = keycloakSession.getProvider(UserAgentParserProvider.class);
-        UserAgentInfo userAgentInfo = userAgentParserProvider.parse(keycloakSession.getContext().getHttpRequest().getHttpHeaders().getHeaderString(HttpHeaders.USER_AGENT));
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, userAgentInfo);
+        DeviceRepresentationProvider deviceRepresentationProvider = keycloakSession.getProvider(DeviceRepresentationProvider.class);
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, deviceRepresentationProvider.deviceRepresentation());
     }
 
     @Override

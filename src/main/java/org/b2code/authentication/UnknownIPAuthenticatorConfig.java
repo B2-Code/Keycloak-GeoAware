@@ -12,5 +12,9 @@ public class UnknownIPAuthenticatorConfig {
         this.authenticatorConfigModel = authenticatorConfigModel;
     }
 
+    public NotificationMode getEmailModus() {
+        NotificationMode configuredMode = NotificationMode.getByLabel(authenticatorConfigModel.getConfig().get(EMAIL_MODUS));
+        return configuredMode != null ? configuredMode : UnknownIPAuthenticatorConfigProperties.EMAIL_MODUS_DEFAULT;
+    }
 
 }

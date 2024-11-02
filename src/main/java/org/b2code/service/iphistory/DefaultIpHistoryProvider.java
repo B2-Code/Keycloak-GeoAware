@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.HttpHeaders;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.authentication.UnknownIPAuthenticatorConfigProperties;
+import org.b2code.authentication.NotificationMode;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
 import org.b2code.service.mail.EmailHelper;
@@ -47,7 +47,7 @@ public class DefaultIpHistoryProvider implements IpHistoryProvider {
      * @param ip     the IP address
      * @param userId the user ID
      */
-    public void track(@NotNull String ip, @NotNull String userId, @NotNull String emailModus) {
+    public void track(@NotNull String ip, @NotNull String userId, @NotNull NotificationMode notificationMode) {
         RealmModel realm = session.getContext().getRealm();
         UserModel user = userProvider.getUserById(realm, userId);
 
@@ -55,12 +55,12 @@ public class DefaultIpHistoryProvider implements IpHistoryProvider {
         boolean knownIp = updateRecords(lastIps, ip);
         setLastIps(user, lastIps);
 
-        if (!knownIp && emailModus.equals(UnknownIPAuthenticatorConfigProperties.UNKNOWN_IP)) {
+        if (!knownIp && notificationMode.equals(NotificationMode.UNKNOWN_IP)) {
             log.debugf("New IP for user %s (%s), sending notification mail", user.getUsername(), ip);
-            sentEmailNotification(user, ip);
-        } else if (emailModus.equals(UnknownIPAuthenticatorConfigProperties.ALWAYS)) {
-            log.debugf("Sending always notification mail for user %s (%s)", user.getUsername(), ip);
-            sentEmailNotification(user, ip);
+            sendEmailNotification(user, ip);
+        } else if (notificationMode.equals(NotificationMode.ALWAYS)) {
+            log.debugf("Sending notification mail for user %s (%s)", user.getUsername(), ip);
+            sendEmailNotification(user, ip);
         }
     }
 
@@ -110,7 +110,7 @@ public class DefaultIpHistoryProvider implements IpHistoryProvider {
      * @param user the user
      * @param ip   the new IP address
      */
-    private void sentEmailNotification(UserModel user, String ip) {
+    private void sendEmailNotification(UserModel user, String ip) {
         GeoipDatabaseAccessProvider geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
         UserAgentParserProvider userAgentParserProvider = session.getProvider(UserAgentParserProvider.class);
         GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);

@@ -20,18 +20,19 @@ public class UnknownIPAuthenticator implements Authenticator {
         String ipAddress = context.getConnection().getRemoteAddr();
         log.debugf("IP address: %s", ipAddress);
 
-        String emailModus = getEmailModus(context);
+        NotificationMode emailModus = getEmailModus(context);
         log.debugf("Email modus: %s", emailModus);
 
         context.success();
         trackIp(ipAddress, context.getUser().getId(), emailModus);
     }
 
-    private String getEmailModus(AuthenticationFlowContext context) {
-        return context.getAuthenticatorConfig().getConfig().get(UnknownIPAuthenticatorConfig.EMAIL_MODUS);
+    private NotificationMode getEmailModus(AuthenticationFlowContext context) {
+        UnknownIPAuthenticatorConfig config = new UnknownIPAuthenticatorConfig(context.getAuthenticatorConfig());
+        return config.getEmailModus();
     }
 
-    private void trackIp(String ip, String userId, String emailModus) {
+    private void trackIp(String ip, String userId, NotificationMode emailModus) {
         session.getProvider(IpHistoryProvider.class).track(ip, userId, emailModus);
     }
 

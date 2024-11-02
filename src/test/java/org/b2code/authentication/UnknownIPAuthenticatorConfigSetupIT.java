@@ -21,13 +21,13 @@ class UnknownIPAuthenticatorConfigSetupIT extends IntegrationTestBase {
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(UnknownIPAuthenticatorFactory.PROVIDER_ID))
                 .map(AuthenticationExecutionInfoRepresentation::getAuthenticationConfig)
                 .map(flowResource::getAuthenticatorConfig).toList();
-        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(UnknownIPAuthenticatorConfig.EMAIL_MODUS).equals(UnknownIPAuthenticatorConfigProperties.ALWAYS)));
+        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(UnknownIPAuthenticatorConfig.EMAIL_MODUS).equals(NotificationMode.ALWAYS.getLabel())));
     }
 
     @Test
     void testAuthenticatorUpdateToUnknownIP() {
         UnknownIPAuthenticatorConfigTestHelper authenticatorConfig = new UnknownIPAuthenticatorConfigTestHelper(keycloak.getKeycloakAdminClient());
-        String emailModus = UnknownIPAuthenticatorConfigProperties.UNKNOWN_IP;
+        String emailModus = NotificationMode.UNKNOWN_IP.getLabel();
         authenticatorConfig.setEmailModus(emailModus);
 
         AuthenticationManagementResource flowResource = realm.flows();
@@ -43,7 +43,7 @@ class UnknownIPAuthenticatorConfigSetupIT extends IntegrationTestBase {
     @Test
     void testAuthenticatorUpdateToOnChange() {
         UnknownIPAuthenticatorConfigTestHelper authenticatorConfig = new UnknownIPAuthenticatorConfigTestHelper(keycloak.getKeycloakAdminClient());
-        String emailModus = UnknownIPAuthenticatorConfigProperties.ON_CHANGE;
+        String emailModus = NotificationMode.ON_CHANGE.getLabel();
         authenticatorConfig.setEmailModus(emailModus);
 
         AuthenticationManagementResource flowResource = realm.flows();

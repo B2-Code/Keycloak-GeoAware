@@ -22,7 +22,7 @@ services:
       - "8443:8443"
       - "8787:8787"
     volumes:
-      - ./target/keycloak-geoaware-jar-with-dependencies.jar:/opt/keycloak/providers/extension.jar
+      - ./target/keycloak-geoaware-shaded.jar:/opt/keycloak/providers/extension.jar
       - ./src/main/resources/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ./src/main/resources/geoip-databases:/opt/keycloak/data/geoip-databases
 

@@ -52,7 +52,14 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
         keycloakSessionFactory.register(event -> {
             if (event instanceof RealmModel.RealmPostCreateEvent postCreateEvent) {
-                this.updateUserProfile(postCreateEvent.getKeycloakSession());
+                if (postCreateEvent.getKeycloakSession().getContext().getRealm() == null) {
+                    // For some reason the realm context is set for creations, but null for imports
+                    postCreateEvent.getKeycloakSession().getContext().setRealm(postCreateEvent.getCreatedRealm());
+                    this.updateUserProfile(postCreateEvent.getKeycloakSession());
+                    postCreateEvent.getKeycloakSession().getContext().setRealm(null);
+                } else {
+                    this.updateUserProfile(postCreateEvent.getKeycloakSession());
+                }
             } else if (event instanceof PostMigrationEvent) {
                 KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> session.getProvider(RealmProvider.class).getRealmsStream().forEach(realm -> {
                     session.getContext().setRealm(realm);

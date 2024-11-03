@@ -9,12 +9,12 @@ class PluginConsistencyTest {
 
     @Test
     void testProviderIdHasNotChanged() {
-        assertEquals("unknown-ip", new UnknownIPAuthenticatorFactory().getId());
+        assertEquals("geoaware-unknown-ip", new UnknownIPAuthenticatorFactory().getId());
     }
 
     @Test
     void testDisplayTypeHasNotChanged() {
-        assertEquals("Unknown IP", new UnknownIPAuthenticatorFactory().getDisplayType());
+        assertEquals("GeoAware Unknown IP", new UnknownIPAuthenticatorFactory().getDisplayType());
     }
 
 }

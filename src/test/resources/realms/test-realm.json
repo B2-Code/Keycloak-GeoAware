@@ -1779,7 +1779,7 @@
     "id" : "c905377a-f096-46a6-a4ce-8364a9d3384e",
     "alias" : "unknown-ip",
     "config" : {
-      "email-modus" : "Unknown IP"
+      "email-modus" : "Always"
     }
   } ],
   "requiredActions" : [ {

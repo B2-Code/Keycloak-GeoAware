@@ -1,6 +1,7 @@
 package org.b2code.service.loginhistory;
 
 import com.google.auto.service.AutoService;
+import org.b2code.PluginConstants;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.Spi;
@@ -15,7 +16,7 @@ public class LoginHistorySpi implements Spi {
 
     @Override
     public String getName() {
-        return "login-history";
+        return PluginConstants.PLUGIN_NAME_LOWER_CASE + "-login-history";
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.b2code.authentication;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.PluginConstants;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -18,8 +19,8 @@ import java.util.Map;
 @AutoService(AuthenticatorFactory.class)
 public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
 
-    public static final String PROVIDER_ID = "unknown-ip";
-    public static final String DISPLAY_TYPE = "Unknown IP";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-ip";
+    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown IP";
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
     @Override
@@ -29,7 +30,7 @@ public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, Serv
 
     @Override
     public String getReferenceCategory() {
-        return "Authorization";
+        return null;
     }
 
     @Override

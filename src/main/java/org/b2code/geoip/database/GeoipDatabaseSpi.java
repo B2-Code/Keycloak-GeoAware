@@ -1,6 +1,7 @@
 package org.b2code.geoip.database;
 
 import com.google.auto.service.AutoService;
+import org.b2code.PluginConstants;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.Spi;
@@ -15,7 +16,7 @@ public class GeoipDatabaseSpi implements Spi {
 
     @Override
     public String getName() {
-        return "geoip-database";
+        return PluginConstants.PLUGIN_NAME_LOWER_CASE + "-geoip-database";
     }
 
     @Override

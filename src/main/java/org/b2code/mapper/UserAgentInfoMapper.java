@@ -21,7 +21,7 @@ import java.util.List;
 @AutoService(ProtocolMapper.class)
 public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements AllTokenTypesMapper {
 
-    public static final String PROVIDER_ID = "oidc-user-agent-info-mapper";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-oidc-user-agent-info-mapper";
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 

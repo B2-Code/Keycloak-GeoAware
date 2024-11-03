@@ -2,6 +2,7 @@ package org.b2code.service.loginhistory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 @Getter
 @Setter
@@ -24,5 +25,17 @@ public class LoginRecord {
         private String deviceType;
         @JsonProperty(value = "mobile")
         private boolean isMobile;
+
+        public static Device fromDeviceRepresentation(DeviceRepresentation device) {
+            return builder()
+                    .deviceType(device.getDevice())
+                    .os(device.getOs())
+                    .osVersion(device.getOsVersion())
+                    .browser(device.getBrowser())
+                    .isMobile(device.isMobile())
+                    .build();
+        }
     }
+
+
 }

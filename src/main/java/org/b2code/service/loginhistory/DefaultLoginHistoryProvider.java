@@ -9,6 +9,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -40,20 +41,8 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         getLoginRecords();
     }
 
-    /**
-     * Persists the current login information of a user in the history
-     * Automatically prevents duplicate records if called multiple times
-     */
     public void track() {
-        String authNoteKey = USER_ATTRIBUTE_LAST_IPS + "Set";
-        String authNoteValue = "true";
-        if (authNoteValue.equals(session.getContext().getAuthenticationSession().getAuthNote(authNoteKey))) {
-            log.trace("Login history already tracked for this authentication session");
-            return;
-        }
         updateRecords();
-        setLoginRecords();
-        session.getContext().getAuthenticationSession().setAuthNote(authNoteKey, authNoteValue);
         log.trace("Successfully tracked login");
     }
 
@@ -64,6 +53,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         if (loginRecords.size() > maxRecords) {
             loginRecords = loginRecords.stream().sorted(Comparator.comparingLong(LoginRecord::getTime).reversed()).limit(maxRecords).toList();
         }
+        setLoginRecords();
     }
 
     public boolean isKnownIp() {
@@ -73,8 +63,12 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     public boolean isKnownDevice() {
         DeviceRepresentation deviceRep = deviceRepresentationProvider.deviceRepresentation();
-        LoginRecord.Device device = map(deviceRep);
+        LoginRecord.Device device = LoginRecord.Device.fromDeviceRepresentation(deviceRep);
         return loginRecords.stream().anyMatch(r -> r.getDevice().equals(device));
+    }
+
+    public List<LoginRecord> getHistory() {
+        return Collections.unmodifiableList(loginRecords);
     }
 
     private LoginRecord generateRecord(long now) {
@@ -82,18 +76,8 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         DeviceRepresentation device = deviceRepresentationProvider.deviceRepresentation();
         return LoginRecord.builder()
                 .ip(ip)
-                .device(map(device))
+                .device(LoginRecord.Device.fromDeviceRepresentation(device))
                 .time(now)
-                .build();
-    }
-
-    private LoginRecord.Device map(DeviceRepresentation device) {
-        return LoginRecord.Device.builder()
-                .deviceType(device.getDevice())
-                .os(device.getOs())
-                .osVersion(device.getOsVersion())
-                .browser(device.getBrowser())
-                .isMobile(device.isMobile())
                 .build();
     }
 

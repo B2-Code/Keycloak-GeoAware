@@ -2,12 +2,17 @@ package org.b2code.authentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.service.iphistory.IpHistoryProvider;
+import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
+import org.b2code.service.loginhistory.LoginHistoryProvider;
+import org.b2code.service.mail.EmailHelper;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 @JBossLog
 @RequiredArgsConstructor
@@ -20,20 +25,44 @@ public class UnknownIPAuthenticator implements Authenticator {
         String ipAddress = context.getConnection().getRemoteAddr();
         log.debugf("IP address: %s", ipAddress);
 
-        NotificationMode emailModus = getEmailModus(context);
-        log.debugf("Email modus: %s", emailModus);
+        NotificationMode emailMode = getEmailMode(context);
+        log.debugf("Email mode: %s", emailMode);
 
         context.success();
-        trackIp(ipAddress, context.getUser().getId(), emailModus);
+        trackIp(emailMode);
     }
 
-    private NotificationMode getEmailModus(AuthenticationFlowContext context) {
+    private NotificationMode getEmailMode(AuthenticationFlowContext context) {
         UnknownIPAuthenticatorConfig config = new UnknownIPAuthenticatorConfig(context.getAuthenticatorConfig());
         return config.getEmailModus();
     }
 
-    private void trackIp(String ip, String userId, NotificationMode emailModus) {
-        session.getProvider(IpHistoryProvider.class).track(ip, userId, emailModus);
+    private void trackIp(NotificationMode emailMode) {
+        LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
+        UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
+        String ip = session.getContext().getConnection().getRemoteAddr();
+
+        if (!loginHistoryProvider.isKnownIp() && emailMode.equals(NotificationMode.UNKNOWN_IP)) {
+            log.debugf("New IP for user %s (%s), sending notification mail", user.getUsername(), ip);
+            sentEmailNotification(user, ip);
+        } else if (emailMode.equals(NotificationMode.ALWAYS)) {
+            log.debugf("Sending always notification mail for user %s (%s)", user.getUsername(), ip);
+            sentEmailNotification(user, ip);
+        }
+    }
+
+    /**
+     * Sends an email notification to the user about login and the IP address.
+     *
+     * @param user the user
+     * @param ip   the new IP address
+     */
+    private void sentEmailNotification(UserModel user, String ip) {
+        GeoipDatabaseAccessProvider geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
+        DeviceRepresentationProvider userAgentParserProvider = session.getProvider(DeviceRepresentationProvider.class);
+        GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);
+        DeviceRepresentation userAgentInfo = userAgentParserProvider.deviceRepresentation();
+        EmailHelper.sendNewIpEmail(geoIpInfo, userAgentInfo, session, user, session.getContext().getRealm());
     }
 
     @Override

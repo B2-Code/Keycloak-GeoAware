@@ -8,8 +8,8 @@ import org.b2code.geoip.GeoIpInfo;
 import org.keycloak.common.util.Time;
 import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailTemplateProvider;
+import org.keycloak.models.AbstractKeycloakTransaction;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakTransaction;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @JBossLog
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmailHelper implements KeycloakTransaction {
+public class EmailHelper extends AbstractKeycloakTransaction {
 
     private KeycloakSession session;
     private UserModel user;
@@ -69,12 +69,7 @@ public class EmailHelper implements KeycloakTransaction {
     }
 
     @Override
-    public void begin() {
-        // NOOP
-    }
-
-    @Override
-    public void commit() {
+    public void commitImpl() {
         try {
             log.debugf("Sending email to %s (%s)", user.getEmail(), type);
             session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession()).send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
@@ -84,22 +79,7 @@ public class EmailHelper implements KeycloakTransaction {
     }
 
     @Override
-    public void rollback() {
+    public void rollbackImpl() {
         // NOOP
-    }
-
-    @Override
-    public void setRollbackOnly() {
-        // NOOP
-    }
-
-    @Override
-    public boolean getRollbackOnly() {
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
     }
 }

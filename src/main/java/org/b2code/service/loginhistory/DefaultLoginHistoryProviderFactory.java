@@ -1,4 +1,4 @@
-package org.b2code.service.iphistory;
+package org.b2code.service.loginhistory;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
@@ -22,17 +22,25 @@ import java.util.List;
 import java.util.Set;
 
 @JBossLog
-@AutoService(IpHistoryProviderFactory.class)
-public class DefaultIpHistoryProviderFactory implements IpHistoryProviderFactory {
+@AutoService(LoginHistoryProviderFactory.class)
+public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
 
-    private static final String RECORD_RETENTION_TIME_HOURS_PARAM = "retentionTimeHours";
-    private static final String RECORD_RETENTION_TIME_HOURS_DEFAULT = "24";
+    private static final String RECORD_RETENTION_TIME_HOURS_PARAM = "recordRetentionTimeHours";
+    private static final int RECORD_RETENTION_TIME_HOURS_DEFAULT = 24;
+
+    private static final String MAX_RECORDS_PARAM = "recordMax";
+    private static final int MAX_RECORDS_DEFAULT = 100;
+
+    private static final String SHOW_HISTORY_IN_ACCOUNT_PARAM = "showHistoryInAccount";
+    private static final boolean SHOW_HISTORY_IN_ACCOUNT_DEFAULT = Environment.isDevMode();
+
     private Config.Scope config;
 
     @Override
-    public DefaultIpHistoryProvider create(KeycloakSession session) {
-        int retentionTimeHours = Integer.parseInt(config.get(RECORD_RETENTION_TIME_HOURS_PARAM, RECORD_RETENTION_TIME_HOURS_DEFAULT));
-        return new DefaultIpHistoryProvider(session, retentionTimeHours);
+    public DefaultLoginHistoryProvider create(KeycloakSession session) {
+        int retentionTimeHours = config.getInt(RECORD_RETENTION_TIME_HOURS_PARAM, RECORD_RETENTION_TIME_HOURS_DEFAULT);
+        int maxRecords = config.getInt(MAX_RECORDS_PARAM, MAX_RECORDS_DEFAULT);
+        return new DefaultLoginHistoryProvider(session, retentionTimeHours, maxRecords);
     }
 
     @Override
@@ -58,10 +66,10 @@ public class DefaultIpHistoryProviderFactory implements IpHistoryProviderFactory
         UserProfileProvider userProfileProvider = session.getProvider(UserProfileProvider.class);
         UPConfig existingUpConfig = userProfileProvider.getConfiguration().clone();
 
-        String groupName = "ip-history";
+        String groupName = "login-history";
         UPGroup expectedGroup = new UPGroup(groupName);
-        expectedGroup.setDisplayHeader("IP History");
-        expectedGroup.setDisplayDescription("Records of IP addresses and devices used by the user");
+        expectedGroup.setDisplayHeader("${loginHistoryUserProfileAttributeGroup}");
+        expectedGroup.setDisplayDescription("${loginHistoryUserProfileAttributeGroupDescription}");
 
         List<UPGroup> existingGroups = existingUpConfig.getGroups().stream()
                 .filter(group -> group.getName().equals(expectedGroup.getName()))
@@ -87,12 +95,15 @@ public class DefaultIpHistoryProviderFactory implements IpHistoryProviderFactory
             }
         }
 
-        UPAttribute expectedAttribute = new UPAttribute(DefaultIpHistoryProvider.USER_ATTRIBUTE_LAST_IPS, true, new UPAttributePermissions(Set.of(UserProfileConstants.ROLE_ADMIN), Environment.isDevMode() ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet()));
-        expectedAttribute.setDisplayName("Records");
+        boolean showAttribute = config.getBoolean(SHOW_HISTORY_IN_ACCOUNT_PARAM, SHOW_HISTORY_IN_ACCOUNT_DEFAULT);
+        Set<String> viewPermissions = showAttribute ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
+        Set<String> editPermissions = showAttribute && Environment.isDevMode() ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
+        UPAttribute expectedAttribute = new UPAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, true, new UPAttributePermissions(viewPermissions, editPermissions));
+        expectedAttribute.setDisplayName("${loginHistoryUserProfileAttribute}");
         expectedAttribute.setGroup(groupName);
-        UPAttribute existingAttribute = existingUpConfig.getAttribute(DefaultIpHistoryProvider.USER_ATTRIBUTE_LAST_IPS);
+        UPAttribute existingAttribute = existingUpConfig.getAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS);
         if (existingAttribute == null || !existingAttribute.equals(expectedAttribute)) {
-            log.debugf("Updating user profile attribute '%s' in realm '%s'", DefaultIpHistoryProvider.USER_ATTRIBUTE_LAST_IPS, session.getContext().getRealm().getName());
+            log.debugf("Updating user profile attribute '%s' in realm '%s'", DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, session.getContext().getRealm().getName());
             UPConfig newUpConfig = existingUpConfig.addOrReplaceAttribute(expectedAttribute);
             userProfileProvider.setConfiguration(newUpConfig);
         }

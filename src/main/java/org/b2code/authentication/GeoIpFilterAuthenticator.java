@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
-import org.b2code.service.iphistory.IpHistoryProvider;
+import org.b2code.service.loginhistory.LoginHistoryProvider;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
@@ -47,7 +47,8 @@ public class GeoIpFilterAuthenticator implements Authenticator {
     }
 
     private void trackIp() {
-        session.getProvider(IpHistoryProvider.class).track();
+        session.getProvider(LoginHistoryProvider.class).track();
+        session.getProvider(LoginHistoryProvider.class).track();
     }
 
     @Override

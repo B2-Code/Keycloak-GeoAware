@@ -2,6 +2,7 @@ package org.b2code.mapper;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.PluginConstants;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
 import org.keycloak.models.ClientSessionContext;
@@ -55,7 +56,7 @@ public class GeoIpInfoMapper extends AbstractOIDCProtocolMapper implements AllTo
 
     @Override
     public String getDisplayType() {
-        return "GeoIp info";
+        return PluginConstants.PLUGIN_NAME + " GeoIp info";
     }
 
     @Override

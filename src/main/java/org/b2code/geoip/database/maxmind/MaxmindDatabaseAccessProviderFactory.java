@@ -64,7 +64,7 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
             log.error("Maxmind database is not a City database");
             return null;
         }
-        log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+        log.infof("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
         return newReader;
     }
 

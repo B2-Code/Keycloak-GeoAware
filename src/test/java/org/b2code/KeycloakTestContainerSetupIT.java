@@ -1,13 +1,8 @@
 package org.b2code;
 
-import org.b2code.authentication.GeoIpFilterAuthenticatorConfig;
-import org.b2code.authentication.GeoIpFilterAuthenticatorConfigTestHelper;
-import org.b2code.authentication.GeoIpFilterAuthenticatorFactory;
+import org.b2code.authentication.UnknownIPAuthenticatorFactory;
 import org.junit.jupiter.api.Test;
-import org.keycloak.admin.client.resource.AuthenticationManagementResource;
-import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
-import org.keycloak.representations.idm.AuthenticatorConfigRepresentation;
 
 import java.util.List;
 
@@ -39,7 +34,7 @@ class KeycloakTestContainerSetupIT extends IntegrationTestBase {
                 .realm(TEST_REALM)
                 .flows().getAuthenticatorProviders()
                 .stream()
-                .anyMatch(p -> p.get("id").equals(GeoIpFilterAuthenticatorFactory.PROVIDER_ID));
+                .anyMatch(p -> p.get("id").equals(UnknownIPAuthenticatorFactory.PROVIDER_ID));
         assertTrue(authenticatorExists);
     }
 

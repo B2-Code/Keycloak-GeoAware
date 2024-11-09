@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
-import org.keycloak.common.util.Time;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,16 +28,16 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     private final GeoipDatabaseAccessProvider geoipDatabaseAccessProvider;
 
-    private final int retentionTimeHours;
+    private final Duration retentionTime;
 
     private final int maxRecords;
 
     private List<LoginRecord> loginRecords;
 
-    public DefaultLoginHistoryProvider(KeycloakSession session, int retentionTimeHours, int maxRecords) {
+    public DefaultLoginHistoryProvider(KeycloakSession session, Duration retentionTime, int maxRecords) {
         log.tracef("Creating new %s", DefaultLoginHistoryProvider.class.getSimpleName());
         this.session = session;
-        this.retentionTimeHours = retentionTimeHours;
+        this.retentionTime = retentionTime;
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
         this.geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
@@ -49,11 +50,11 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     }
 
     private void updateRecords() {
-        long now = Time.currentTime();
-        loginRecords.removeIf(r -> now - r.getTime() > (long) retentionTimeHours * 60 * 60);
-        loginRecords.addFirst(generateRecord(now));
+        Instant now = Instant.now();
+        loginRecords.removeIf(r -> r.getTime().isBefore(now.minus(retentionTime)));
+        loginRecords.addFirst(generateRecord());
         if (loginRecords.size() > maxRecords) {
-            loginRecords = loginRecords.stream().sorted(Comparator.comparingLong(LoginRecord::getTime).reversed()).limit(maxRecords).toList();
+            loginRecords = loginRecords.stream().sorted(Comparator.comparing(LoginRecord::getTime).reversed()).limit(maxRecords).toList();
         }
         setLoginRecords();
     }
@@ -70,7 +71,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     }
 
     public Optional<LoginRecord> getLastLogin() {
-        return loginRecords.stream().max(Comparator.comparingLong(LoginRecord::getTime));
+        return loginRecords.stream().max(Comparator.comparing(LoginRecord::getTime));
     }
 
     public boolean isKnownLocation() {
@@ -84,14 +85,14 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         return Collections.unmodifiableList(loginRecords);
     }
 
-    private LoginRecord generateRecord(long now) {
+    private LoginRecord generateRecord() {
         String ip = session.getContext().getConnection().getRemoteAddr();
         DeviceRepresentation device = deviceRepresentationProvider.deviceRepresentation();
         GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);
         return LoginRecord.builder()
                 .geoIpInfo(geoIpInfo)
                 .device(LoginRecord.Device.fromDeviceRepresentation(device))
-                .time(now)
+                .time(Instant.now())
                 .build();
     }
 

@@ -17,6 +17,8 @@ import org.keycloak.representations.userprofile.config.UPGroup;
 import org.keycloak.userprofile.UserProfileConstants;
 import org.keycloak.userprofile.UserProfileProvider;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -25,8 +27,8 @@ import java.util.Set;
 @AutoService(LoginHistoryProviderFactory.class)
 public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
 
-    private static final String RECORD_RETENTION_TIME_HOURS_PARAM = "recordRetentionTimeHours";
-    private static final int RECORD_RETENTION_TIME_HOURS_DEFAULT = 24;
+    private static final String RECORD_RETENTION_TIME_PARAM = "recordRetentionTime";
+    private static final String RECORD_RETENTION_TIME_DEFAULT = "P1D";
 
     private static final String MAX_RECORDS_PARAM = "recordMax";
     private static final int MAX_RECORDS_DEFAULT = 100;
@@ -38,9 +40,20 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
 
     @Override
     public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        int retentionTimeHours = config.getInt(RECORD_RETENTION_TIME_HOURS_PARAM, RECORD_RETENTION_TIME_HOURS_DEFAULT);
+        String retentionTimeValue = config.get(RECORD_RETENTION_TIME_PARAM, RECORD_RETENTION_TIME_DEFAULT);
+        Duration retentionTime;
+        try {
+            retentionTime = Duration.parse(retentionTimeValue);
+            if (retentionTime.isNegative() || retentionTime.isZero()) {
+                throw new DateTimeParseException("Retention time must be positive", retentionTimeValue, 0);
+            }
+        } catch (DateTimeParseException e) {
+            log.errorf("Invalid retention time format: '%s'. Please use ISO-8601 duration format. Using default value.", retentionTimeValue);
+            retentionTime = Duration.parse(RECORD_RETENTION_TIME_DEFAULT);
+        }
+
         int maxRecords = config.getInt(MAX_RECORDS_PARAM, MAX_RECORDS_DEFAULT);
-        return new DefaultLoginHistoryProvider(session, retentionTimeHours, maxRecords);
+        return new DefaultLoginHistoryProvider(session, retentionTime, maxRecords);
     }
 
     @Override

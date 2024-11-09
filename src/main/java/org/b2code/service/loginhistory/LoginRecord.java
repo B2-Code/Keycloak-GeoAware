@@ -3,9 +3,13 @@ package org.b2code.service.loginhistory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.quarkus.vertx.runtime.jackson.InstantSerializer;
 import lombok.*;
 import org.b2code.geoip.GeoIpInfo;
 import org.keycloak.representations.account.DeviceRepresentation;
+
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -14,7 +18,8 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @NoArgsConstructor
 public class LoginRecord {
 
-    private Long time;
+    @JsonSerialize(using = InstantSerializer.class)
+    private Instant time;
     private Device device;
     @JsonProperty(value = "geoip")
     private GeoIpInfo geoIpInfo;

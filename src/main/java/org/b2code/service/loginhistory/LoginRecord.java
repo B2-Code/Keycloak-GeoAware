@@ -1,5 +1,7 @@
 package org.b2code.service.loginhistory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.b2code.geoip.GeoIpInfo;
@@ -21,13 +23,14 @@ public class LoginRecord {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Device {
         private String os;
         private String osVersion;
         private String browser;
         private String deviceType;
         @JsonProperty(value = "mobile")
-        private boolean isMobile;
+        private Boolean isMobile;
 
         public static Device fromDeviceRepresentation(DeviceRepresentation device) {
             return builder()
@@ -40,6 +43,7 @@ public class LoginRecord {
         }
     }
 
+    @JsonIgnore
     public String getIp() {
         return geoIpInfo.getIp();
     }

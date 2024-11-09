@@ -2,6 +2,7 @@ package org.b2code.service.loginhistory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
@@ -20,7 +21,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     public static final String USER_ATTRIBUTE_LAST_IPS = "loginHistoryRecord";
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     private final KeycloakSession session;
 

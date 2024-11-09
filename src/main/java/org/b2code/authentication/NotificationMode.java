@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum NotificationMode {
     ALWAYS,
     UNKNOWN_IP,
-    ON_CHANGE;
+    ON_CHANGE,
+    UNKNOWN_LOCATION;
 
     private String label;
 
@@ -27,5 +28,6 @@ public enum NotificationMode {
         ALWAYS.setLabel("Always");
         UNKNOWN_IP.setLabel("Unknown IP");
         ON_CHANGE.setLabel("On Change");
+        UNKNOWN_LOCATION.setLabel("Unknown Location");
     }
 }

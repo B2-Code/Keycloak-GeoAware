@@ -2,6 +2,7 @@ package org.b2code.service.loginhistory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.b2code.geoip.GeoIpInfo;
 import org.keycloak.representations.account.DeviceRepresentation;
 
 @Getter
@@ -10,9 +11,11 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRecord {
-    private String ip;
+
     private Long time;
     private Device device;
+    @JsonProperty(value = "geoip")
+    private GeoIpInfo geoIpInfo;
 
     @Data
     @Builder
@@ -37,5 +40,8 @@ public class LoginRecord {
         }
     }
 
+    public String getIp() {
+        return geoIpInfo.getIp();
+    }
 
 }

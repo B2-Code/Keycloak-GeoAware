@@ -29,7 +29,7 @@ public class UnknownIPAuthenticator implements Authenticator {
         log.debugf("Email mode: %s", emailMode);
 
         context.success();
-        trackIp(emailMode);
+        sendNotification(emailMode);
     }
 
     private NotificationMode getEmailMode(AuthenticationFlowContext context) {
@@ -37,17 +37,25 @@ public class UnknownIPAuthenticator implements Authenticator {
         return config.getEmailModus();
     }
 
-    private void trackIp(NotificationMode emailMode) {
+    private void sendNotification(NotificationMode emailMode) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
         String ip = session.getContext().getConnection().getRemoteAddr();
 
-        if (!loginHistoryProvider.isKnownIp() && emailMode.equals(NotificationMode.UNKNOWN_IP)) {
+        if (emailMode == NotificationMode.UNKNOWN_IP && !loginHistoryProvider.isKnownIp()) {
             log.debugf("New IP for user %s (%s), sending notification mail", user.getUsername(), ip);
             sentEmailNotification(user, ip);
-        } else if (emailMode.equals(NotificationMode.ALWAYS)) {
+        } else if (emailMode == NotificationMode.ON_CHANGE && loginHistoryProvider.getLastLogin().map(l -> !l.getIp().equals(ip)).orElse(true)) {
+            log.debugf("IP for user %s (%s) changed, sending notification mail", user.getUsername(), ip);
+            sentEmailNotification(user, ip);
+        } else if (emailMode == NotificationMode.UNKNOWN_LOCATION && !loginHistoryProvider.isKnownLocation()) {
+            log.debugf("New location for user %s (%s), sending notification mail", user.getUsername(), ip);
+            sentEmailNotification(user, ip);
+        } else if (emailMode == NotificationMode.ALWAYS) {
             log.debugf("Sending always notification mail for user %s (%s)", user.getUsername(), ip);
             sentEmailNotification(user, ip);
+        } else {
+            log.debugf("The IP for user %s (%s) does not match the specified criteria", user.getUsername(), ip);
         }
     }
 

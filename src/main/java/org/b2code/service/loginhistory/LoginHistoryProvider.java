@@ -3,6 +3,7 @@ package org.b2code.service.loginhistory;
 import org.keycloak.provider.Provider;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LoginHistoryProvider extends Provider {
 
@@ -17,6 +18,14 @@ public interface LoginHistoryProvider extends Provider {
     boolean isKnownDevice();
 
     /**
+     * The location is determined by the IP address.
+     * As this is quite imprecise, an accuracy radius is used to determine whether two locations are considered the same.
+     *
+     * @return true if the location is already in the history, false otherwise
+     */
+    boolean isKnownLocation();
+
+    /**
      * @return the history of logins as immutable list
      */
     List<LoginRecord> getHistory();
@@ -27,4 +36,8 @@ public interface LoginHistoryProvider extends Provider {
      */
     void track();
 
+    /**
+     * @return the last login record
+     */
+    Optional<LoginRecord> getLastLogin();
 }

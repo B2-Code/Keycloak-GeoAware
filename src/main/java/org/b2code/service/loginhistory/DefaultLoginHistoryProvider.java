@@ -3,16 +3,15 @@ package org.b2code.service.loginhistory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
 import org.keycloak.common.util.Time;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JBossLog
@@ -26,6 +25,8 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     private final DeviceRepresentationProvider deviceRepresentationProvider;
 
+    private final GeoipDatabaseAccessProvider geoipDatabaseAccessProvider;
+
     private final int retentionTimeHours;
 
     private final int maxRecords;
@@ -38,6 +39,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         this.retentionTimeHours = retentionTimeHours;
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
+        this.geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
         getLoginRecords();
     }
 
@@ -67,6 +69,17 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         return loginRecords.stream().anyMatch(r -> r.getDevice().equals(device));
     }
 
+    public Optional<LoginRecord> getLastLogin() {
+        return loginRecords.stream().max(Comparator.comparingLong(LoginRecord::getTime));
+    }
+
+    public boolean isKnownLocation() {
+        String ip = session.getContext().getConnection().getRemoteAddr();
+        GeoipDatabaseAccessProvider provider = session.getProvider(GeoipDatabaseAccessProvider.class);
+        GeoIpInfo ipInfo = provider.getIpInfo(ip);
+        return loginRecords.stream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
+    }
+
     public List<LoginRecord> getHistory() {
         return Collections.unmodifiableList(loginRecords);
     }
@@ -74,8 +87,9 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     private LoginRecord generateRecord(long now) {
         String ip = session.getContext().getConnection().getRemoteAddr();
         DeviceRepresentation device = deviceRepresentationProvider.deviceRepresentation();
+        GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);
         return LoginRecord.builder()
-                .ip(ip)
+                .geoIpInfo(geoIpInfo)
                 .device(LoginRecord.Device.fromDeviceRepresentation(device))
                 .time(now)
                 .build();

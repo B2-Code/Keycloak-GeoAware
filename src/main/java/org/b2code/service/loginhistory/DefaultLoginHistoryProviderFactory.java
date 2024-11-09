@@ -33,8 +33,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
     private static final String MAX_RECORDS_PARAM = "recordMax";
     private static final int MAX_RECORDS_DEFAULT = 100;
 
-    private static final String SHOW_HISTORY_IN_ACCOUNT_PARAM = "showHistoryInAccount";
-    private static final boolean SHOW_HISTORY_IN_ACCOUNT_DEFAULT = Environment.isDevMode();
+    private static final String USER_PROFILE_ATTRIBUTE_GROUP_NAME = "login-history";
 
     private Config.Scope config;
 
@@ -85,11 +84,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
     private void updateUserProfile(KeycloakSession session) {
         UserProfileProvider userProfileProvider = session.getProvider(UserProfileProvider.class);
         UPConfig existingUpConfig = userProfileProvider.getConfiguration().clone();
-
-        String groupName = "login-history";
-        UPGroup expectedGroup = new UPGroup(groupName);
-        expectedGroup.setDisplayHeader("${loginHistoryUserProfileAttributeGroup}");
-        expectedGroup.setDisplayDescription("${loginHistoryUserProfileAttributeGroupDescription}");
+        UPGroup expectedGroup = getExpectedUpGroup();
 
         List<UPGroup> existingGroups = existingUpConfig.getGroups().stream()
                 .filter(group -> group.getName().equals(expectedGroup.getName()))
@@ -115,18 +110,29 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
             }
         }
 
-        boolean showAttribute = config.getBoolean(SHOW_HISTORY_IN_ACCOUNT_PARAM, SHOW_HISTORY_IN_ACCOUNT_DEFAULT);
-        Set<String> viewPermissions = showAttribute ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
-        Set<String> editPermissions = showAttribute && Environment.isDevMode() ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
-        UPAttribute expectedAttribute = new UPAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, true, new UPAttributePermissions(viewPermissions, editPermissions));
-        expectedAttribute.setDisplayName("${loginHistoryUserProfileAttribute}");
-        expectedAttribute.setGroup(groupName);
+        UPAttribute expectedAttribute = getExpectedUpAttribute();
         UPAttribute existingAttribute = existingUpConfig.getAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS);
         if (existingAttribute == null || !existingAttribute.equals(expectedAttribute)) {
             log.debugf("Updating user profile attribute '%s' in realm '%s'", DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, session.getContext().getRealm().getName());
             UPConfig newUpConfig = existingUpConfig.addOrReplaceAttribute(expectedAttribute);
             userProfileProvider.setConfiguration(newUpConfig);
         }
+    }
+
+    private static UPAttribute getExpectedUpAttribute() {
+        Set<String> viewPermissions = Set.of(UserProfileConstants.ROLE_ADMIN);
+        Set<String> editPermissions = Environment.isDevMode() ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
+        UPAttribute expectedAttribute = new UPAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, true, new UPAttributePermissions(viewPermissions, editPermissions));
+        expectedAttribute.setDisplayName("${loginHistoryUserProfileAttribute}");
+        expectedAttribute.setGroup(USER_PROFILE_ATTRIBUTE_GROUP_NAME);
+        return expectedAttribute;
+    }
+
+    private static UPGroup getExpectedUpGroup() {
+        UPGroup expectedGroup = new UPGroup(USER_PROFILE_ATTRIBUTE_GROUP_NAME);
+        expectedGroup.setDisplayHeader("${loginHistoryUserProfileAttributeGroup}");
+        expectedGroup.setDisplayDescription("${loginHistoryUserProfileAttributeGroupDescription}");
+        return expectedGroup;
     }
 
     @Override

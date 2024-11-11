@@ -4,7 +4,7 @@ import org.keycloak.models.AuthenticatorConfigModel;
 
 public class UnknownIPAuthenticatorConfig {
 
-    public static final String EMAIL_MODUS = "email-modus";
+    public static final String EMAIL_MODE = "email-mode";
 
     private final AuthenticatorConfigModel authenticatorConfigModel;
 
@@ -12,9 +12,9 @@ public class UnknownIPAuthenticatorConfig {
         this.authenticatorConfigModel = authenticatorConfigModel;
     }
 
-    public NotificationMode getEmailModus() {
-        NotificationMode configuredMode = NotificationMode.getByLabel(authenticatorConfigModel.getConfig().get(EMAIL_MODUS));
-        return configuredMode != null ? configuredMode : UnknownIPAuthenticatorConfigProperties.EMAIL_MODUS_DEFAULT;
+    public UnknownIPAuthenticatorNotificationMode getEmailMode() {
+        // Email mode is required, so it should always be present
+        return UnknownIPAuthenticatorNotificationMode.getByLabel(authenticatorConfigModel.getConfig().get(EMAIL_MODE)).orElseThrow(() -> new IllegalArgumentException("Email notification mode not found"));
     }
 
 }

@@ -23,7 +23,7 @@ public class MaxmindDatabaseAccessProvider implements GeoipDatabaseAccessProvide
             try {
                 Stopwatch stopwatch = Stopwatch.createStarted();
                 CityResponse maxmindInfo = this.reader.city(InetAddress.getByName(ipAddress));
-                log.debugf("Maxmind GeopIP lookup took %s", stopwatch.stop());
+                log.debugf("Maxmind GeoIP lookup took %s", stopwatch.stop());
                 return GeoIpInfo.builder()
                         .ip(ipAddress)
                         .city(maxmindInfo.getCity().getName())

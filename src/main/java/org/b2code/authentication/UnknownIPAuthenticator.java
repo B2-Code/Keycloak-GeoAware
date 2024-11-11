@@ -25,33 +25,33 @@ public class UnknownIPAuthenticator implements Authenticator {
         String ipAddress = context.getConnection().getRemoteAddr();
         log.debugf("IP address: %s", ipAddress);
 
-        NotificationMode emailMode = getEmailMode(context);
+        UnknownIPAuthenticatorNotificationMode emailMode = getEmailMode(context);
         log.debugf("Email mode: %s", emailMode);
 
         context.success();
         sendNotification(emailMode);
     }
 
-    private NotificationMode getEmailMode(AuthenticationFlowContext context) {
+    private UnknownIPAuthenticatorNotificationMode getEmailMode(AuthenticationFlowContext context) {
         UnknownIPAuthenticatorConfig config = new UnknownIPAuthenticatorConfig(context.getAuthenticatorConfig());
-        return config.getEmailModus();
+        return config.getEmailMode();
     }
 
-    private void sendNotification(NotificationMode emailMode) {
+    private void sendNotification(UnknownIPAuthenticatorNotificationMode emailMode) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
         String ip = session.getContext().getConnection().getRemoteAddr();
 
-        if (emailMode == NotificationMode.UNKNOWN_IP && !loginHistoryProvider.isKnownIp()) {
+        if (emailMode == UnknownIPAuthenticatorNotificationMode.UNKNOWN_IP && !loginHistoryProvider.isKnownIp()) {
             log.debugf("New IP for user %s (%s), sending notification mail", user.getUsername(), ip);
             sentEmailNotification(user, ip);
-        } else if (emailMode == NotificationMode.ON_CHANGE && loginHistoryProvider.getLastLogin().map(l -> !l.getIp().equals(ip)).orElse(true)) {
+        } else if (emailMode == UnknownIPAuthenticatorNotificationMode.ON_CHANGE && loginHistoryProvider.getLastLogin().map(l -> !l.getIp().equals(ip)).orElse(true)) {
             log.debugf("IP for user %s (%s) changed, sending notification mail", user.getUsername(), ip);
             sentEmailNotification(user, ip);
-        } else if (emailMode == NotificationMode.UNKNOWN_LOCATION && !loginHistoryProvider.isKnownLocation()) {
+        } else if (emailMode == UnknownIPAuthenticatorNotificationMode.UNKNOWN_LOCATION && !loginHistoryProvider.isKnownLocation()) {
             log.debugf("New location for user %s (%s), sending notification mail", user.getUsername(), ip);
             sentEmailNotification(user, ip);
-        } else if (emailMode == NotificationMode.ALWAYS) {
+        } else if (emailMode == UnknownIPAuthenticatorNotificationMode.ALWAYS) {
             log.debugf("Sending always notification mail for user %s (%s)", user.getUsername(), ip);
             sentEmailNotification(user, ip);
         } else {

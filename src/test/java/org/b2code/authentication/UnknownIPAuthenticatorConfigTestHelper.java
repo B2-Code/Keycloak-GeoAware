@@ -18,8 +18,8 @@ public class UnknownIPAuthenticatorConfigTestHelper {
         this.keycloak = keycloak;
     }
 
-    public void setEmailModus(String emailModus) {
-        updateProperty(UnknownIPAuthenticatorConfig.EMAIL_MODUS, emailModus);
+    public void setEmailMode(String emailMode) {
+        updateProperty(UnknownIPAuthenticatorConfig.EMAIL_MODE, emailMode);
     }
 
     private void updateProperty(String propertyName, String value) {
@@ -31,16 +31,16 @@ public class UnknownIPAuthenticatorConfigTestHelper {
     }
 
     private void updateAuthenticatorConfig(Consumer<AuthenticatorConfigRepresentation> configurer) {
-        AuthenticationManagementResource flowRessource = keycloak.realm(IntegrationTestBase.TEST_REALM).flows();
-        List<AuthenticationExecutionInfoRepresentation> executions = flowRessource.getFlows().stream()
-                .flatMap(f -> flowRessource.getExecutions(f.getAlias()).stream())
+        AuthenticationManagementResource flowResource = keycloak.realm(IntegrationTestBase.TEST_REALM).flows();
+        List<AuthenticationExecutionInfoRepresentation> executions = flowResource.getFlows().stream()
+                .flatMap(f -> flowResource.getExecutions(f.getAlias()).stream())
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(UnknownIPAuthenticatorFactory.PROVIDER_ID))
                 .toList();
         for (AuthenticationExecutionInfoRepresentation execution : executions) {
             String authenticationConfigId = execution.getAuthenticationConfig();
-            AuthenticatorConfigRepresentation authenticatorConfig = flowRessource.getAuthenticatorConfig(authenticationConfigId);
+            AuthenticatorConfigRepresentation authenticatorConfig = flowResource.getAuthenticatorConfig(authenticationConfigId);
             configurer.accept(authenticatorConfig);
-            flowRessource.updateAuthenticatorConfig(authenticationConfigId, authenticatorConfig);
+            flowResource.updateAuthenticatorConfig(authenticationConfigId, authenticatorConfig);
         }
     }
 

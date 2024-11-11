@@ -13,8 +13,11 @@ import org.keycloak.representations.account.DeviceRepresentation;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @JBossLog
 public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
@@ -33,7 +36,8 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     private final int maxRecords;
 
-    private List<LoginRecord> loginRecords;
+    // The list is sorted by time, newest first
+    private final List<LoginRecord> loginRecords;
 
     public DefaultLoginHistoryProvider(KeycloakSession session, Duration retentionTime, int maxRecords) {
         log.tracef("Creating new %s", DefaultLoginHistoryProvider.class.getSimpleName());
@@ -42,48 +46,43 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
         this.geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
-        getLoginRecords();
+        this.loginRecords = getLoginRecords();
     }
 
     public void track() {
-        updateRecords();
+        Stream<LoginRecord> newRecords = Stream.concat(Stream.of(generateRecord()), getHistoryStream()).limit(maxRecords);
+        setLoginRecords(newRecords);
         log.trace("Successfully tracked login");
-    }
-
-    private void updateRecords() {
-        Instant now = Instant.now();
-        loginRecords.removeIf(r -> r.getTime().isBefore(now.minus(retentionTime)));
-        loginRecords.addFirst(generateRecord());
-        if (loginRecords.size() > maxRecords) {
-            loginRecords = loginRecords.stream().sorted(Comparator.comparing(LoginRecord::getTime).reversed()).limit(maxRecords).toList();
-        }
-        setLoginRecords();
     }
 
     public boolean isKnownIp() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        return loginRecords.stream().anyMatch(r -> r.getIp().equals(ip));
+        return getHistoryStream().anyMatch(r -> r.getIp().equals(ip));
     }
 
     public boolean isKnownDevice() {
         DeviceRepresentation deviceRep = deviceRepresentationProvider.deviceRepresentation();
         LoginRecord.Device device = LoginRecord.Device.fromDeviceRepresentation(deviceRep);
-        return loginRecords.stream().anyMatch(r -> r.getDevice().equals(device));
-    }
-
-    public Optional<LoginRecord> getLastLogin() {
-        return loginRecords.stream().max(Comparator.comparing(LoginRecord::getTime));
+        return getHistoryStream().anyMatch(r -> r.getDevice().equals(device));
     }
 
     public boolean isKnownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
         GeoipDatabaseAccessProvider provider = session.getProvider(GeoipDatabaseAccessProvider.class);
         GeoIpInfo ipInfo = provider.getIpInfo(ip);
-        return loginRecords.stream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
+        return getHistoryStream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
+    }
+
+    public Optional<LoginRecord> getLastLogin() {
+        return getHistory().isEmpty() ? Optional.empty() : Optional.of(getHistory().getFirst());
     }
 
     public List<LoginRecord> getHistory() {
-        return Collections.unmodifiableList(loginRecords);
+        return this.loginRecords;
+    }
+
+    public Stream<LoginRecord> getHistoryStream() {
+        return this.loginRecords.stream();
     }
 
     private LoginRecord generateRecord() {
@@ -97,9 +96,10 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
                 .build();
     }
 
-    private void getLoginRecords() {
+    private List<LoginRecord> getLoginRecords() {
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
-        this.loginRecords = user.getAttributeStream(USER_ATTRIBUTE_LAST_IPS)
+        Instant now = Instant.now();
+        return user.getAttributeStream(USER_ATTRIBUTE_LAST_IPS)
                 .map(e -> {
                     try {
                         return objectMapper.readValue(e, LoginRecord.class);
@@ -109,11 +109,13 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .filter(r -> r.getTime().isAfter(now.minus(retentionTime)))
+                .sorted(Comparator.comparing(LoginRecord::getTime).reversed())
+                .toList();
     }
 
-    private void setLoginRecords() {
-        List<String> newValues = loginRecords.stream()
+    private void setLoginRecords(Stream<LoginRecord> newRecords) {
+        List<String> newValues = newRecords
                 .map(e -> {
                     try {
                         return objectMapper.writeValueAsString(e);

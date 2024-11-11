@@ -38,6 +38,9 @@ public class LoginRecord {
         private Boolean isMobile;
 
         public static Device fromDeviceRepresentation(DeviceRepresentation device) {
+            if (device == null) {
+                return new Device();
+            }
             return builder()
                     .deviceType(device.getDevice())
                     .os(device.getOs())

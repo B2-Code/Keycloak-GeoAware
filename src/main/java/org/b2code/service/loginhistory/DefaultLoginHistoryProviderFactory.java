@@ -47,7 +47,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
                 throw new DateTimeParseException("Retention time must be positive", retentionTimeValue, 0);
             }
         } catch (DateTimeParseException e) {
-            log.errorf("Invalid retention time format: '%s'. Please use ISO-8601 duration format. Using default value.", retentionTimeValue);
+            log.errorf("Invalid retention time format: '%s'. Please use ISO-8601 duration format. Using default value '%s'.", retentionTimeValue, RECORD_RETENTION_TIME_DEFAULT);
             retentionTime = Duration.parse(RECORD_RETENTION_TIME_DEFAULT);
         }
 

@@ -4,6 +4,7 @@ import org.keycloak.provider.Provider;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface LoginHistoryProvider extends Provider {
 
@@ -26,7 +27,12 @@ public interface LoginHistoryProvider extends Provider {
     boolean isKnownLocation();
 
     /**
-     * @return the history of logins as immutable list
+     * @return the history of logins as stream
+     */
+    Stream<LoginRecord> getHistoryStream();
+
+    /**
+     * @return the history of logins as list
      */
     List<LoginRecord> getHistory();
 

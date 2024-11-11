@@ -49,6 +49,9 @@ public class EmailHelper extends AbstractKeycloakTransaction {
     }
 
     private static Map<String, Object> getGeoIpParams(GeoIpInfo geoIpInfo) {
+        if (geoIpInfo == null) {
+            return Map.of("city", "?", "country", "?", "date", new Date(Time.currentTimeMillis()), "ip", "?");
+        }
         Map<String, Object> geoIpParams = new HashMap<>();
         geoIpParams.put("city", geoIpInfo.getCity() != null ? geoIpInfo.getCity() : "?");
         geoIpParams.put("country", geoIpInfo.getCountry() != null ? geoIpInfo.getCountry() : "?");
@@ -58,6 +61,9 @@ public class EmailHelper extends AbstractKeycloakTransaction {
     }
 
     private static Map<String, Object> getUserAgentParams(DeviceRepresentation userAgentInfo) {
+        if (userAgentInfo == null) {
+            return Map.of("browser", "?", "os", "?");
+        }
         Map<String, Object> userAgentParams = new HashMap<>();
         userAgentParams.put("browser", userAgentInfo.getBrowser() != null ? userAgentInfo.getBrowser() : "?");
         String os = userAgentInfo.getOs();

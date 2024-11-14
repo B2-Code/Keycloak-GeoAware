@@ -2,6 +2,7 @@ package org.b2code.authentication;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.PluginConstants;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -16,10 +17,10 @@ import java.util.Map;
 
 @JBossLog
 @AutoService(AuthenticatorFactory.class)
-public class GeoIpFilterAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
+public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
 
-    public static final String PROVIDER_ID = "geo-ip-filter";
-    public static final String DISPLAY_TYPE = "Geo-IP-Filter";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-ip";
+    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown IP";
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
     @Override
@@ -29,7 +30,7 @@ public class GeoIpFilterAuthenticatorFactory implements AuthenticatorFactory, Se
 
     @Override
     public String getReferenceCategory() {
-        return "Authorization";
+        return null;
     }
 
     @Override
@@ -49,17 +50,17 @@ public class GeoIpFilterAuthenticatorFactory implements AuthenticatorFactory, Se
 
     @Override
     public String getHelpText() {
-        return "Apply a Geo-IP filter to the authentication process";
+        return "";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return GeoIpFilterAuthenticatorConfigProperties.CONFIG_PROPERTIES;
+        return UnknownIPAuthenticatorConfigProperties.CONFIG_PROPERTIES;
     }
 
     @Override
-    public Authenticator create(KeycloakSession keycloakSession) {
-        return new GeoIpFilterAuthenticator(keycloakSession);
+    public Authenticator create(KeycloakSession session) {
+        return new UnknownIPAuthenticator(session);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class GeoIpFilterAuthenticatorFactory implements AuthenticatorFactory, Se
     }
 
     @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+    public void postInit(KeycloakSessionFactory factory) {
 
     }
 

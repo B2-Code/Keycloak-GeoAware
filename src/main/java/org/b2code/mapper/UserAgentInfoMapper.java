@@ -1,10 +1,9 @@
 package org.b2code.mapper;
 
 import com.google.auto.service.AutoService;
-import jakarta.ws.rs.core.HttpHeaders;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.service.useragent.UserAgentInfo;
-import org.b2code.service.useragent.UserAgentParserProvider;
+import org.b2code.PluginConstants;
+import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
@@ -22,7 +21,7 @@ import java.util.List;
 @AutoService(ProtocolMapper.class)
 public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements AllTokenTypesMapper {
 
-    public static final String PROVIDER_ID = "oidc-user-agent-info-mapper";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-oidc-user-agent-info-mapper";
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 
@@ -33,15 +32,14 @@ public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements A
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-        log.tracef("Mapping UserAgent info to claim '%s'", mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME));
-        UserAgentParserProvider userAgentParserProvider = keycloakSession.getProvider(UserAgentParserProvider.class);
-        UserAgentInfo userAgentInfo = userAgentParserProvider.parse(keycloakSession.getContext().getHttpRequest().getHttpHeaders().getHeaderString(HttpHeaders.USER_AGENT));
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, userAgentInfo);
+        log.tracef("Mapping user agent info to claim '%s'", mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME));
+        DeviceRepresentationProvider deviceRepresentationProvider = keycloakSession.getProvider(DeviceRepresentationProvider.class);
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, deviceRepresentationProvider.deviceRepresentation());
     }
 
     @Override
     public String getHelpText() {
-        return "Map UserAgent information to the token";
+        return "Map user agent information to the token";
     }
 
     @Override
@@ -56,7 +54,7 @@ public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements A
 
     @Override
     public String getDisplayType() {
-        return "UserAgent info";
+        return PluginConstants.PLUGIN_NAME + " user agent info";
     }
 
     @Override

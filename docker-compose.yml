@@ -2,7 +2,7 @@ services:
   keycloak:
     container_name: keycloak
     hostname: keycloak
-    image: quay.io/keycloak/keycloak:26.0.0
+    image: quay.io/keycloak/keycloak:26.0.5
     depends_on:
       - postgres
     environment:
@@ -15,13 +15,14 @@ services:
       KC_DB_PASSWORD: keycloak
       KC_LOG_CONSOLE_COLOR: 'true'
       KC_LOG_LEVEL: INFO,org.b2code:DEBUG
+      KC_LOG_CONSOLE_INCLUDE_TRACE: 'false'
     command: [ 'start-dev', '--debug', '--db', 'postgres', '--features', 'opentelemetry', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
     ports:
       - "8080:8080"
       - "8443:8443"
       - "8787:8787"
     volumes:
-      - ./target/keycloak-geoaware-jar-with-dependencies.jar:/opt/keycloak/providers/extension.jar
+      - ./target/keycloak-geoaware-shaded.jar:/opt/keycloak/providers/extension.jar
       - ./src/main/resources/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ./src/main/resources/geoip-databases:/opt/keycloak/data/geoip-databases
 
@@ -33,6 +34,8 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -56,7 +59,7 @@ services:
 
   export-keycloak-realm:
     container_name: keycloak-export
-    image: quay.io/keycloak/keycloak:26.0.0
+    image: quay.io/keycloak/keycloak:26.0.5
     profiles:
       - export-realm
     depends_on:
@@ -72,7 +75,7 @@ services:
 
   import-keycloak-realm:
     container_name: keycloak-import
-    image: quay.io/keycloak/keycloak:26.0.0
+    image: quay.io/keycloak/keycloak:26.0.5
     profiles:
       - import-realm
     depends_on:

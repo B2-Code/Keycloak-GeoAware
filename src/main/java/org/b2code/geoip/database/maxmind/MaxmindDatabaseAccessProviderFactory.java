@@ -19,7 +19,10 @@ import java.util.Map;
 @AutoService(GeoipDatabaseAccessProviderFactory.class)
 public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccessProviderFactory, ServerInfoAwareProviderFactory {
 
-    private static final String DATABASE_PATH = "databasePath";
+    private static final String DATABASE_PATH_PARAM = "databasePath";
+
+    private static final String CACHE_SIZE_PARAM = "cacheSize";
+    private static final int CACHE_SIZE_DEFAULT = 1000;
 
     private Config.Scope config;
 
@@ -27,7 +30,7 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
 
     @Override
     public MaxmindDatabaseAccessProvider create(KeycloakSession keycloakSession) {
-        if (config.get(DATABASE_PATH) == null) {
+        if (config.get(DATABASE_PATH_PARAM) == null) {
             log.error("Maxmind Database requires database path to be set.");
             return null;
         }
@@ -40,7 +43,7 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
 
     private DatabaseReader createReader() {
         log.trace("Creating new Maxmind database reader");
-        String databasePath = config.get(DATABASE_PATH);
+        String databasePath = config.get(DATABASE_PATH_PARAM);
 
         File database;
         try {
@@ -51,9 +54,10 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
         }
 
         DatabaseReader newReader;
+        int cacheSize = config.getInt(CACHE_SIZE_PARAM, CACHE_SIZE_DEFAULT);
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
-            newReader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
+            newReader = new DatabaseReader.Builder(database).withCache(new CHMCache(cacheSize)).build();
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;
@@ -64,7 +68,7 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
             log.error("Maxmind database is not a City database");
             return null;
         }
-        log.debugf("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+        log.infof("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
         return newReader;
     }
 

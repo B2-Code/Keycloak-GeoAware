@@ -13,9 +13,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.keycloak>26.0.0</version.keycloak>
+        <version.keycloak>26.0.5</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
-        <version.browscap>1.4.4</version.browscap>
         <version.lombok>1.18.34</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.0</version.validation-api>
@@ -87,13 +86,6 @@
             <version>${version.geoip2}</version>
         </dependency>
 
-        <!-- UserAgentAnalyzer -->
-        <dependency>
-            <groupId>com.blueconic</groupId>
-            <artifactId>browscap-java</artifactId>
-            <version>${version.browscap}</version>
-        </dependency>
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -107,6 +99,7 @@
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
             <version>${version.auto-service}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Validation -->
@@ -171,6 +164,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>geoip-databases/**</exclude>
+                    <exclude>cfg/**</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -194,24 +188,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/libs
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
             </plugin>
@@ -221,13 +197,9 @@
                 <version>3.4.2</version>
                 <configuration>
                     <archive>
-                        <manifestFile>
-                            src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}MANIFEST.MF
-                        </manifestFile>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
@@ -256,26 +228,39 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>create-bundle</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <archive>
-                                <manifestFile>
-                                    src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}MANIFEST.MF
-                                </manifestFile>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                            </archive>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>META-INF/versions/**/module-info.class</exclude>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                    <addHeader>false</addHeader>
+                                </transformer>
+                            </transformers>
+                            <finalName>${project.artifactId}-shaded</finalName>
                         </configuration>
                     </execution>
                 </executions>

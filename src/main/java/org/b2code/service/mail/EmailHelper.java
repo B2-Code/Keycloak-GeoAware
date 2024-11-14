@@ -5,14 +5,14 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.service.useragent.UserAgentInfo;
 import org.keycloak.common.util.Time;
 import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailTemplateProvider;
+import org.keycloak.models.AbstractKeycloakTransaction;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakTransaction;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 import java.util.Collections;
 import java.util.Date;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @JBossLog
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmailHelper implements KeycloakTransaction {
+public class EmailHelper extends AbstractKeycloakTransaction {
 
     private KeycloakSession session;
     private UserModel user;
@@ -34,21 +34,24 @@ public class EmailHelper implements KeycloakTransaction {
         session.getTransactionManager().enlistAfterCompletion(transaction);
     }
 
-    public static void sendNewIpEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull UserAgentInfo userAgentInfo, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
+    public static void sendNewIpEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull DeviceRepresentation deviceRepresentation, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
-        params.putAll(getUserAgentParams(userAgentInfo));
+        params.putAll(getUserAgentParams(deviceRepresentation));
         sendAsyncEmail(session, user, realm, EmailType.LOGIN_FROM_NEW_IP, params);
     }
 
-    public static void sendNewDeviceEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull UserAgentInfo userAgentInfo, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
+    public static void sendNewDeviceEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull DeviceRepresentation deviceRepresentation, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
-        params.putAll(getUserAgentParams(userAgentInfo));
+        params.putAll(getUserAgentParams(deviceRepresentation));
         sendAsyncEmail(session, user, realm, EmailType.LOGIN_FROM_NEW_DEVICE, params);
     }
 
     private static Map<String, Object> getGeoIpParams(GeoIpInfo geoIpInfo) {
+        if (geoIpInfo == null) {
+            return Map.of("city", "?", "country", "?", "date", new Date(Time.currentTimeMillis()), "ip", "?");
+        }
         Map<String, Object> geoIpParams = new HashMap<>();
         geoIpParams.put("city", geoIpInfo.getCity() != null ? geoIpInfo.getCity() : "?");
         geoIpParams.put("country", geoIpInfo.getCountry() != null ? geoIpInfo.getCountry() : "?");
@@ -57,21 +60,22 @@ public class EmailHelper implements KeycloakTransaction {
         return geoIpParams;
     }
 
-    private static Map<String, Object> getUserAgentParams(UserAgentInfo userAgentInfo) {
+    private static Map<String, Object> getUserAgentParams(DeviceRepresentation userAgentInfo) {
+        if (userAgentInfo == null) {
+            return Map.of("browser", "?", "os", "?");
+        }
         Map<String, Object> userAgentParams = new HashMap<>();
         userAgentParams.put("browser", userAgentInfo.getBrowser() != null ? userAgentInfo.getBrowser() : "?");
-        userAgentParams.put("browserVersion", userAgentInfo.getBrowserMajorVersion() != null ? userAgentInfo.getBrowserMajorVersion() : "?");
-        userAgentParams.put("os", userAgentInfo.getPlatform() != null ? userAgentInfo.getPlatform() : "?");
+        String os = userAgentInfo.getOs();
+        if (os != null && userAgentInfo.getOsVersion() != null) {
+            os += " " + userAgentInfo.getOsVersion();
+        }
+        userAgentParams.put("os", os != null ? os : "?");
         return userAgentParams;
     }
 
     @Override
-    public void begin() {
-        // NOOP
-    }
-
-    @Override
-    public void commit() {
+    public void commitImpl() {
         try {
             log.debugf("Sending email to %s (%s)", user.getEmail(), type);
             session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession()).send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
@@ -81,22 +85,7 @@ public class EmailHelper implements KeycloakTransaction {
     }
 
     @Override
-    public void rollback() {
+    public void rollbackImpl() {
         // NOOP
-    }
-
-    @Override
-    public void setRollbackOnly() {
-        // NOOP
-    }
-
-    @Override
-    public boolean getRollbackOnly() {
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
     }
 }

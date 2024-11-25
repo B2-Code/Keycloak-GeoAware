@@ -1,6 +1,16 @@
 version: "1.0"
 linter: jetbrains/qodana-jvm-community:2024.2
 profile:
-  name: qodana.recommended
+  path: .qodana/profile.yaml
 include:
   - name: CheckDependencyLicenses
+exclude:
+  - name: All
+    paths:
+      - src/test/resources
+  - name: ChainedMethodCall
+  - name: SingleClassImport
+  - name: NestedMethodCall
+  - name: UnusedLibrary
+  - name: UnqualifiedFieldAccess
+  - name: LocalCanBeFinal

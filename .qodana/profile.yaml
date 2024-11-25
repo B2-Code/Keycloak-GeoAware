@@ -1,0 +1,24 @@
+name: "Qodana JVM Community"
+baseProfile: empty
+
+inspections:
+  - group: "category:General"
+    enabled: true
+  - group: "category:Java"
+    enabled: true
+  - group: "category:JVM languages"
+    enabled: true
+  - group: "category:RegExp"
+    enabled: true
+  - group: "category:JUnit"
+    enabled: true
+  - group: "category:Maven"
+    enabled: true
+  - group: "category:Proofreading"
+    enabled: true
+  - group: "category:Properties files"
+    enabled: true
+  - group: "category:Qodana"
+    enabled: true
+  - group: "category:Version control"
+    enabled: true

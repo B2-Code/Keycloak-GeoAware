@@ -6,6 +6,10 @@ inspections:
     enabled: true
   - group: "category:Java"
     enabled: true
+  - group: "category:Java/Java language level issues"
+    enabled: false
+  - group: "category:Java/Internationalization"
+    enabled: false
   - group: "category:JVM languages"
     enabled: true
   - group: "category:RegExp"

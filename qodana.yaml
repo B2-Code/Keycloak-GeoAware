@@ -8,3 +8,7 @@ exclude:
   - name: All
     paths:
       - src/test/resources
+  - name: ChainedMethodCall
+  - name: SingleClassImport
+  - name: NestedMethodCall
+  - name: UnusedLibrary

@@ -4,3 +4,7 @@ profile:
   path: .qodana/profile.yaml
 include:
   - name: CheckDependencyLicenses
+exclude:
+  - name: All
+    paths:
+      - src/test/resources

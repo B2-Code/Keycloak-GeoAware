@@ -9,6 +9,7 @@ exclude:
     paths:
       - src/test/resources
       - .devcontainer
+      - src/main/resources/cfg
   - name: ChainedMethodCall
   - name: SingleClassImport
   - name: NestedMethodCall
@@ -22,3 +23,7 @@ exclude:
   - name: ClassWithoutLogger
   - name: ClassHasNoToStringMethod
   - name: ClassWithoutNoArgConstructor
+  - name: InterfaceWithOnlyOneDirectInheritor
+  - name: ClassWithoutConstructor
+  - name: PublicConstructor
+  - name: OnDemandImport

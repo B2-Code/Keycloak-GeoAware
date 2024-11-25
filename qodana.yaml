@@ -8,9 +8,17 @@ exclude:
   - name: All
     paths:
       - src/test/resources
+      - .devcontainer
   - name: ChainedMethodCall
   - name: SingleClassImport
   - name: NestedMethodCall
   - name: UnusedLibrary
   - name: UnqualifiedFieldAccess
   - name: LocalCanBeFinal
+  - name: UnqualifiedMethodAccess
+  - name: DesignForExtension
+  - name: UnqualifiedStaticUsage
+  - name: PublicMethodWithoutLogging
+  - name: ClassWithoutLogger
+  - name: ClassHasNoToStringMethod
+  - name: ClassWithoutNoArgConstructor

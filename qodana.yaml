@@ -12,3 +12,5 @@ exclude:
   - name: SingleClassImport
   - name: NestedMethodCall
   - name: UnusedLibrary
+  - name: UnqualifiedFieldAccess
+  - name: LocalCanBeFinal

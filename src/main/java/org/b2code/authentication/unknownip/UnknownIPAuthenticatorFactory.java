@@ -1,8 +1,9 @@
-package org.b2code.authentication;
+package org.b2code.authentication.unknownip;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
+import org.b2code.authentication.base.ConditionActionAuthenticator;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -21,6 +22,7 @@ public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, Serv
 
     public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-ip";
     public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown IP";
+
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
     @Override
@@ -60,7 +62,7 @@ public class UnknownIPAuthenticatorFactory implements AuthenticatorFactory, Serv
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        return new UnknownIPAuthenticator(session);
+        return new ConditionActionAuthenticator(session);
     }
 
     @Override

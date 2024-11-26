@@ -8,7 +8,6 @@ import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.Constants;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ConditionActionAuthenticatorConfig {
 
@@ -25,6 +24,6 @@ public class ConditionActionAuthenticatorConfig {
 
     public List<AuthenticatorAction> getActions() {
         String labels = authenticatorConfigModel.getConfig().get(ActionFactory.ACTION_PROPERTY_NAME);
-        return Stream.of(labels.split(Constants.CFG_DELIMITER)).map(ActionFactory::getActionByLabel).toList();
+        return Constants.CFG_DELIMITER_PATTERN.splitAsStream(labels).map(ActionFactory::getActionByLabel).toList();
     }
 }

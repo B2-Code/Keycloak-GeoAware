@@ -15,7 +15,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -100,34 +99,39 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
         Instant now = Instant.now();
         return user.getAttributeStream(USER_ATTRIBUTE_LAST_IPS)
-                .map(e -> {
-                    try {
-                        return objectMapper.readValue(e, LoginRecord.class);
-                    } catch (JsonProcessingException ex) {
-                        log.errorf("Failed to parse last IP record: %s", ex.getMessage());
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
+                .map(this::mapFromString)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .filter(r -> r.getTime().isAfter(now.minus(retentionTime)))
                 .sorted(Comparator.comparing(LoginRecord::getTime).reversed())
                 .toList();
     }
 
+    private Optional<LoginRecord> mapFromString(String str) {
+        try {
+            return Optional.of(objectMapper.readValue(str, LoginRecord.class));
+        } catch (JsonProcessingException ex) {
+            log.errorf("Failed to parse last IP record: %s", ex.getMessage());
+            return Optional.empty();
+        }
+    }
+
     private void setLoginRecords(Stream<LoginRecord> newRecords) {
         List<String> newValues = newRecords
-                .map(e -> {
-                    try {
-                        return objectMapper.writeValueAsString(e);
-                    } catch (JsonProcessingException ex) {
-                        log.errorf("Failed to write last IP record: %s", ex.getMessage());
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
+                .map(this::mapToString)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
-        log.debugf("Writing user attributes %s = %s", USER_ATTRIBUTE_LAST_IPS, newValues);
         session.getContext().getAuthenticationSession().getAuthenticatedUser().setAttribute(USER_ATTRIBUTE_LAST_IPS, newValues);
+    }
+
+    private Optional<String> mapToString(LoginRecord record) {
+        try {
+            return Optional.of(objectMapper.writeValueAsString(record));
+        } catch (JsonProcessingException ex) {
+            log.errorf("Failed to write last IP record: %s", ex.getMessage());
+            return Optional.empty();
+        }
     }
 
     @Override

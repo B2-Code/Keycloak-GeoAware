@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip.condition;
+package org.b2code.authentication.device.condition;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
@@ -6,16 +6,16 @@ import org.b2code.service.loginhistory.LoginHistoryProvider;
 import org.keycloak.models.KeycloakSession;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class OnIpChangeCondition implements AuthenticatorCondition {
+public class StrictOnUnknownDeviceCondition implements AuthenticatorCondition {
 
-    public static final String LABEL = "On IP Change";
+    public static final String LABEL = "Unknown Device";
 
-    private static final OnIpChangeCondition INSTANCE = new OnIpChangeCondition();
+    private static final StrictOnUnknownDeviceCondition INSTANCE = new StrictOnUnknownDeviceCondition();
 
     @Override
     public boolean check(KeycloakSession session) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
-        return loginHistoryProvider.getLastLogin().map(l -> !l.getIp().equals(session.getContext().getConnection().getRemoteAddr())).orElse(true);
+        return loginHistoryProvider.isKnownDevice();
     }
 
     @Override
@@ -25,10 +25,11 @@ public class OnIpChangeCondition implements AuthenticatorCondition {
 
     @Override
     public String getHelpText() {
-        return "Triggers when the IP address changes.";
+        return "Triggers when the device is unknown.";
     }
 
-    public static OnIpChangeCondition instance() {
+    public static StrictOnUnknownDeviceCondition instance() {
         return INSTANCE;
     }
+
 }

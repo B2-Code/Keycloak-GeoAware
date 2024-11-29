@@ -5,11 +5,11 @@ import com.google.common.base.Stopwatch;
 import com.maxmind.db.CHMCache;
 import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.ServerInfoAwareFactory;
 import org.b2code.geoip.database.GeoipDatabaseAccessProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.ServerInfoAwareProviderFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @JBossLog
 @AutoService(GeoipDatabaseAccessProviderFactory.class)
-public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccessProviderFactory, ServerInfoAwareProviderFactory {
+public class MaxmindDatabaseAccessProviderFactory extends ServerInfoAwareFactory implements GeoipDatabaseAccessProviderFactory {
 
     private static final String DATABASE_PATH_PARAM = "databasePath";
 

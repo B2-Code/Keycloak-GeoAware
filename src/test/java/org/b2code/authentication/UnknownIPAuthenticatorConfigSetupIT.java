@@ -2,7 +2,8 @@ package org.b2code.authentication;
 
 import org.b2code.IntegrationTestBase;
 import org.b2code.authentication.base.condition.AlwaysCondition;
-import org.b2code.authentication.base.condition.ConditionFactory;
+import org.b2code.authentication.base.condition.AuthenticatorCondition;
+import org.b2code.authentication.base.condition.AuthenticatorConditionOption;
 import org.b2code.authentication.unknownip.UnknownIPAuthenticatorFactory;
 import org.b2code.authentication.unknownip.condition.OnIpChangeCondition;
 import org.b2code.authentication.unknownip.condition.UnknownIpCondition;
@@ -26,7 +27,7 @@ class UnknownIPAuthenticatorConfigSetupIT extends IntegrationTestBase {
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(UnknownIPAuthenticatorFactory.PROVIDER_ID))
                 .map(AuthenticationExecutionInfoRepresentation::getAuthenticationConfig)
                 .map(flowResource::getAuthenticatorConfig).toList();
-        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(ConditionFactory.CONDITION_PROPERTY_NAME).equals(AlwaysCondition.LABEL)));
+        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(AuthenticatorCondition.CONFIG_PROPERTY_NAME).equals(AlwaysCondition.LABEL)));
     }
 
     @Test
@@ -41,7 +42,7 @@ class UnknownIPAuthenticatorConfigSetupIT extends IntegrationTestBase {
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(UnknownIPAuthenticatorFactory.PROVIDER_ID))
                 .map(AuthenticationExecutionInfoRepresentation::getAuthenticationConfig)
                 .map(flowResource::getAuthenticatorConfig).toList();
-        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(ConditionFactory.CONDITION_PROPERTY_NAME).equals(UnknownIpCondition.LABEL)));
+        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(AuthenticatorCondition.CONFIG_PROPERTY_NAME).equals(UnknownIpCondition.LABEL)));
     }
 
     @Test
@@ -56,6 +57,6 @@ class UnknownIPAuthenticatorConfigSetupIT extends IntegrationTestBase {
                 .filter(e -> e.getProviderId() != null && e.getProviderId().equals(UnknownIPAuthenticatorFactory.PROVIDER_ID))
                 .map(AuthenticationExecutionInfoRepresentation::getAuthenticationConfig)
                 .map(flowResource::getAuthenticatorConfig).toList();
-        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(ConditionFactory.CONDITION_PROPERTY_NAME).equals(OnIpChangeCondition.LABEL)));
+        assertTrue(authenticatorConfigs.stream().allMatch(c -> c.getConfig().get(AuthenticatorCondition.CONFIG_PROPERTY_NAME).equals(OnIpChangeCondition.LABEL)));
     }
 }

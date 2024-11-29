@@ -2,11 +2,10 @@ package org.b2code.authentication;
 
 import org.b2code.IntegrationTestBase;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
-import org.b2code.authentication.base.condition.ConditionFactory;
+import org.b2code.authentication.base.condition.AuthenticatorConditionOption;
 import org.b2code.authentication.unknownip.UnknownIPAuthenticatorFactory;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
-import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
 import org.keycloak.representations.idm.AuthenticatorConfigRepresentation;
 
@@ -23,7 +22,7 @@ public class UnknownIPAuthenticatorConfigTestHelper {
     }
 
     public void setCondition(String label) {
-        updateProperty(ConditionFactory.CONDITION_PROPERTY_NAME, label);
+        updateProperty(AuthenticatorCondition.CONFIG_PROPERTY_NAME, label);
     }
 
     private void updateProperty(String propertyName, String value) {

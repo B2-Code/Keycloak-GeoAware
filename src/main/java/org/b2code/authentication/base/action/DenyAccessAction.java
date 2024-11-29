@@ -1,6 +1,7 @@
 package org.b2code.authentication.base.action;
 
 import jakarta.ws.rs.core.Response;
+import lombok.NoArgsConstructor;
 import org.b2code.PluginConstants;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
@@ -8,9 +9,12 @@ import org.keycloak.events.Errors;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.messages.Messages;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class DenyAccessAction implements AuthenticatorAction {
 
     public static final String LABEL = "Deny Access";
+
+    private static final DenyAccessAction INSTANCE = new DenyAccessAction();
 
     @Override
     public void execute(KeycloakSession session, AuthenticationFlowContext context) {
@@ -34,4 +38,7 @@ public class DenyAccessAction implements AuthenticatorAction {
         return "Aborts the authentication process and denies access to the user.";
     }
 
+    public static DenyAccessAction instance() {
+        return INSTANCE;
+    }
 }

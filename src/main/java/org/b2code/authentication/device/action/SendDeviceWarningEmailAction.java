@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip.action;
+package org.b2code.authentication.device.action;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.action.AuthenticatorAction;
@@ -12,11 +12,11 @@ import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class SendIpWarningEmailAction implements AuthenticatorAction {
+public class SendDeviceWarningEmailAction implements AuthenticatorAction {
 
-    public static final String LABEL = "Notification Email (IP)";
+    public static final String LABEL = "Notification Email (Device)";
 
-    private static final SendIpWarningEmailAction INSTANCE = new SendIpWarningEmailAction();
+    private static final SendDeviceWarningEmailAction INSTANCE = new SendDeviceWarningEmailAction();
 
     @Override
     public void execute(KeycloakSession session, AuthenticationFlowContext context) {
@@ -26,7 +26,7 @@ public class SendIpWarningEmailAction implements AuthenticatorAction {
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
         GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);
         DeviceRepresentation userAgentInfo = userAgentParserProvider.deviceRepresentation();
-        EmailHelper.sendNewIpEmail(geoIpInfo, userAgentInfo, session, user, session.getContext().getRealm());
+        EmailHelper.sendNewDeviceEmail(geoIpInfo, userAgentInfo, session, user, session.getContext().getRealm());
     }
 
     @Override
@@ -36,10 +36,11 @@ public class SendIpWarningEmailAction implements AuthenticatorAction {
 
     @Override
     public String getHelpText() {
-        return "Sends an email to the user with the new IP address and location.";
+        return "Sends an email to the user with the new device information.";
     }
 
-    public static SendIpWarningEmailAction instance() {
+    public static SendDeviceWarningEmailAction instance() {
         return INSTANCE;
     }
+
 }

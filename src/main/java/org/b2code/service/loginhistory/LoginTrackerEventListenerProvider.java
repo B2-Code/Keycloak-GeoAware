@@ -20,7 +20,6 @@ public class LoginTrackerEventListenerProvider implements EventListenerProvider 
             log.debug("Tracking login event");
             session.getProvider(LoginHistoryProvider.class).track();
         }
-
     }
 
     @Override

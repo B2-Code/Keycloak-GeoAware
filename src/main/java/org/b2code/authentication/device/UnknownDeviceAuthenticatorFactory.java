@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip;
+package org.b2code.authentication.device;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
@@ -17,10 +17,10 @@ import java.util.List;
 
 @JBossLog
 @AutoService(AuthenticatorFactory.class)
-public class UnknownIPAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
+public class UnknownDeviceAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-ip";
-    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown IP";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-device";
+    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown Device";
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
@@ -56,7 +56,7 @@ public class UnknownIPAuthenticatorFactory extends ServerInfoAwareFactory implem
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return UnknownIPAuthenticatorConfigProperties.CONFIG_PROPERTIES;
+        return UnknownDeviceAuthenticatorConfigProperties.CONFIG_PROPERTIES;
     }
 
     @Override

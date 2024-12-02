@@ -14,17 +14,19 @@ services:
       KC_DB_USER: keycloak
       KC_DB_PASSWORD: keycloak
       KC_LOG_CONSOLE_COLOR: 'true'
-      KC_LOG_LEVEL: INFO,org.b2code:DEBUG
+      KC_LOG_LEVEL: INFO,org.b2code:ALL
       KC_LOG_CONSOLE_INCLUDE_TRACE: 'false'
-    command: [ 'start-dev', '--debug', '--db', 'postgres', '--features', 'opentelemetry', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
+      KC_SPI_GEOAWARE_GLOBAL_ENABLED: 'true'
+      KC_SPI_GEOAWARE_REALM_MASTER_ENABLED: 'false'
+    command: [ 'start-dev', '--debug', '--db', 'postgres', '--features', 'opentelemetry,declarative-ui', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
     ports:
       - "8080:8080"
       - "8443:8443"
       - "8787:8787"
     volumes:
       - ./target/keycloak-geoaware-shaded.jar:/opt/keycloak/providers/extension.jar
-      - ./src/main/resources/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-      - ./src/main/resources/geoip-databases:/opt/keycloak/data/geoip-databases
+      - ./src/main/resources/dev/geoip-databases:/opt/keycloak/data/geoip-databases
+      - ./src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
 
   postgres:
     container_name: postgres

@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.database.GeoipDatabaseAccessProvider;
+import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.GeoipProviderFactory;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
@@ -29,7 +30,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     private final DeviceRepresentationProvider deviceRepresentationProvider;
 
-    private final GeoipDatabaseAccessProvider geoipDatabaseAccessProvider;
+    private final GeoipProvider geoipProvider;
 
     private final Duration retentionTime;
 
@@ -44,14 +45,14 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         this.retentionTime = retentionTime;
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
-        this.geoipDatabaseAccessProvider = session.getProvider(GeoipDatabaseAccessProvider.class);
+        this.geoipProvider = GeoipProviderFactory.getProvider(session);
         this.loginRecords = getLoginRecords();
     }
 
     public void track() {
         Stream<LoginRecord> newRecords = Stream.concat(Stream.of(generateRecord()), getHistoryStream()).limit(maxRecords);
         setLoginRecords(newRecords);
-        log.trace("Successfully tracked login");
+        log.debug("Successfully tracked login");
     }
 
     public boolean isKnownIp() {
@@ -67,7 +68,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     public boolean isKnownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        GeoipDatabaseAccessProvider provider = session.getProvider(GeoipDatabaseAccessProvider.class);
+        GeoipProvider provider = GeoipProviderFactory.getProvider(session);
         GeoIpInfo ipInfo = provider.getIpInfo(ip);
         return getHistoryStream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
     }
@@ -87,7 +88,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     private LoginRecord generateRecord() {
         String ip = session.getContext().getConnection().getRemoteAddr();
         DeviceRepresentation device = deviceRepresentationProvider.deviceRepresentation();
-        GeoIpInfo geoIpInfo = geoipDatabaseAccessProvider.getIpInfo(ip);
+        GeoIpInfo geoIpInfo = geoipProvider.getIpInfo(ip);
         return LoginRecord.builder()
                 .geoIpInfo(geoIpInfo)
                 .device(LoginRecord.Device.fromDeviceRepresentation(device))

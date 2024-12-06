@@ -60,6 +60,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
+        setGeoipProviderOptions(factory.create());
         factory.register((ProviderEvent event) -> {
             if (event instanceof PostMigrationEvent) {
                 onPostMigrationEvent(factory);
@@ -70,17 +71,11 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     }
 
     private void onPostMigrationEvent(KeycloakSessionFactory factory) {
-        KeycloakModelUtils.runJobInTransaction(factory, session -> {
-            syncComponentModelInAllRealms(session);
-            setGeoipProviderOptions(session);
-        });
+        KeycloakModelUtils.runJobInTransaction(factory, this::syncComponentModelInAllRealms);
     }
 
     private void onRealmPostCreateEvent(RealmModel.RealmPostCreateEvent event, KeycloakSessionFactory factory) {
-        KeycloakModelUtils.runJobInTransaction(factory, session -> {
-            RealmModel realm = event.getCreatedRealm();
-            syncComponentModel(realm);
-        });
+        KeycloakModelUtils.runJobInTransaction(factory, session -> syncComponentModel(event.getCreatedRealm()));
     }
 
     private void syncComponentModelInAllRealms(KeycloakSession session) {

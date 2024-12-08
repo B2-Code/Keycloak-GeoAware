@@ -12,6 +12,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
+import org.keycloak.services.Urls;
 
 import java.util.Collections;
 import java.util.Date;
@@ -26,6 +27,7 @@ public class EmailHelper {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
         params.putAll(getUserAgentParams(deviceRepresentation));
+        params.putAll(getResetCredentialText(session));
         send(session, user, realm, EmailType.LOGIN_FROM_NEW_IP, params);
     }
 
@@ -33,6 +35,7 @@ public class EmailHelper {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
         params.putAll(getUserAgentParams(deviceRepresentation));
+        params.putAll(getResetCredentialText(session));
         send(session, user, realm, EmailType.LOGIN_FROM_NEW_DEVICE, params);
     }
 
@@ -46,6 +49,14 @@ public class EmailHelper {
         geoIpParams.put("date", new Date(Time.currentTimeMillis()));
         geoIpParams.put("ip", geoIpInfo.getIp());
         return geoIpParams;
+    }
+
+    private static Map<String, Object> getResetCredentialText(KeycloakSession session) {
+        return Map.of("resetCredentialsHelp", session.getContext().getRealm().isResetPasswordAllowed() ? "${resetCredentialsActionHelpText} " + getResetCredentialUrl(session) : "${contactAdminHelpText}");
+    }
+
+    private static String getResetCredentialUrl(KeycloakSession session) {
+        return Urls.loginResetCredentials(session.getContext().getUri().getBaseUri(), session.getContext().getRealm().getName()).toString();
     }
 
     private static Map<String, Object> getUserAgentParams(DeviceRepresentation userAgentInfo) {

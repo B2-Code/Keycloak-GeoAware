@@ -1,6 +1,9 @@
 package org.b2code.authentication;
 
 import org.b2code.IntegrationTestBase;
+import org.b2code.authentication.base.condition.AuthenticatorCondition;
+import org.b2code.authentication.base.condition.AuthenticatorConditionOption;
+import org.b2code.authentication.unknownip.UnknownIPAuthenticatorFactory;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
@@ -18,8 +21,8 @@ public class UnknownIPAuthenticatorConfigTestHelper {
         this.keycloak = keycloak;
     }
 
-    public void setEmailMode(String emailMode) {
-        updateProperty(UnknownIPAuthenticatorConfig.EMAIL_MODE, emailMode);
+    public void setCondition(String label) {
+        updateProperty(AuthenticatorCondition.CONFIG_PROPERTY_NAME, label);
     }
 
     private void updateProperty(String propertyName, String value) {

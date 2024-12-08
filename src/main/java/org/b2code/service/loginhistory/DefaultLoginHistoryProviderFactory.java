@@ -2,6 +2,7 @@ package org.b2code.service.loginhistory;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.admin.PluginConfigWrapper;
 import org.keycloak.Config;
 import org.keycloak.common.util.Environment;
 import org.keycloak.models.KeycloakSession;
@@ -18,7 +19,6 @@ import org.keycloak.userprofile.UserProfileConstants;
 import org.keycloak.userprofile.UserProfileProvider;
 
 import java.time.Duration;
-import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -27,37 +27,18 @@ import java.util.Set;
 @AutoService(LoginHistoryProviderFactory.class)
 public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
 
-    private static final String RECORD_RETENTION_TIME_PARAM = "recordRetentionTime";
-    private static final String RECORD_RETENTION_TIME_DEFAULT = "P1D";
-
-    private static final String MAX_RECORDS_PARAM = "recordMax";
-    private static final int MAX_RECORDS_DEFAULT = 100;
-
     private static final String USER_PROFILE_ATTRIBUTE_GROUP_NAME = "login-history";
-
-    private Config.Scope config;
 
     @Override
     public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        String retentionTimeValue = config.get(RECORD_RETENTION_TIME_PARAM, RECORD_RETENTION_TIME_DEFAULT);
-        Duration retentionTime;
-        try {
-            retentionTime = Duration.parse(retentionTimeValue);
-            if (retentionTime.isNegative() || retentionTime.isZero()) {
-                throw new DateTimeParseException("Retention time must be positive", retentionTimeValue, 0);
-            }
-        } catch (DateTimeParseException e) {
-            log.errorf("Invalid retention time format: '%s'. Please use ISO-8601 duration format. Using default value '%s'.", retentionTimeValue, RECORD_RETENTION_TIME_DEFAULT);
-            retentionTime = Duration.parse(RECORD_RETENTION_TIME_DEFAULT);
-        }
-
-        int maxRecords = config.getInt(MAX_RECORDS_PARAM, MAX_RECORDS_DEFAULT);
+        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(session.getContext().getRealm());
+        Duration retentionTime = Duration.ofDays(pluginConfig.getLoginHistoryRetentionDays());
+        int maxRecords = pluginConfig.getLoginHistoryMaxRecords();
         return new DefaultLoginHistoryProvider(session, retentionTime, maxRecords);
     }
 
     @Override
     public void init(Config.Scope scope) {
-        this.config = scope;
     }
 
     @Override

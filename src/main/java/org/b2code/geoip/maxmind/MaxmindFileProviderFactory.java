@@ -1,49 +1,41 @@
-package org.b2code.geoip.database.maxmind;
+package org.b2code.geoip.maxmind;
 
 import com.google.auto.service.AutoService;
 import com.google.common.base.Stopwatch;
 import com.maxmind.db.CHMCache;
 import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.database.GeoipDatabaseAccessProviderFactory;
+import org.b2code.ServerInfoAwareFactory;
+import org.b2code.admin.PluginConfigWrapper;
+import org.b2code.geoip.GeoipProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.ServerInfoAwareProviderFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 @JBossLog
-@AutoService(GeoipDatabaseAccessProviderFactory.class)
-public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccessProviderFactory, ServerInfoAwareProviderFactory {
+@AutoService(GeoipProviderFactory.class)
+public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
 
-    private static final String DATABASE_PATH_PARAM = "databasePath";
-
-    private static final String CACHE_SIZE_PARAM = "cacheSize";
-    private static final int CACHE_SIZE_DEFAULT = 1000;
-
-    private Config.Scope config;
+    public static final String PROVIDER_ID = "maxmind-file";
 
     private DatabaseReader reader;
 
     @Override
-    public MaxmindDatabaseAccessProvider create(KeycloakSession keycloakSession) {
-        if (config.get(DATABASE_PATH_PARAM) == null) {
-            log.error("Maxmind Database requires database path to be set.");
-            return null;
-        }
-        log.tracef("Creating new %s", MaxmindDatabaseAccessProvider.class.getSimpleName());
+    public MaxmindFileProvider create(KeycloakSession keycloakSession) {
+        log.tracef("Creating new %s", MaxmindFileProvider.class.getSimpleName());
         if (reader == null) {
-            reader = createReader();
+            reader = createReader(keycloakSession);
         }
-        return new MaxmindDatabaseAccessProvider(reader);
+        return new MaxmindFileProvider(reader);
     }
 
-    private DatabaseReader createReader() {
-        log.trace("Creating new Maxmind database reader");
-        String databasePath = config.get(DATABASE_PATH_PARAM);
+    private DatabaseReader createReader(KeycloakSession keycloakSession) {
+        log.trace("Creating new Maxmind file reader");
+        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(keycloakSession.getContext().getRealm());
+        String databasePath = pluginConfig.getMaxmindDatabaseFilePath();
 
         File database;
         try {
@@ -54,7 +46,7 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
         }
 
         DatabaseReader newReader;
-        int cacheSize = config.getInt(CACHE_SIZE_PARAM, CACHE_SIZE_DEFAULT);
+        int cacheSize = pluginConfig.getGeoipDatabaseCacheSize();
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             newReader = new DatabaseReader.Builder(database).withCache(new CHMCache(cacheSize)).build();
@@ -74,14 +66,11 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
 
     @Override
     public void init(Config.Scope scope) {
-        this.config = scope;
     }
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        if (reader == null) {
-            reader = createReader();
-        }
+
     }
 
     @Override
@@ -95,16 +84,6 @@ public class MaxmindDatabaseAccessProviderFactory implements GeoipDatabaseAccess
 
     @Override
     public String getId() {
-        return "maxmind";
+        return PROVIDER_ID;
     }
-
-    @Override
-    public Map<String, String> getOperationalInfo() {
-        String version = getClass().getPackage().getImplementationVersion();
-        if (version == null) {
-            version = "dev";
-        }
-        return Map.of("Version", version);
-    }
-
 }

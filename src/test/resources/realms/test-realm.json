@@ -40,6 +40,7 @@
   "bruteForceProtected" : false,
   "permanentLockout" : false,
   "maxTemporaryLockouts" : 0,
+  "bruteForceStrategy" : "MULTIPLE",
   "maxFailureWaitSeconds" : 900,
   "minimumQuickLoginWaitSeconds" : 60,
   "waitIncrementSeconds" : 60,
@@ -1168,7 +1169,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "saml-user-property-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-full-name-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper" ]
       }
     }, {
       "id" : "ceb1751b-1d32-44e6-85af-f9899248be43",
@@ -1177,7 +1178,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-property-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-full-name-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-full-name-mapper", "saml-role-list-mapper", "saml-user-property-mapper", "oidc-address-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "3bd47845-52d5-442a-8720-a82e7e6d4dfd",
@@ -1296,8 +1297,9 @@
       }
     } ]
   },
-  "internationalizationEnabled" : false,
-  "supportedLocales" : [ ],
+  "internationalizationEnabled" : true,
+  "supportedLocales" : [ "de", "en" ],
+  "defaultLocale" : "en",
   "authenticationFlows" : [ {
     "id" : "ffa7c9ad-5a40-4cfd-a09d-a1726e10fd67",
     "alias" : "Account verification options",
@@ -1512,9 +1514,9 @@
       "userSetupAllowed" : false
     } ]
   }, {
-    "id" : "575744c1-792c-4827-b3a2-b8d4a8817e15",
+    "id" : "f1ac9e3a-61b7-4c15-9fa5-7f990ae7fd58",
     "alias" : "browser-with-geo-ip-block",
-    "description" : ":)",
+    "description" : "",
     "providerId" : "basic-flow",
     "topLevel" : true,
     "builtIn" : false,
@@ -1522,15 +1524,15 @@
       "authenticator" : "auth-username-password-form",
       "authenticatorFlow" : false,
       "requirement" : "REQUIRED",
-      "priority" : 10,
+      "priority" : 0,
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
     }, {
-      "authenticatorConfig" : "unknown-ip",
+      "authenticatorConfig" : "geoaware",
       "authenticator" : "geoaware-unknown-ip",
       "authenticatorFlow" : false,
       "requirement" : "REQUIRED",
-      "priority" : 11,
+      "priority" : 1,
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
     } ]
@@ -1770,16 +1772,17 @@
       "require.password.update.after.registration" : "false"
     }
   }, {
+    "id" : "da08dc85-a27e-4cae-9c70-c4bb94e17660",
+    "alias" : "geoaware",
+    "config" : {
+      "action" : "Log",
+      "condition" : "Always"
+    }
+  }, {
     "id" : "9a851c54-77d4-4b00-867c-9620ef160665",
     "alias" : "review profile config",
     "config" : {
       "update.profile.on.first.login" : "missing"
-    }
-  }, {
-    "id" : "c905377a-f096-46a6-a4ce-8364a9d3384e",
-    "alias" : "unknown-ip",
-    "config" : {
-      "email-mode" : "Always"
     }
   } ],
   "requiredActions" : [ {
@@ -1895,7 +1898,7 @@
     "organizationsEnabled" : "false",
     "acr.loa.map" : "{}"
   },
-  "keycloakVersion" : "26.0.0",
+  "keycloakVersion" : "26.0.5",
   "userManagedAccessAllowed" : false,
   "organizationsEnabled" : false,
   "clientProfiles" : {

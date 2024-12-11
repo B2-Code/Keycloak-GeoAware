@@ -19,7 +19,7 @@
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.0</version.validation-api>
 
-        <version.junit>5.10.2</version.junit>
+        <version.junit>5.11.3</version.junit>
         <version.log4j>2.23.1</version.log4j>
         <version.testcontainers>1.20.1</version.testcontainers>
         <version.testcontainers-keycloak>3.5.1</version.testcontainers-keycloak>

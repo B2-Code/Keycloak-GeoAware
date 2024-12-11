@@ -13,7 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.keycloak>26.0.5</version.keycloak>
+        <version.keycloak>26.0.7</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
         <version.lombok>1.18.34</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>
@@ -163,8 +163,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
-                    <exclude>geoip-databases/**</exclude>
-                    <exclude>cfg/**</exclude>
+                    <exclude>dev/**</exclude>
                 </excludes>
             </resource>
         </resources>

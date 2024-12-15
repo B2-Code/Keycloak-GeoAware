@@ -1,2 +1,12 @@
 title: Keycloak GeoAware
 theme: just-the-docs
+
+url: "https://b2-code.github.io"
+baseurl: "Keycloak-GeoAware"
+repository: B2-Code/Keycloak-GeoAware
+
+permalink: pretty
+
+aux_links:
+  "GitHub":
+    - "https://github.com/B2-Code/Keycloak-GeoAware"

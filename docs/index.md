@@ -1,6 +1,7 @@
 ---
 title: Home
 layout: home
+nav_order: 0
 ---
 
 [Keycloak-GeoAware][GitHub] is an advanced feature extension for [Keycloak][Keycloak] that integrates geolocation and device monitoring into the authentication process.

@@ -2,6 +2,7 @@ package org.b2code.admin;
 
 import lombok.experimental.UtilityClass;
 import org.b2code.PluginConstants;
+import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.b2code.geoip.maxmind.MaxmindFileProviderFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
@@ -46,6 +47,34 @@ public class PluginConfigOptions {
             "",
             false,
             false
+    );
+
+    public static final ProviderConfigProperty MAXMIND_ACCOUNT_ID = new ProviderConfigProperty(
+            "maxmind_account_id",
+            "Maxmind Account ID",
+            "Maxmind account ID",
+            ProviderConfigProperty.STRING_TYPE,
+            "",
+            false,
+            false
+    );
+
+    public static final ProviderConfigProperty MAXMIND_LICENSE_KEY = new ProviderConfigProperty(
+            "maxmind_license_key",
+            "Maxmind License Key",
+            "Maxmind license key",
+            ProviderConfigProperty.PASSWORD,
+            "",
+            false,
+            false
+    );
+
+    public static final ProviderConfigProperty MAXMIND_WEB_DATABASE = new ProviderConfigProperty(
+            "maxmind_web_database",
+            "Maxmind Web Service Database",
+            "Specify the Maxmind database to use",
+            ProviderConfigProperty.LIST_TYPE,
+            MaxmindDatabase.GEO_LITE.getLabel()
     );
 
     public static final ProviderConfigProperty LOGIN_HISTORY_RETENTION_DAYS = new ProviderConfigProperty(

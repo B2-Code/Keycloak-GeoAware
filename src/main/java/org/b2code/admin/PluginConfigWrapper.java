@@ -3,6 +3,7 @@ package org.b2code.admin;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
 import org.b2code.admin.ui.RealmConfigTab;
+import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.keycloak.Config;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
@@ -41,6 +42,18 @@ public class PluginConfigWrapper {
         return get(PluginConfigOptions.MAXMIND_FILE_PATH);
     }
 
+    public int getMaxmindAccountId() {
+        return getInt(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
+    }
+
+    public String getMaxmindLicenseKey() {
+        return get(PluginConfigOptions.MAXMIND_LICENSE_KEY);
+    }
+
+    public MaxmindDatabase getMaxmindWebDatabase() {
+        return MaxmindDatabase.fromLabel(get(PluginConfigOptions.MAXMIND_WEB_DATABASE));
+    }
+
     public int getGeoipDatabaseCacheSize() {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }
@@ -60,7 +73,6 @@ public class PluginConfigWrapper {
     private boolean getBoolean(String key, String defaultValue) {
         return Boolean.parseBoolean(get(key, defaultValue));
     }
-
 
     private int getInt(ProviderConfigProperty property) {
         return getInt(property.getName(), (String) property.getDefaultValue());

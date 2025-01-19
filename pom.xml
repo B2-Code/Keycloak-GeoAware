@@ -86,6 +86,13 @@
             <version>${version.geoip2}</version>
         </dependency>
 
+        <!-- IpInfo.io -->
+        <dependency>
+            <groupId>io.ipinfo</groupId>
+            <artifactId>ipinfo-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -1,6 +1,6 @@
 package org.b2code;
 
-import org.b2code.authentication.UnknownIPAuthenticatorFactory;
+import org.b2code.authentication.unknownip.UnknownIPAuthenticatorFactory;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
 

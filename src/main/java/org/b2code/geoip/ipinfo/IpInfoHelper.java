@@ -15,9 +15,8 @@ public class IpInfoHelper {
                 .country(ipInfoResponse.getCountryName())
                 .countryIsoCode(ipInfoResponse.getCountryCode())
                 .continent(ipInfoResponse.getContinent().getName())
-                // .latitude(ipInfoResponse.getLatitude())
-                // .longitude(ipInfoResponse.getLongitude())
-                // .accuracyRadius(ipInfoResponse.getLocation().getAccuracyRadius())
+                .latitude(Double.valueOf(ipInfoResponse.getLatitude()))
+                .longitude(Double.valueOf(ipInfoResponse.getLongitude()))
                 .build();
     }
 }

@@ -7,6 +7,7 @@ import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -23,6 +24,7 @@ import org.keycloak.provider.ProviderEvent;
 import org.keycloak.services.ui.extend.UiTabProvider;
 import org.keycloak.services.ui.extend.UiTabProviderFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +52,9 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
         builder.property(PluginConfigOptions.GEOIP_PROVIDER);
         builder.property(PluginConfigOptions.GEOIP_CACHE_SIZE);
         builder.property(PluginConfigOptions.MAXMIND_FILE_PATH);
+        builder.property(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
+        builder.property(PluginConfigOptions.MAXMIND_LICENSE_KEY);
+        builder.property(PluginConfigOptions.MAXMIND_WEB_DATABASE);
         configProperties = builder.build();
     }
 
@@ -61,6 +66,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     @Override
     public void postInit(KeycloakSessionFactory factory) {
         setGeoipProviderOptions(factory.create());
+        setMaxmindWebDatabaseOptions();
         factory.register((ProviderEvent event) -> {
             if (event instanceof PostMigrationEvent) {
                 onPostMigrationEvent(factory);
@@ -91,6 +97,11 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     private void setGeoipProviderOptions(KeycloakSession session) {
         Set<String> databaseProviderOptions = session.listProviderIds(GeoipProvider.class);
         PluginConfigOptions.GEOIP_PROVIDER.setOptions(List.copyOf(databaseProviderOptions));
+    }
+
+    private void setMaxmindWebDatabaseOptions() {
+        List<String> databaseProviderOptions = Arrays.stream(MaxmindDatabase.values()).map(MaxmindDatabase::getLabel).toList();
+        PluginConfigOptions.MAXMIND_WEB_DATABASE.setOptions(databaseProviderOptions);
     }
 
     private void copyEnvironmentToComponentModel(ComponentModel model, RealmModel realm) {

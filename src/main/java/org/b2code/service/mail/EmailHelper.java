@@ -8,11 +8,11 @@ import org.b2code.geoip.GeoIpInfo;
 import org.keycloak.common.util.Time;
 import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailTemplateProvider;
-import org.keycloak.models.AbstractKeycloakTransaction;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
+import org.keycloak.services.Urls;
 
 import java.util.Collections;
 import java.util.Date;
@@ -21,31 +21,22 @@ import java.util.Map;
 
 @JBossLog
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmailHelper extends AbstractKeycloakTransaction {
-
-    private KeycloakSession session;
-    private UserModel user;
-    private RealmModel realm;
-    private EmailType type;
-    private Map<String, Object> params;
-
-    private static void sendAsyncEmail(KeycloakSession session, UserModel user, RealmModel realm, EmailType type, Map<String, Object> params) {
-        EmailHelper transaction = new EmailHelper(session, user, realm, type, params);
-        session.getTransactionManager().enlistAfterCompletion(transaction);
-    }
+public class EmailHelper {
 
     public static void sendNewIpEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull DeviceRepresentation deviceRepresentation, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
         params.putAll(getUserAgentParams(deviceRepresentation));
-        sendAsyncEmail(session, user, realm, EmailType.LOGIN_FROM_NEW_IP, params);
+        params.putAll(getResetCredentialText(session));
+        send(session, user, realm, EmailType.LOGIN_FROM_NEW_IP, params);
     }
 
     public static void sendNewDeviceEmail(@NotNull GeoIpInfo geoIpInfo, @NotNull DeviceRepresentation deviceRepresentation, @NotNull KeycloakSession session, @NotNull UserModel user, @NotNull RealmModel realm) {
         Map<String, Object> params = new HashMap<>();
         params.putAll(getGeoIpParams(geoIpInfo));
         params.putAll(getUserAgentParams(deviceRepresentation));
-        sendAsyncEmail(session, user, realm, EmailType.LOGIN_FROM_NEW_DEVICE, params);
+        params.putAll(getResetCredentialText(session));
+        send(session, user, realm, EmailType.LOGIN_FROM_NEW_DEVICE, params);
     }
 
     private static Map<String, Object> getGeoIpParams(GeoIpInfo geoIpInfo) {
@@ -58,6 +49,14 @@ public class EmailHelper extends AbstractKeycloakTransaction {
         geoIpParams.put("date", new Date(Time.currentTimeMillis()));
         geoIpParams.put("ip", geoIpInfo.getIp());
         return geoIpParams;
+    }
+
+    private static Map<String, Object> getResetCredentialText(KeycloakSession session) {
+        return Map.of("resetCredentialsHelp", session.getContext().getRealm().isResetPasswordAllowed() ? "${resetCredentialsActionHelpText} " + getResetCredentialUrl(session) : "${contactAdminHelpText}");
+    }
+
+    private static String getResetCredentialUrl(KeycloakSession session) {
+        return Urls.loginResetCredentials(session.getContext().getUri().getBaseUri(), session.getContext().getRealm().getName()).toString();
     }
 
     private static Map<String, Object> getUserAgentParams(DeviceRepresentation userAgentInfo) {
@@ -74,8 +73,7 @@ public class EmailHelper extends AbstractKeycloakTransaction {
         return userAgentParams;
     }
 
-    @Override
-    public void commitImpl() {
+    public static void send(KeycloakSession session, UserModel user, RealmModel realm, EmailType type, Map<String, Object> params) {
         try {
             log.debugf("Sending email to %s (%s)", user.getEmail(), type);
             session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession()).send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
@@ -84,8 +82,4 @@ public class EmailHelper extends AbstractKeycloakTransaction {
         }
     }
 
-    @Override
-    public void rollbackImpl() {
-        // NOOP
-    }
 }

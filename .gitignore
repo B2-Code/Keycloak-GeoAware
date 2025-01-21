@@ -38,4 +38,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src/main/resources/geoip-databases/
+src/main/resources/dev/geoip-databases/

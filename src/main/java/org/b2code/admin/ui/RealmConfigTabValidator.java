@@ -6,6 +6,7 @@ import org.b2code.PluginConstants;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.maxmind.MaxmindFileProviderFactory;
+import org.b2code.geoip.maxmind.MaxmindWebServiceProviderFactory;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
 import org.keycloak.models.RealmModel;
@@ -42,6 +43,7 @@ public class RealmConfigTabValidator {
             helper.checkInt(PluginConfigOptions.GEOIP_CACHE_SIZE, PluginConfigOptions.GEOIP_CACHE_SIZE.isRequired());
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS, PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS.isRequired());
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS, PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS.isRequired());
+            helper.checkInt(PluginConfigOptions.MAXMIND_ACCOUNT_ID, PluginConfigOptions.MAXMIND_ACCOUNT_ID.isRequired());
 
             helper.checkList(PluginConfigOptions.GEOIP_PROVIDER, PluginConfigOptions.GEOIP_PROVIDER.isRequired());
             if (model.get(PluginConfigOptions.GEOIP_PROVIDER.getName()).equals(MaxmindFileProviderFactory.PROVIDER_ID)) {
@@ -54,6 +56,10 @@ public class RealmConfigTabValidator {
                 if (!Files.exists(p)) {
                     throw new ComponentValidationException("No such file ''{0}''", path);
                 }
+            } else if (model.get(PluginConfigOptions.GEOIP_PROVIDER.getName()).equals(MaxmindWebServiceProviderFactory.PROVIDER_ID)) {
+                helper.checkRequired(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
+                helper.checkRequired(PluginConfigOptions.MAXMIND_LICENSE_KEY);
+                helper.checkRequired(PluginConfigOptions.MAXMIND_WEB_DATABASE);
             }
         } catch (ComponentValidationException e) {
             String message = MessageFormat.format(e.getMessage(), e.getParameters());

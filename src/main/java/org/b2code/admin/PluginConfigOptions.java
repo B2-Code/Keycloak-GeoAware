@@ -87,16 +87,6 @@ public class PluginConfigOptions {
             false
     );
 
-    public static final ProviderConfigProperty IPINFO_CACHE_IN_DAYS = new ProviderConfigProperty(
-            "ipinfo_cache_in_days",
-            "IPinfo Cache In Days",
-            "Number of days to cache IPinfo data",
-            ProviderConfigProperty.STRING_TYPE,
-            "7",
-            false,
-            true
-    );
-
     public static final ProviderConfigProperty LOGIN_HISTORY_RETENTION_DAYS = new ProviderConfigProperty(
             "login_history_retention_days",
             "Login History Retention Days",

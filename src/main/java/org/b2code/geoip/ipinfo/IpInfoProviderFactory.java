@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @JBossLog
 @AutoService(GeoipProviderFactory.class)
-public class IpInfoWebServiceProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
+public class IpInfoProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
 
     public static final String PROVIDER_ID = "ipinfo-webservice";
 
@@ -24,11 +24,11 @@ public class IpInfoWebServiceProviderFactory extends ServerInfoAwareFactory impl
 
     @Override
     public GeoipProvider create(KeycloakSession session) {
-        log.tracef("Creating new %s", IpInfoWebServiceProvider.class.getSimpleName());
+        log.tracef("Creating new %s", IpInfoProvider.class.getSimpleName());
         if (client == null) {
             client = createClient(session);
         }
-        return new IpInfoWebServiceProvider(client);
+        return new IpInfoProvider(client);
     }
 
     private IPinfo createClient(KeycloakSession keycloakSession) {
@@ -38,7 +38,6 @@ public class IpInfoWebServiceProviderFactory extends ServerInfoAwareFactory impl
         return new IPinfo
                 .Builder()
                 .setToken(pluginConfig.getIpInfoToken())
-                .setCache(new SimpleCache(Duration.ofDays(pluginConfig.getIpInfoCacheInDays())))
                 .build();
     }
 

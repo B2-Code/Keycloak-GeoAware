@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 
 @JBossLog
 @RequiredArgsConstructor
-public abstract class IpInfoProvider implements GeoipProvider {
+public class IpInfoProvider implements GeoipProvider {
 
     private final IPinfo ipInfo;
 

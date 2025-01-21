@@ -77,6 +77,26 @@ public class PluginConfigOptions {
             MaxmindDatabase.GEO_LITE.getLabel()
     );
 
+    public static final ProviderConfigProperty IPDATA_API_URL = new ProviderConfigProperty(
+            "ipdata_web_service_url",
+            "Use only European servers",
+            "If enabled, only European servers will be used",
+            ProviderConfigProperty.BOOLEAN_TYPE,
+            "false",
+            false,
+            false
+    );
+
+    public static final ProviderConfigProperty IPDATA_API_KEY = new ProviderConfigProperty(
+            "ipdata_web_service_api_key",
+            "IpData Web Service Api Key",
+            "Api Key for the IpData.co web service",
+            ProviderConfigProperty.PASSWORD,
+            "",
+            false,
+            true
+    );
+
     public static final ProviderConfigProperty LOGIN_HISTORY_RETENTION_DAYS = new ProviderConfigProperty(
             "login_history_retention_days",
             "Login History Retention Days",

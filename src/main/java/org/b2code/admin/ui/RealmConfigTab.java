@@ -55,6 +55,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
         builder.property(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
         builder.property(PluginConfigOptions.MAXMIND_LICENSE_KEY);
         builder.property(PluginConfigOptions.MAXMIND_WEB_DATABASE);
+        builder.property(PluginConfigOptions.IPINFO_TOKEN);
         configProperties = builder.build();
     }
 

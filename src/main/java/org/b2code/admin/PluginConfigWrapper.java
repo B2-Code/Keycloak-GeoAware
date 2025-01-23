@@ -54,6 +54,10 @@ public class PluginConfigWrapper {
         return MaxmindDatabase.fromLabel(get(PluginConfigOptions.MAXMIND_WEB_DATABASE));
     }
 
+    public String getIpInfoToken() {
+        return get(PluginConfigOptions.IPINFO_TOKEN);
+    }
+
     public int getGeoipDatabaseCacheSize() {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }

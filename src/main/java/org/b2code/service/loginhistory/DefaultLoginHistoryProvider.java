@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoipProvider;
-import org.b2code.geoip.GeoipProviderFactory;
+import org.b2code.geoip.GeoIpProvider;
+import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
@@ -30,7 +30,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     private final DeviceRepresentationProvider deviceRepresentationProvider;
 
-    private final GeoipProvider geoipProvider;
+    private final GeoIpProvider geoipProvider;
 
     private final Duration retentionTime;
 
@@ -45,7 +45,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         this.retentionTime = retentionTime;
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
-        this.geoipProvider = GeoipProviderFactory.getProvider(session);
+        this.geoipProvider = GeoIpProviderFactory.getProvider(session);
         this.loginRecords = getLoginRecords();
     }
 
@@ -68,7 +68,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     public boolean isKnownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        GeoipProvider provider = GeoipProviderFactory.getProvider(session);
+        GeoIpProvider provider = GeoIpProviderFactory.getProvider(session);
         GeoIpInfo ipInfo = provider.getIpInfo(ip);
         return getHistoryStream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
     }

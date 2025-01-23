@@ -1,13 +1,9 @@
 package org.b2code.authentication.device;
 
-import org.b2code.authentication.base.action.*;
-import org.b2code.authentication.base.condition.AlwaysCondition;
+import org.b2code.authentication.base.action.AuthenticatorActionConfigPropertyBuilder;
+import org.b2code.authentication.base.action.AuthenticatorActionOption;
 import org.b2code.authentication.base.condition.AuthenticatorConditionConfigPropertyBuilder;
 import org.b2code.authentication.base.condition.AuthenticatorConditionOption;
-import org.b2code.authentication.base.condition.NeverCondition;
-import org.b2code.authentication.device.action.SendDeviceWarningEmailAction;
-import org.b2code.authentication.device.condition.StrictOnDeviceChangeCondition;
-import org.b2code.authentication.device.condition.StrictOnUnknownDeviceCondition;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ProviderConfigurationBuilder;
 

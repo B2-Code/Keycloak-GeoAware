@@ -5,14 +5,14 @@ import com.maxmind.geoip2.WebServiceClient;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigWrapper;
-import org.b2code.geoip.GeoipProviderFactory;
+import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
 @JBossLog
-@AutoService(GeoipProviderFactory.class)
-public class MaxmindWebServiceProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
+@AutoService(GeoIpProviderFactory.class)
+public class MaxmindWebServiceProviderFactory extends ServerInfoAwareFactory implements GeoIpProviderFactory {
 
     public static final String PROVIDER_ID = "maxmind-webservice";
 
@@ -24,7 +24,7 @@ public class MaxmindWebServiceProviderFactory extends ServerInfoAwareFactory imp
         if (client == null) {
             client = createClient(keycloakSession);
         }
-        return new MaxmindWebServiceProvider(client);
+        return new MaxmindWebServiceProvider(keycloakSession, client);
     }
 
     private WebServiceClient createClient(KeycloakSession keycloakSession) {

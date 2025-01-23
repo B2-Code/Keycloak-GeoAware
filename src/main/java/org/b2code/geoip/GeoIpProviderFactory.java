@@ -6,12 +6,12 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.provider.ProviderFactory;
 
 
-public interface GeoipProviderFactory extends ProviderFactory<GeoipProvider> {
+public interface GeoIpProviderFactory extends ProviderFactory<GeoIpProvider> {
 
-    static GeoipProvider getProvider(KeycloakSession session) {
+    static GeoIpProvider getProvider(KeycloakSession session) {
         RealmModel realm = session.getContext().getRealm();
         PluginConfigWrapper pluginConfigWrapper = new PluginConfigWrapper(realm);
         String configuredProvider = pluginConfigWrapper.getGeoipDatabaseProvider();
-        return session.getProvider(GeoipProvider.class, configuredProvider);
+        return session.getProvider(GeoIpProvider.class, configuredProvider);
     }
 }

@@ -6,7 +6,7 @@ import org.b2code.PluginConstants;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
-import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.GeoIpProvider;
 import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
@@ -95,7 +95,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     }
 
     private void setGeoipProviderOptions(KeycloakSession session) {
-        Set<String> databaseProviderOptions = session.listProviderIds(GeoipProvider.class);
+        Set<String> databaseProviderOptions = session.listProviderIds(GeoIpProvider.class);
         PluginConfigOptions.GEOIP_PROVIDER.setOptions(List.copyOf(databaseProviderOptions));
     }
 

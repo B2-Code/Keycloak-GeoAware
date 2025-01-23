@@ -7,7 +7,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigWrapper;
-import org.b2code.geoip.GeoipProviderFactory;
+import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -16,8 +16,8 @@ import java.io.File;
 import java.io.IOException;
 
 @JBossLog
-@AutoService(GeoipProviderFactory.class)
-public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
+@AutoService(GeoIpProviderFactory.class)
+public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implements GeoIpProviderFactory {
 
     public static final String PROVIDER_ID = "maxmind-file";
 
@@ -29,7 +29,7 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
         if (reader == null) {
             reader = createReader(keycloakSession);
         }
-        return new MaxmindFileProvider(reader);
+        return new MaxmindFileProvider(keycloakSession, reader);
     }
 
     private DatabaseReader createReader(KeycloakSession keycloakSession) {

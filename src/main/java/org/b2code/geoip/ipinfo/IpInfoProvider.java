@@ -7,18 +7,24 @@ import io.ipinfo.api.model.IPResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.GeoIpProvider;
+import org.b2code.geoip.cache.CachingGeoIpProvider;
+import org.keycloak.models.KeycloakSession;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @JBossLog
-@RequiredArgsConstructor
-public class IpInfoProvider implements GeoipProvider {
+public class IpInfoProvider extends CachingGeoIpProvider {
 
     private final IPinfo ipInfo;
 
-    public GeoIpInfo getIpInfo(String ipAddress) {
+    public IpInfoProvider(KeycloakSession session, IPinfo ipInfo) {
+        super(session);
+        this.ipInfo = ipInfo;
+    }
+
+    public GeoIpInfo getIpInfoImpl(String ipAddress) {
         if (null == ipInfo) {
             log.warn("IpInfo GeoIP provider not initialized");
             return GeoIpInfo.builder().ip(ipAddress).build();

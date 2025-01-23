@@ -42,6 +42,7 @@ public class RealmConfigTabValidator {
             }
 
             helper.checkInt(PluginConfigOptions.GEOIP_CACHE_SIZE, PluginConfigOptions.GEOIP_CACHE_SIZE.isRequired());
+            helper.checkInt(PluginConfigOptions.GEOIP_CACHE_HOURS, PluginConfigOptions.GEOIP_CACHE_HOURS.isRequired());
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS, PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS.isRequired());
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS, PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS.isRequired());
             helper.checkInt(PluginConfigOptions.MAXMIND_ACCOUNT_ID, PluginConfigOptions.MAXMIND_ACCOUNT_ID.isRequired());

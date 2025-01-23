@@ -11,9 +11,11 @@ import org.keycloak.models.KeycloakSessionFactory;
 @AutoService(GeoIpCacheProviderFactory.class)
 public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory implements GeoIpCacheProviderFactory {
 
+    private static final DefaultGeoIpCacheProvider INSTANCE = new DefaultGeoIpCacheProvider();
+
     @Override
     public DefaultGeoIpCacheProvider create(KeycloakSession keycloakSession) {
-        return new DefaultGeoIpCacheProvider();
+        return INSTANCE;
     }
 
     @Override

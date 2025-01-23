@@ -39,6 +39,16 @@ public class PluginConfigOptions {
             true
     );
 
+    public static final ProviderConfigProperty GEOIP_CACHE_HOURS = new ProviderConfigProperty(
+            "geoip_cache_lifetime_hours",
+            "GeoIP Cache Time",
+            "Time to live for GeoIP cache entries in hours",
+            ProviderConfigProperty.STRING_TYPE,
+            "24",
+            false,
+            false
+    );
+
     public static final ProviderConfigProperty MAXMIND_FILE_PATH = new ProviderConfigProperty(
             "maxmind_database_path",
             "Maxmind File Path",

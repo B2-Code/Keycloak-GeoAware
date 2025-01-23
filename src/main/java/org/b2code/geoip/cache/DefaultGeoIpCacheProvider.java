@@ -11,6 +11,7 @@ import org.keycloak.models.KeycloakSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @JBossLog
 @RequiredArgsConstructor
@@ -20,9 +21,10 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
 
     private Cache<String, GeoIpInfo> createCache(KeycloakSession session) {
         PluginConfigWrapper config = new PluginConfigWrapper(session.getContext().getRealm());
-        log.debugf("Creating cache with size %d", config.getGeoipDatabaseCacheSize());
+        log.debugf("Creating cache with size %d and expiration after %d hours", config.getGeoipDatabaseCacheSize(), config.getGeoipDatabaseCacheHours());
         return CacheBuilder.newBuilder()
                 .maximumSize(config.getGeoipDatabaseCacheSize())
+                .expireAfterWrite(config.getGeoipDatabaseCacheHours(), TimeUnit.HOURS)
                 .build();
     }
 

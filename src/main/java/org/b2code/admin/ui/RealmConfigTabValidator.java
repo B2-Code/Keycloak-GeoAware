@@ -5,6 +5,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
+import org.b2code.geoip.ipinfo.IpInfoProviderFactory;
 import org.b2code.geoip.maxmind.MaxmindFileProviderFactory;
 import org.b2code.geoip.maxmind.MaxmindWebServiceProviderFactory;
 import org.keycloak.component.ComponentModel;
@@ -60,6 +61,10 @@ public class RealmConfigTabValidator {
                 helper.checkRequired(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
                 helper.checkRequired(PluginConfigOptions.MAXMIND_LICENSE_KEY);
                 helper.checkRequired(PluginConfigOptions.MAXMIND_WEB_DATABASE);
+            } else if (model.get(PluginConfigOptions.GEOIP_PROVIDER.getName()).equals(IpInfoProviderFactory.PROVIDER_ID)) {
+                helper.checkRequired(PluginConfigOptions.IPINFO_TOKEN);
+            } else {
+                throw new ComponentValidationException("Invalid ''{0}'' value", PluginConfigOptions.GEOIP_PROVIDER.getLabel());
             }
         } catch (ComponentValidationException e) {
             String message = MessageFormat.format(e.getMessage(), e.getParameters());

@@ -12,6 +12,7 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
 import org.keycloak.models.RealmModel;
 import org.keycloak.provider.ConfigurationValidationHelper;
+import org.keycloak.provider.ProviderConfigProperty;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,9 +43,13 @@ public class RealmConfigTabValidator {
             }
 
             helper.checkInt(PluginConfigOptions.GEOIP_CACHE_SIZE, PluginConfigOptions.GEOIP_CACHE_SIZE.isRequired());
+            checkPositiveValue(PluginConfigOptions.GEOIP_CACHE_SIZE, model);
             helper.checkInt(PluginConfigOptions.GEOIP_CACHE_HOURS, PluginConfigOptions.GEOIP_CACHE_HOURS.isRequired());
+            checkPositiveValue(PluginConfigOptions.GEOIP_CACHE_HOURS, model);
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS, PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS.isRequired());
+            checkPositiveValue(PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS, model);
             helper.checkInt(PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS, PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS.isRequired());
+            checkPositiveValue(PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS, model);
             helper.checkInt(PluginConfigOptions.MAXMIND_ACCOUNT_ID, PluginConfigOptions.MAXMIND_ACCOUNT_ID.isRequired());
 
             helper.checkList(PluginConfigOptions.GEOIP_PROVIDER, PluginConfigOptions.GEOIP_PROVIDER.isRequired());
@@ -74,6 +79,16 @@ public class RealmConfigTabValidator {
         } catch (Exception e) {
             log.errorf("Invalid %s configuration: %s", PluginConstants.PLUGIN_NAME, e.getMessage());
             throw new ComponentValidationException(e.getMessage());
+        }
+    }
+
+    private void checkPositiveValue(ProviderConfigProperty property, ComponentModel model) throws ComponentValidationException {
+        checkMinValue(property, model, 1);
+    }
+
+    private void checkMinValue(ProviderConfigProperty property, ComponentModel model, int minValue) throws ComponentValidationException {
+        if (Long.parseLong(model.get(property.getName())) < minValue) {
+            throw new ComponentValidationException("''{0}'' must be greater than or equal to {1}", property.getLabel(), minValue);
         }
     }
 }

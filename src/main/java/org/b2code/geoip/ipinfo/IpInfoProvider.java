@@ -4,10 +4,8 @@ import com.google.common.base.Stopwatch;
 import io.ipinfo.api.IPinfo;
 import io.ipinfo.api.errors.RateLimitedException;
 import io.ipinfo.api.model.IPResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoIpProvider;
 import org.b2code.geoip.cache.CachingGeoIpProvider;
 import org.keycloak.models.KeycloakSession;
 

@@ -41,7 +41,7 @@ public class PluginConfigOptions {
 
     public static final ProviderConfigProperty GEOIP_CACHE_HOURS = new ProviderConfigProperty(
             "geoip_cache_lifetime_hours",
-            "GeoIP Cache Time",
+            "GeoIP Cache Time (in hours)",
             "Time to live for GeoIP cache entries in hours",
             ProviderConfigProperty.STRING_TYPE,
             "24",

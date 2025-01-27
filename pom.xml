@@ -21,7 +21,7 @@
         <version.keycloak>26.1.0</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
         <version.ipinfo>3.0.0</version.ipinfo>
-        <version.lombok>1.18.34</version.lombok>
+        <version.lombok>1.18.36</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.0</version.validation-api>
 

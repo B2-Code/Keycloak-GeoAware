@@ -2,7 +2,7 @@ services:
   keycloak:
     container_name: keycloak
     hostname: keycloak
-    image: quay.io/keycloak/keycloak:26.0.7
+    image: quay.io/keycloak/keycloak:26.1.0
     depends_on:
       - postgres
     environment:
@@ -24,9 +24,9 @@ services:
       - "8443:8443"
       - "8787:8787"
     volumes:
-      - ./target/keycloak-geoaware-shaded.jar:/opt/keycloak/providers/extension.jar
-      - ./src/main/resources/dev/geoip-databases:/opt/keycloak/data/geoip-databases
-      - ./src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ./provider/target/keycloak-geoaware-provider-shaded.jar:/opt/keycloak/providers/extension.jar
+      - ./provider/src/main/resources/dev/geoip-databases:/opt/keycloak/data/geoip-databases
+      - ./provider/src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
 
   postgres:
     container_name: postgres
@@ -73,7 +73,7 @@ services:
       KC_LOG_CONSOLE_COLOR: 'true'
     command: [ 'export', '--dir', '/opt/keycloak/data/export', '--db', 'postgres', '--users', 'same_file', '--realm', 'test' ]
     volumes:
-      - ./src/test/resources/realms:/opt/keycloak/data/export
+      - ./provider/src/test/resources/realms:/opt/keycloak/data/export
 
   import-keycloak-realm:
     container_name: keycloak-import
@@ -89,7 +89,7 @@ services:
       KC_LOG_CONSOLE_COLOR: 'true'
     command: [ 'import', '--dir', '/opt/keycloak/data/import', '--db', 'postgres' ]
     volumes:
-      - ./src/test/resources/realms:/opt/keycloak/data/import
+      - ./provider/src/test/resources/realms:/opt/keycloak/data/import
 
 volumes:
   postgres-data:

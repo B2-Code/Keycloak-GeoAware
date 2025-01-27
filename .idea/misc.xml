@@ -5,6 +5,7 @@
       <item index="0" class="java.lang.String" itemvalue="com.google.auto.service.AutoService" />
     </list>
     <writeAnnotations>
+      <writeAnnotation name="org.keycloak.testframework.annotations.InjectRealm" />
       <writeAnnotation name="org.testcontainers.junit.jupiter.Container" />
     </writeAnnotations>
   </component>

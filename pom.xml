@@ -29,6 +29,7 @@
         <version.log4j>2.24.3</version.log4j>
         <version.restassured>5.5.0</version.restassured>
         <version.jboss.slf4j-logmanager>2.0.1.Final</version.jboss.slf4j-logmanager>
+        <version.jacoco-maven-plugin>0.8.12</version.jacoco-maven-plugin>
 
         <skipTests>false</skipTests>
         <skipITs>${skipTests}</skipITs>
@@ -44,4 +45,25 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${version.jacoco-maven-plugin}</version>
+                <configuration>
+                    <append>true</append>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,4 +1,4 @@
-name: Build and test
+name: Tests
 
 on:
   push:
@@ -7,26 +7,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: temurin
-          cache: maven
-      - name: Build
-        run: mvn -B -U -DskipITs=true clean package --file pom.xml
-
-  integration-tests:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        keycloak_version: [ 26.0.4, 26.0.5, 26.0.6, 26.0.7 ]
+        keycloak_version: [ 26.0.4, 26.0.5, 26.0.6, 26.0.7, 26.0.8, 26.1.0 ]
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
@@ -36,5 +22,5 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-      - name: Run integration tests
-        run: mvn -B -U -DskipUTs=true clean package failsafe:integration-test failsafe:verify --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}
+      - name: Run test
+        run: mvn -B -U -DskipUTs=true clean test --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}

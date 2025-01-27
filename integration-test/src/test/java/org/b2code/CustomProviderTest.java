@@ -10,14 +10,14 @@ import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.realm.ManagedRealm;
 
 @KeycloakIntegrationTest(config = ServerConfig.class)
-public class CustomProviderTest {
+class CustomProviderTest {
 
     @InjectRealm(lifecycle = LifeCycle.CLASS, config = RealmAConfig.class)
     private ManagedRealm realm;
 
     @Test
-    public void testCreatedClient() {
-        Assertions.assertEquals(realm.getCreatedRepresentation().getClients().size(), 1);
-        Assertions.assertEquals(realm.getCreatedRepresentation().getClients().get(0).getId(), "test-client");
+    void testCreatedClient() {
+        Assertions.assertEquals(1, realm.getCreatedRepresentation().getClients().size());
+        Assertions.assertEquals("test-client", realm.getCreatedRepresentation().getClients().getFirst().getClientId());
     }
 }

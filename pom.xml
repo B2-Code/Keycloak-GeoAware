@@ -13,9 +13,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <sonar.organization>b2-code</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-
         <version.keycloak>26.0.7</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
         <version.ipinfo>3.0.0</version.ipinfo>

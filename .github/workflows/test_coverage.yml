@@ -20,8 +20,10 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
+      - name: Compile
+        run: mvn -B -U -DskipTests=true install --file pom.xml
       - name: Run test
-        run: mvn -B -U -DskipUTs=true clean test --file pom.xml
+        run: mvn -B -U -DskipUTs=true test --file pom.xml
       - name: Report results to DeepSource
         run: |
           curl https://deepsource.io/cli | sh

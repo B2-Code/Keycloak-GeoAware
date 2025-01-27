@@ -2,7 +2,6 @@ package org.b2code.geoip.maxmind;
 
 import com.google.auto.service.AutoService;
 import com.google.common.base.Stopwatch;
-import com.maxmind.db.CHMCache;
 import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
@@ -46,10 +45,9 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
         }
 
         DatabaseReader newReader;
-        int cacheSize = pluginConfig.getGeoipDatabaseCacheSize();
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
-            newReader = new DatabaseReader.Builder(database).withCache(new CHMCache(cacheSize)).build();
+            newReader = new DatabaseReader.Builder(database).build();
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;

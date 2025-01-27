@@ -27,6 +27,6 @@ jobs:
       - name: Report results to DeepSource
         run: |
           curl https://deepsource.io/cli | sh
-          ./bin/deepsource report --analyzer test-coverage --key java --value-file integration-test/target/jacoco.exec
+          ./bin/deepsource report --analyzer test-coverage --key java --value-file integration-test/target/site/jacoco-aggregate/jacoco.xml
         env:
           DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}

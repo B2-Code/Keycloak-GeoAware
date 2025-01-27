@@ -6,8 +6,8 @@ import io.ipdata.client.service.IpdataService;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigWrapper;
-import org.b2code.geoip.GeoipProvider;
-import org.b2code.geoip.GeoipProviderFactory;
+import org.b2code.geoip.GeoIpProvider;
+import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -15,20 +15,20 @@ import org.keycloak.models.KeycloakSessionFactory;
 import java.net.URI;
 
 @JBossLog
-@AutoService(GeoipProviderFactory.class)
-public class IpDataProviderFactory extends ServerInfoAwareFactory implements GeoipProviderFactory {
+@AutoService(GeoIpProviderFactory.class)
+public class IpDataProviderFactory extends ServerInfoAwareFactory implements GeoIpProviderFactory {
 
     public static final String PROVIDER_ID = "ipdata-webservice";
 
     private IpdataService client;
 
     @Override
-    public GeoipProvider create(KeycloakSession session) {
+    public GeoIpProvider create(KeycloakSession session) {
         log.tracef("Creating new %s", IpDataProvider.class.getSimpleName());
         if (client == null) {
             client = createClient(session);
         }
-        return new IpDataProvider(client);
+        return new IpDataProvider(session, client);
     }
 
     private IpdataService createClient(KeycloakSession keycloakSession) {

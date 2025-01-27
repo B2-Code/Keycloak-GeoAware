@@ -3,20 +3,24 @@ package org.b2code.geoip.ipdata;
 import com.google.common.base.Stopwatch;
 import io.ipdata.client.model.IpdataModel;
 import io.ipdata.client.service.IpdataService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.cache.CachingGeoIpProvider;
+import org.keycloak.models.KeycloakSession;
 
 import java.net.InetAddress;
 
 @JBossLog
-@RequiredArgsConstructor
-public class IpDataProvider implements GeoipProvider {
+public class IpDataProvider extends CachingGeoIpProvider {
 
     private final IpdataService ipdataService;
 
-    public GeoIpInfo getIpInfo(String ipAddress) {
+    public IpDataProvider(KeycloakSession session, IpdataService ipdataService) {
+        super(session);
+        this.ipdataService = ipdataService;
+    }
+
+    public GeoIpInfo getIpInfoImpl(String ipAddress) {
         if (null == ipdataService) {
             log.warn("IpData provider not initialized");
             return GeoIpInfo.builder().ip(ipAddress).build();

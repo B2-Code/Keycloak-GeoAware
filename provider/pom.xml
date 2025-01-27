@@ -58,6 +58,13 @@
             <version>${version.ipinfo}</version>
         </dependency>
 
+        <!-- IpData -->
+        <dependency>
+            <groupId>co.ipdata.client</groupId>
+            <artifactId>ipdata-java-client</artifactId>
+            <version>${version.ipdata}</version>
+        </dependency>
+
         <!-- AutoService -->
         <dependency>
             <groupId>com.google.auto.service</groupId>

@@ -58,6 +58,14 @@ public class PluginConfigWrapper {
         return get(PluginConfigOptions.IPINFO_TOKEN);
     }
 
+    public String getIpDataApiKey() {
+        return get(PluginConfigOptions.IPDATA_API_KEY);
+    }
+
+    public boolean getIpDataApiUrl() {
+        return getBoolean(PluginConfigOptions.IPDATA_API_URL);
+    }
+
     public int getGeoipDatabaseCacheSize() {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }

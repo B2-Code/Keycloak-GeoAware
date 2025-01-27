@@ -24,7 +24,7 @@ services:
       - "8443:8443"
       - "8787:8787"
     volumes:
-      - ./provider/target/keycloak-geoaware-provider-shaded.jar:/opt/keycloak/providers/extension.jar
+      - ./provider/target/keycloak-geoaware-provider-1.0-SNAPSHOT-shaded.jar:/opt/keycloak/providers/extension.jar
       - ./provider/src/main/resources/dev/geoip-databases:/opt/keycloak/data/geoip-databases
       - ./provider/src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
 
@@ -61,7 +61,7 @@ services:
 
   export-keycloak-realm:
     container_name: keycloak-export
-    image: quay.io/keycloak/keycloak:26.0.7
+    image: quay.io/keycloak/keycloak:26.1.0
     profiles:
       - export-realm
     depends_on:
@@ -77,7 +77,7 @@ services:
 
   import-keycloak-realm:
     container_name: keycloak-import
-    image: quay.io/keycloak/keycloak:26.0.7
+    image: quay.io/keycloak/keycloak:26.1.0
     profiles:
       - import-realm
     depends_on:

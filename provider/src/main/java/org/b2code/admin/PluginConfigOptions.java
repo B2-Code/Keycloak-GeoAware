@@ -97,6 +97,26 @@ public class PluginConfigOptions {
             false
     );
 
+    public static final ProviderConfigProperty IPDATA_API_KEY = new ProviderConfigProperty(
+            "ipdata_api_key",
+            "IPData API Key",
+            "IPData API key",
+            ProviderConfigProperty.PASSWORD,
+            "",
+            false,
+            false
+    );
+
+    public static final ProviderConfigProperty IPDATA_API_URL = new ProviderConfigProperty(
+            "ipdata_api_url",
+            "IPData API URL",
+            "Use IPData EU servers",
+            ProviderConfigProperty.BOOLEAN_TYPE,
+            "false",
+            false,
+            false
+    );
+
     public static final ProviderConfigProperty LOGIN_HISTORY_RETENTION_DAYS = new ProviderConfigProperty(
             "login_history_retention_days",
             "Login History Retention Days",

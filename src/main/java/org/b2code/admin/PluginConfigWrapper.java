@@ -62,6 +62,10 @@ public class PluginConfigWrapper {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }
 
+    public int getGeoipDatabaseCacheHours() {
+        return getInt(PluginConfigOptions.GEOIP_CACHE_HOURS);
+    }
+
     public int getLoginHistoryRetentionDays() {
         return getInt(PluginConfigOptions.LOGIN_HISTORY_RETENTION_DAYS);
     }

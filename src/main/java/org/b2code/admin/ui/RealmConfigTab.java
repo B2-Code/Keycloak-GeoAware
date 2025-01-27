@@ -6,7 +6,7 @@ import org.b2code.PluginConstants;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
-import org.b2code.geoip.GeoipProvider;
+import org.b2code.geoip.GeoIpProvider;
 import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
@@ -51,6 +51,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
         builder.property(PluginConfigOptions.LOGIN_HISTORY_MAX_RECORDS);
         builder.property(PluginConfigOptions.GEOIP_PROVIDER);
         builder.property(PluginConfigOptions.GEOIP_CACHE_SIZE);
+        builder.property(PluginConfigOptions.GEOIP_CACHE_HOURS);
         builder.property(PluginConfigOptions.MAXMIND_FILE_PATH);
         builder.property(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
         builder.property(PluginConfigOptions.MAXMIND_LICENSE_KEY);
@@ -66,7 +67,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-        setGeoipProviderOptions(factory.create());
+        setGeoIpProviderOptions(factory.create());
         setMaxmindWebDatabaseOptions();
         factory.register((ProviderEvent event) -> {
             if (event instanceof PostMigrationEvent) {
@@ -95,8 +96,8 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
                 .forEach(component -> copyEnvironmentToComponentModel(component, realm));
     }
 
-    private void setGeoipProviderOptions(KeycloakSession session) {
-        Set<String> databaseProviderOptions = session.listProviderIds(GeoipProvider.class);
+    private void setGeoIpProviderOptions(KeycloakSession session) {
+        Set<String> databaseProviderOptions = session.listProviderIds(GeoIpProvider.class);
         PluginConfigOptions.GEOIP_PROVIDER.setOptions(List.copyOf(databaseProviderOptions));
     }
 

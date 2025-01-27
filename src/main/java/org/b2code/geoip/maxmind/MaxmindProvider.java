@@ -4,22 +4,27 @@ import com.google.common.base.Stopwatch;
 import com.maxmind.geoip2.GeoIp2Provider;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.geoip.cache.CachingGeoIpProvider;
 import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoipProvider;
+import org.keycloak.models.KeycloakSession;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @JBossLog
-@RequiredArgsConstructor
-public abstract class MaxmindProvider implements GeoipProvider {
+public abstract class MaxmindProvider extends CachingGeoIpProvider {
 
     private final GeoIp2Provider geoIpProvider;
 
-    public GeoIpInfo getIpInfo(String ipAddress) {
+    protected MaxmindProvider(KeycloakSession session, GeoIp2Provider geoIpProvider) {
+        super(session);
+        this.geoIpProvider = geoIpProvider;
+    }
+
+    @Override
+    protected GeoIpInfo getIpInfoImpl(String ipAddress) {
         if (null == geoIpProvider) {
             log.warn("Maxmind GeoIP provider not initialized");
             return GeoIpInfo.builder().ip(ipAddress).build();

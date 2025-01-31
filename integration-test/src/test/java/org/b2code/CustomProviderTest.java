@@ -48,7 +48,7 @@ class CustomProviderTest {
     }
 
     @Test
-    public void testAuthorizationCode() throws Exception {
+    void testAuthorizationCode() throws Exception {
         URL authorizationRequestURL = oAuthClient.authorizationRequest();
         webDriver.navigate().to(authorizationRequestURL);
         loginPage.fillLogin(user.getUsername(), user.getPassword());

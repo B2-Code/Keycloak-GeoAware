@@ -1,4 +1,4 @@
-name: Code Coverage
+name: Test Coverage
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  code-coverage:
+  test-coverage:
     runs-on: ubuntu-latest
     continue-on-error: false
     steps:
@@ -24,6 +24,9 @@ jobs:
         run: mvn -B -U -DskipTests=true install --file pom.xml
       - name: Run test
         run: mvn -B -U -DskipUTs=true test --file pom.xml
+        env:
+          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       - name: Report results to DeepSource
         run: |
           curl https://deepsource.io/cli | sh

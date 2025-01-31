@@ -1,6 +1,6 @@
 Keycloak GeoAware
 ============
-![GitHub actions workflow status](https://img.shields.io/github/actions/workflow/status/B2-Code/Keycloak-GeoAware/allTests.yml)
+![GitHub actions workflow status](https://img.shields.io/github/actions/workflow/status/B2-Code/Keycloak-GeoAware/all_tests.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/B2-Code/Keycloak-GeoAware/main)
 ![GitHub release](https://img.shields.io/github/v/release/B2-Code/Keycloak-GeoAware)
 ![GitHub downloads (all assets, all releases)](https://img.shields.io/github/downloads/B2-Code/Keycloak-GeoAware/total)

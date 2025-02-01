@@ -26,3 +26,6 @@ jobs:
         run: mvn -B -U -DskipTests=true install --file pom.xml
       - name: Run test
         run: mvn -B -U -DskipUTs=true clean test --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}
+        env:
+          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}

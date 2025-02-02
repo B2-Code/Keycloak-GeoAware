@@ -27,6 +27,7 @@ jobs:
         env:
           MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+          IPINFO_TOKEN: ${{ secrets.IPINFO_TOKEN }}
       - name: Report results to DeepSource
         run: |
           curl https://deepsource.io/cli | sh

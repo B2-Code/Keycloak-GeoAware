@@ -11,12 +11,6 @@ public class RealmAConfig implements RealmConfig {
                 .secret("test-secret")
                 .directAccessGrants();
 
-        realmConfigBuilder.addUser("test-user")
-                .name("Test", "User")
-                .email("test-user@test-domain.com")
-                .password("test-password")
-                .emailVerified();
-
         return realmConfigBuilder;
     }
 }

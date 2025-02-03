@@ -74,7 +74,9 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
     @Override
     public void close() {
         try {
-            this.reader.close();
+            if (this.reader != null) {
+                this.reader.close();
+            }
         } catch (IOException e) {
             log.warn("Failed to close Maxmind database reader", e);
         }

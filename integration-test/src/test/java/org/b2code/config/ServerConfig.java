@@ -13,6 +13,7 @@ public abstract class ServerConfig implements KeycloakServerConfig {
     public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder keycloakServerConfigBuilder) {
         Map<String, String> options = new HashMap<>();
         options.put("spi-geoaware-global-enabled", "true");
+        options.put("spi-geoaware-global-login-history-max-records", "5");
         options.putAll(getOptions());
         return keycloakServerConfigBuilder
                 .dependency("org.b2code", "keycloak-geoaware-provider")

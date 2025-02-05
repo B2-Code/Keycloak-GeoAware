@@ -1,4 +1,4 @@
-package org.b2code.service.loginhistory;
+package org.b2code.loginhistory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;

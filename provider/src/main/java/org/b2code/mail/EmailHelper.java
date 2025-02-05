@@ -1,4 +1,4 @@
-package org.b2code.service.mail;
+package org.b2code.mail;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -8,11 +8,13 @@ import org.b2code.geoip.GeoIpInfo;
 import org.keycloak.common.util.Time;
 import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailTemplateProvider;
+import org.keycloak.locale.LocaleSelectorProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.account.DeviceRepresentation;
 import org.keycloak.services.Urls;
+import org.keycloak.sessions.AuthenticationSessionModel;
 
 import java.util.Collections;
 import java.util.Date;
@@ -74,11 +76,21 @@ public class EmailHelper {
     }
 
     public static void send(KeycloakSession session, UserModel user, RealmModel realm, EmailType type, Map<String, Object> params) {
+        log.debugf("Sending email to %s (%s)", user.getEmail(), type);
+        AuthenticationSessionModel authenticatedSession = session.getContext().getAuthenticationSession();
+        // Keycloak allows the language to be set in the login flow. Since an attacker could change the language, we need to ensure that the email is sent in the user's preferred or default language.
+        String userRequestLocale = authenticatedSession.getAuthNote(LocaleSelectorProvider.USER_REQUEST_LOCALE);
+        if (userRequestLocale != null) {
+            authenticatedSession.removeAuthNote(LocaleSelectorProvider.USER_REQUEST_LOCALE);
+        }
         try {
-            log.debugf("Sending email to %s (%s)", user.getEmail(), type);
-            session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession()).send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
+            EmailTemplateProvider emailTemplateProvider = session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession());
+            emailTemplateProvider.send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
         } catch (EmailException e) {
             log.error("Failed to send email. Please check if your email settings are correct.", e);
+        }
+        if (userRequestLocale != null) {
+            authenticatedSession.setAuthNote(LocaleSelectorProvider.USER_REQUEST_LOCALE, userRequestLocale);
         }
     }
 

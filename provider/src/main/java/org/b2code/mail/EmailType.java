@@ -1,4 +1,4 @@
-package org.b2code.service.mail;
+package org.b2code.mail;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

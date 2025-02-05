@@ -75,20 +75,16 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <directory>provider/src/main/resources</directory>
+                <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>dev/**</exclude>
                 </excludes>
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -104,6 +100,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>shaded</shadedClassifierName>
+                            <finalName>${project.artifactId}-shaded</finalName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>

@@ -6,6 +6,10 @@
     </list>
     <writeAnnotations>
       <writeAnnotation name="org.keycloak.testframework.annotations.InjectRealm" />
+      <writeAnnotation name="org.keycloak.testframework.annotations.InjectUser" />
+      <writeAnnotation name="org.keycloak.testframework.oauth.nimbus.annotations.InjectOAuthClient" />
+      <writeAnnotation name="org.keycloak.testframework.ui.annotations.InjectPage" />
+      <writeAnnotation name="org.keycloak.testframework.ui.annotations.InjectWebDriver" />
       <writeAnnotation name="org.testcontainers.junit.jupiter.Container" />
     </writeAnnotations>
   </component>

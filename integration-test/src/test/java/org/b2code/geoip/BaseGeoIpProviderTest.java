@@ -72,7 +72,11 @@ abstract class BaseGeoIpProviderTest {
             login();
             logout();
         }
+        List<LoginRecord> ipAddresses = getLoginRecords();
+        Assertions.assertEquals(5, ipAddresses.size());
+    }
 
+    protected List<LoginRecord> getLoginRecords() {
         UserRepresentation userRep = realm.admin().users().get(user.getId()).toRepresentation();
         Assertions.assertNotNull(userRep);
 
@@ -81,7 +85,14 @@ abstract class BaseGeoIpProviderTest {
 
         List<String> ipAddresses = attributes.get("loginHistoryRecord");
         Assertions.assertNotNull(ipAddresses);
-        Assertions.assertEquals(5, ipAddresses.size());
+        return ipAddresses.stream().map(ip -> {
+            try {
+                return getObjectMapper().readValue(ip, LoginRecord.class);
+            } catch (Exception e) {
+                log.error("Failed to parse login record", e);
+                return null;
+            }
+        }).toList();
     }
 
     protected void logout() {

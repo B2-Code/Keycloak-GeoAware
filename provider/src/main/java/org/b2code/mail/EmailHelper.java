@@ -84,7 +84,7 @@ public class EmailHelper {
             authenticatedSession.removeAuthNote(LocaleSelectorProvider.USER_REQUEST_LOCALE);
         }
         try {
-            EmailTemplateProvider emailTemplateProvider = session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(session.getContext().getAuthenticationSession());
+            EmailTemplateProvider emailTemplateProvider = session.getProvider(EmailTemplateProvider.class).setRealm(realm).setUser(user).setAuthenticationSession(authenticatedSession);
             emailTemplateProvider.send(type.getSubjectKey(), Collections.emptyList(), type.getTemplateName(), params);
         } catch (EmailException e) {
             log.error("Failed to send email. Please check if your email settings are correct.", e);

@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.b2code.config.RealmAConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.keycloak.representations.idm.AuthenticationExecutionExportRepresentation;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.realm.ManagedRealm;
+
+import java.util.List;
 
 @Slf4j
 abstract class BaseAuthenticatorProviderTest {
@@ -15,14 +18,16 @@ abstract class BaseAuthenticatorProviderTest {
     protected ManagedRealm realm;
 
     @Test
-    void testCreateFlowWithCustomProvider() {
+    void testCreateFlow() {
         Assertions.assertEquals(7, realm.admin().flows().getFlows().size());
         createFlow();
         Assertions.assertEquals(8, realm.admin().flows().getFlows().size());
     }
 
     @Test
-    abstract void testExecution();
+    abstract void testCreateFlowWithExecution();
 
     abstract void createFlow();
+
+    abstract List<AuthenticationExecutionExportRepresentation> createExecutions();
 }

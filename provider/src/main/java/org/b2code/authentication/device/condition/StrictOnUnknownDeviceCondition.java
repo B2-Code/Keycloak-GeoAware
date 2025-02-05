@@ -2,7 +2,7 @@ package org.b2code.authentication.device.condition;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
-import org.b2code.service.loginhistory.LoginHistoryProvider;
+import org.b2code.loginhistory.LoginHistoryProvider;
 import org.keycloak.models.KeycloakSession;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)

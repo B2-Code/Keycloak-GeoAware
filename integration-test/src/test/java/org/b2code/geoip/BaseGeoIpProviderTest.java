@@ -7,7 +7,7 @@ import com.nimbusds.oauth2.sdk.TokenResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.config.RealmAConfig;
 import org.b2code.config.TestUserConfig;
-import org.b2code.service.loginhistory.LoginRecord;
+import org.b2code.loginhistory.LoginRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;

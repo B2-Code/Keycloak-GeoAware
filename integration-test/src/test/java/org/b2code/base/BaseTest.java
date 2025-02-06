@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public abstract class BaseTest {
@@ -61,7 +62,7 @@ public abstract class BaseTest {
                 log.error("Failed to parse login record", e);
                 return null;
             }
-        }).toList();
+        }).filter(Objects::nonNull).toList();
     }
 
     protected void logout() {

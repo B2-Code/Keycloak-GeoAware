@@ -3,16 +3,12 @@ package org.b2code.authentication;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.base.BaseTest;
-import org.b2code.config.RealmAConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.representations.idm.*;
-import org.keycloak.testframework.annotations.InjectRealm;
-import org.keycloak.testframework.injection.LifeCycle;
-import org.keycloak.testframework.realm.ManagedRealm;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +17,6 @@ import java.util.Map;
 abstract class BaseAuthenticatorProviderTest extends BaseTest {
 
     private static final String FLOW_ALIAS = "test-flow";
-
-    @InjectRealm(lifecycle = LifeCycle.METHOD, config = RealmAConfig.class)
-    ManagedRealm realm;
 
     @BeforeEach
     void setupFlow() {

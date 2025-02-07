@@ -17,7 +17,7 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
     private final GeoIpCacheProvider cacheProvider;
     private final TracingProvider tracingProvider;
 
-    public CachingGeoIpProvider(KeycloakSession session) {
+    protected CachingGeoIpProvider(KeycloakSession session) {
         log.debugf("Creating %s", CachingGeoIpProvider.class.getSimpleName());
         this.session = session;
         this.cacheProvider = session.getProvider(GeoIpCacheProvider.class);

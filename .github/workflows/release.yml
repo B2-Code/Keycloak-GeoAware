@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Package
+        run: mvn -B -U -DskipTests=true package --file pom.xml
+      - name: Rename JAR
+        run: mv provider/target/keycloak-geoaware-provider-shaded.jar provider/target/keycloak-geoaware.jar
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: provider/target/keycloak-geoaware.jar
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref, '-rc') }}
+          body: |
+            Release notes: https://b2-code.github.io/Keycloak-GeoAware/release-notes/${{ github.ref_name }}

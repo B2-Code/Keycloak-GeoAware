@@ -43,6 +43,11 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
         return geoIpInfo;
     }
 
+    @Override
+    public void close() {
+        // NOOP
+    }
+
     protected abstract GeoIpInfo getIpInfoImpl(@NotNull String ipAddress);
 
 }

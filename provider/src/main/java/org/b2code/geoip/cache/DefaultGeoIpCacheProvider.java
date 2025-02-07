@@ -57,8 +57,12 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
         }
     }
 
+    protected void invalidateAll() {
+        perRealmCache.values().forEach(Cache::invalidateAll);
+    }
+
     @Override
     public void close() {
-        perRealmCache.values().forEach(Cache::invalidateAll);
+        // NOOP
     }
 }

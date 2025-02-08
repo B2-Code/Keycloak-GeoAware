@@ -59,9 +59,4 @@ public abstract class MaxmindProvider extends CachingGeoIpProvider {
         }
     }
 
-
-    @Override
-    public void close() {
-        // NOOP
-    }
 }

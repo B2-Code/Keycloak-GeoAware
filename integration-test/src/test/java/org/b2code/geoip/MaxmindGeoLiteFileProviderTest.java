@@ -9,7 +9,7 @@ import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 import java.util.List;
 
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
-public class MaxmindGeoLiteFileProviderTest extends MaxmindFileProviderTest {
+class MaxmindGeoLiteFileProviderTest extends MaxmindFileProviderTest {
 
     @Test
     void testKnownIp1() throws Exception {

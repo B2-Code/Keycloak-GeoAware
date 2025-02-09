@@ -50,7 +50,7 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
     @Test
     void testLoginAlwaysDenyAccess() throws Exception {
         this.setConditionAndAction("Always", "Deny Access");
-        login(true);
+        loginAndExpectFail();
     }
 
     private AuthenticationFlowRepresentation getFlow() {

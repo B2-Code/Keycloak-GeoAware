@@ -30,7 +30,7 @@ public class IpInfoProviderFactory extends ServerInfoAwareFactory implements Geo
 
     private IPinfo createClient(KeycloakSession keycloakSession) {
         log.trace("Creating new IpInfo file reader");
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(keycloakSession.getContext().getRealm());
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
 
         return new IPinfo
                 .Builder()

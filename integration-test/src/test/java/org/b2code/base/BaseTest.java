@@ -5,10 +5,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.oauth2.sdk.AuthorizationResponse;
 import com.nimbusds.oauth2.sdk.TokenResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.b2code.PluginConstants;
 import org.b2code.config.RealmAConfig;
 import org.b2code.config.TestUserConfig;
 import org.b2code.loginhistory.LoginRecord;
 import org.junit.jupiter.api.Assertions;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.annotations.InjectUser;
@@ -73,7 +75,28 @@ public abstract class BaseTest {
         this.login(false);
     }
 
-    protected void login(boolean expectFail) throws Exception {
+    protected void loginAndExpectFail() throws Exception {
+        this.login(true);
+    }
+
+    protected void loginFromIp(String ip) throws Exception {
+        setMockIp(ip);
+        login(false);
+    }
+
+    protected void loginFromIpAndExpectFail(String ip) throws Exception {
+        setMockIp(ip);
+        login(true);
+    }
+
+    private void setMockIp(String ip) {
+        RealmRepresentation realmRep = realm.admin().toRepresentation();
+        Map<String, String> attributes = realmRep.getAttributes();
+        attributes.put(PluginConstants.PLUGIN_NAME_LOWER_CASE + "-mock-ip", ip);
+        realm.admin().update(realmRep);
+    }
+
+    private void login(boolean expectFail) throws Exception {
         log.info("Logging in");
         log.info(expectFail ? "Expecting login to fail" : "Expecting login to succeed");
 

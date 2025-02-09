@@ -36,7 +36,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-realm-configuration-tab";
 
     static {
-        if (!Profile.isFeatureEnabled(Profile.Feature.DECLARATIVE_UI)) {
+        if (Profile.getInstance() != null && !Profile.isFeatureEnabled(Profile.Feature.DECLARATIVE_UI)) {
             log.infof("As the declarative UI is not enabled, %s can not be configured in the admin console. To enable it, you will need to rebuild Keycloak and enable the '%s' feature.", PluginConstants.PLUGIN_NAME, Profile.Feature.DECLARATIVE_UI.getKey());
         }
     }
@@ -107,7 +107,7 @@ public class RealmConfigTab extends ServerInfoAwareFactory implements UiTabProvi
     }
 
     private void copyEnvironmentToComponentModel(ComponentModel model, RealmModel realm) {
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(realm);
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(realm);
         MultivaluedHashMap<String, String> config = model.getConfig();
         for (ProviderConfigProperty property : configProperties) {
             pluginConfig.getFromEnvConfig(property.getName()).ifPresent(value -> {

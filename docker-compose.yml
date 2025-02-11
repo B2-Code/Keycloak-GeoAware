@@ -2,7 +2,7 @@ services:
   keycloak:
     container_name: keycloak
     hostname: keycloak
-    image: quay.io/keycloak/keycloak:26.1.1
+    image: quay.io/keycloak/keycloak:26.1.2
     depends_on:
       - postgres
     environment:
@@ -61,7 +61,7 @@ services:
 
   export-keycloak-realm:
     container_name: keycloak-export
-    image: quay.io/keycloak/keycloak:26.1.1
+    image: quay.io/keycloak/keycloak:26.1.2
     profiles:
       - export-realm
     depends_on:
@@ -77,7 +77,7 @@ services:
 
   import-keycloak-realm:
     container_name: keycloak-import
-    image: quay.io/keycloak/keycloak:26.1.1
+    image: quay.io/keycloak/keycloak:26.1.2
     profiles:
       - import-realm
     depends_on:

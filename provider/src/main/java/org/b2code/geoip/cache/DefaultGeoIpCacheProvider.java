@@ -20,11 +20,11 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
     private final Map<String, Cache<String, GeoIpInfo>> perRealmCache = new HashMap<>();
 
     private Cache<String, GeoIpInfo> createCache(KeycloakSession session) {
-        PluginConfigWrapper config = new PluginConfigWrapper(session.getContext().getRealm());
-        log.debugf("Creating cache with size %d and expiration after %d hours", config.getGeoipDatabaseCacheSize(), config.getGeoipDatabaseCacheHours());
+        PluginConfigWrapper config = PluginConfigWrapper.of(session);
+        log.debugf("Creating cache with size %d and expiration after %d hours", config.getGeoIpDatabaseCacheSize(), config.getGeoIpDatabaseCacheHours());
         return CacheBuilder.newBuilder()
-                .maximumSize(config.getGeoipDatabaseCacheSize())
-                .expireAfterWrite(config.getGeoipDatabaseCacheHours(), TimeUnit.HOURS)
+                .maximumSize(config.getGeoIpDatabaseCacheSize())
+                .expireAfterWrite(config.getGeoIpDatabaseCacheHours(), TimeUnit.HOURS)
                 .build();
     }
 

@@ -5,7 +5,7 @@ import org.keycloak.representations.idm.AuthenticationExecutionRepresentation;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
-public class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
+class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
     private static final String PROVIDER_ID = "geoaware-unknown-ip";
 

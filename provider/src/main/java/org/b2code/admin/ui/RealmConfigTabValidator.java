@@ -25,7 +25,7 @@ import java.util.Optional;
 public class RealmConfigTabValidator {
 
     public static void validateConfiguration(RealmModel realm, ComponentModel model) throws ComponentValidationException {
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(realm);
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(realm);
         ConfigurationValidationHelper helper = ConfigurationValidationHelper.check(model);
 
         try {

@@ -29,7 +29,7 @@ public class MaxmindWebServiceProviderFactory extends ServerInfoAwareFactory imp
 
     private WebServiceClient createClient(KeycloakSession keycloakSession) {
         log.trace("Creating new Maxmind file reader");
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(keycloakSession.getContext().getRealm());
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
 
         return new WebServiceClient
                 .Builder(pluginConfig.getMaxmindAccountId(), pluginConfig.getMaxmindLicenseKey())

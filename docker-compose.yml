@@ -25,8 +25,9 @@ services:
       - "8787:8787"
     volumes:
       - ./provider/target/keycloak-geoaware-provider-shaded.jar:/opt/keycloak/providers/extension.jar
-      - ./provider/src/main/resources/dev/geoip-databases:/opt/keycloak/data/geoip-databases
       - ./provider/src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ./integration-test/src/test/resources/GeoIP2-City-Test.mmdb:/opt/keycloak/data/geoip-databases/GeoIP2-City-Test.mmdb
+      - ./integration-test/src/test/resources/GeoLite2-City-Test.mmdb:/opt/keycloak/data/geoip-databases/GeoLite2-City-Test.mmdb
 
   postgres:
     container_name: postgres

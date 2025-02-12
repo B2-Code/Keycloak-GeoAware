@@ -2,16 +2,14 @@ package org.b2code.geoip;
 
 import org.b2code.admin.PluginConfigWrapper;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
 import org.keycloak.provider.ProviderFactory;
 
 
 public interface GeoIpProviderFactory extends ProviderFactory<GeoIpProvider> {
 
     static GeoIpProvider getProvider(KeycloakSession session) {
-        RealmModel realm = session.getContext().getRealm();
-        PluginConfigWrapper pluginConfigWrapper = new PluginConfigWrapper(realm);
-        String configuredProvider = pluginConfigWrapper.getGeoipDatabaseProvider();
+        PluginConfigWrapper pluginConfigWrapper = PluginConfigWrapper.of(session);
+        String configuredProvider = pluginConfigWrapper.getGeoIpDatabaseProvider();
         return session.getProvider(GeoIpProvider.class, configuredProvider);
     }
 }

@@ -33,7 +33,7 @@ public class IpDataProviderFactory extends ServerInfoAwareFactory implements Geo
 
     private IpdataService createClient(KeycloakSession keycloakSession) {
         log.trace("Creating new IpData client");
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(keycloakSession.getContext().getRealm());
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
 
         try {
             return Ipdata.builder()

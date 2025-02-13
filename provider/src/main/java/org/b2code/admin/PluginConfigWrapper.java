@@ -68,7 +68,6 @@ public class PluginConfigWrapper {
         return get(PluginConfigOptions.IPINFO_TOKEN);
     }
 
-    public int getGeoIpDatabaseCacheSize() {
     public String getIpDataApiKey() {
         return get(PluginConfigOptions.IPDATA_API_KEY);
     }
@@ -77,7 +76,7 @@ public class PluginConfigWrapper {
         return getBoolean(PluginConfigOptions.IPDATA_API_URL);
     }
 
-    public int getGeoipDatabaseCacheSize() {
+    public int getGeoIpDatabaseCacheSize() {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }
 

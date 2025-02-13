@@ -18,7 +18,6 @@ public class GeoIpInfo {
     private String country;
     private String countryIsoCode;
     private String continent;
-    private Integer confidence;
     private Double latitude;
     private Double longitude;
     private Integer accuracyRadius;

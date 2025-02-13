@@ -1,4 +1,4 @@
-package org.b2code.service.loginhistory;
+package org.b2code.loginhistory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

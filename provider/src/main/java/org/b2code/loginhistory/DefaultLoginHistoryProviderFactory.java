@@ -1,4 +1,4 @@
-package org.b2code.service.loginhistory;
+package org.b2code.loginhistory;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
@@ -31,7 +31,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
 
     @Override
     public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(session.getContext().getRealm());
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(session);
         Duration retentionTime = Duration.ofDays(pluginConfig.getLoginHistoryRetentionDays());
         int maxRecords = pluginConfig.getLoginHistoryMaxRecords();
         return new DefaultLoginHistoryProvider(session, retentionTime, maxRecords);

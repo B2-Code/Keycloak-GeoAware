@@ -21,7 +21,7 @@ public class ConditionActionAuthenticator implements Authenticator {
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        PluginConfigWrapper pluginConfigWrapper = new PluginConfigWrapper(context.getRealm());
+        PluginConfigWrapper pluginConfigWrapper = PluginConfigWrapper.of(context.getSession());
         if (!pluginConfigWrapper.isPluginEnabled()) {
             log.warnf("%s is disabled, but it is used in the '%s' flow", PluginConstants.PLUGIN_NAME, context.getTopLevelFlow().getAlias());
             context.success();

@@ -57,8 +57,4 @@ public class IpInfoProvider extends CachingGeoIpProvider {
         }
     }
 
-    @Override
-    public void close() {
-        // NOOP
-    }
 }

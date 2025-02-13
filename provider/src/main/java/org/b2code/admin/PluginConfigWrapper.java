@@ -7,6 +7,7 @@ import org.b2code.geoip.maxmind.MaxmindDatabase;
 import org.keycloak.Config;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
+import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.utils.StringUtil;
@@ -22,8 +23,17 @@ public class PluginConfigWrapper {
 
     private final RealmModel realm;
 
-    public PluginConfigWrapper(RealmModel realm) {
+    private PluginConfigWrapper(RealmModel realm) {
         this.realm = realm;
+    }
+
+    public static PluginConfigWrapper of(KeycloakSession session) {
+        RealmModel realm = session.getContext().getRealm();
+        return new PluginConfigWrapper(realm);
+    }
+
+    public static PluginConfigWrapper of(RealmModel realm) {
+        return new PluginConfigWrapper(realm);
     }
 
     public String get(ProviderConfigProperty property) {
@@ -34,7 +44,7 @@ public class PluginConfigWrapper {
         return getBoolean(PluginConfigOptions.ENABLED);
     }
 
-    public String getGeoipDatabaseProvider() {
+    public String getGeoIpDatabaseProvider() {
         return get(PluginConfigOptions.GEOIP_PROVIDER);
     }
 
@@ -58,6 +68,7 @@ public class PluginConfigWrapper {
         return get(PluginConfigOptions.IPINFO_TOKEN);
     }
 
+    public int getGeoIpDatabaseCacheSize() {
     public String getIpDataApiKey() {
         return get(PluginConfigOptions.IPDATA_API_KEY);
     }
@@ -70,7 +81,7 @@ public class PluginConfigWrapper {
         return getInt(PluginConfigOptions.GEOIP_CACHE_SIZE);
     }
 
-    public int getGeoipDatabaseCacheHours() {
+    public int getGeoIpDatabaseCacheHours() {
         return getInt(PluginConfigOptions.GEOIP_CACHE_HOURS);
     }
 

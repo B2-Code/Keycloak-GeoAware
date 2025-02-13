@@ -29,7 +29,7 @@ public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory imp
 
     @Override
     public void close() {
-
+        INSTANCE.invalidateAll();
     }
 
     @Override

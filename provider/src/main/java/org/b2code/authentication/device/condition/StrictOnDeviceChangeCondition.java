@@ -2,8 +2,8 @@ package org.b2code.authentication.device.condition;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
-import org.b2code.service.loginhistory.LoginHistoryProvider;
-import org.b2code.service.loginhistory.LoginRecord;
+import org.b2code.loginhistory.LoginHistoryProvider;
+import org.b2code.loginhistory.LoginRecord;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.account.DeviceRepresentation;

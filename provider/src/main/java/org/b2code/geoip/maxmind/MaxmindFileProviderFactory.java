@@ -33,7 +33,7 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
 
     private DatabaseReader createReader(KeycloakSession keycloakSession) {
         log.trace("Creating new Maxmind file reader");
-        PluginConfigWrapper pluginConfig = new PluginConfigWrapper(keycloakSession.getContext().getRealm());
+        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
         String databasePath = pluginConfig.getMaxmindDatabaseFilePath();
 
         File database;

@@ -1,7 +1,6 @@
 package org.b2code.geoip.maxmind;
 
 import com.google.auto.service.AutoService;
-import com.google.common.base.Stopwatch;
 import com.maxmind.geoip2.DatabaseReader;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
@@ -43,23 +42,14 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
             log.errorf("No Maxmind database file found at '%s'", databasePath, e);
             return null;
         }
-
-        DatabaseReader newReader;
-        Stopwatch stopwatch = Stopwatch.createStarted();
         try {
-            newReader = new DatabaseReader.Builder(database).build();
+            DatabaseReader newReader = new DatabaseReader.Builder(database).build();
+            log.infof("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+            return newReader;
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;
         }
-
-        log.debugf("Maxmind database reader created in %s", stopwatch.stop());
-        if (!newReader.getMetadata().getDatabaseType().contains("City")) {
-            log.error("Maxmind database is not a City database");
-            return null;
-        }
-        log.infof("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
-        return newReader;
     }
 
     @Override

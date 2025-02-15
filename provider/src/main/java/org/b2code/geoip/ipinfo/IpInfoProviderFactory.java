@@ -2,6 +2,7 @@ package org.b2code.geoip.ipinfo;
 
 import com.google.auto.service.AutoService;
 import io.ipinfo.api.IPinfo;
+import io.ipinfo.api.cache.NoCache;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
 import org.b2code.admin.PluginConfigWrapper;
@@ -35,6 +36,7 @@ public class IpInfoProviderFactory extends ServerInfoAwareFactory implements Geo
         return new IPinfo
                 .Builder()
                 .setToken(pluginConfig.getIpInfoToken())
+                .setCache(new NoCache())
                 .build();
     }
 

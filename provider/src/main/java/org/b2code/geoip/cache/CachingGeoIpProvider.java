@@ -10,6 +10,8 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.tracing.TracingProvider;
 import org.keycloak.tracing.TracingProviderUtil;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Optional;
 
 @JBossLog
@@ -34,6 +36,10 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
     }
 
     private GeoIpInfo getTraced(String ip) {
+        if (!shouldLookupIp(ip)) {
+            log.debugf("Skipping IP lookup for local or loopback address '%s'", ip);
+            return getEmptyGeoIpInfo(ip);
+        }
         Optional<GeoIpInfo> cachedGeoIpInfo = cacheProvider.get(session, ip);
         tracingProvider.getCurrentSpan().setAttribute("cache.hit", cachedGeoIpInfo.isPresent());
         if (cachedGeoIpInfo.isPresent()) {
@@ -41,9 +47,18 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
             return cachedGeoIpInfo.get();
         }
         log.tracef("Cache miss for '%s'", ip);
-        GeoIpInfo geoIpInfo = getIpInfoImpl(ip);
-        cacheProvider.put(session, ip, geoIpInfo);
-        return geoIpInfo;
+        Optional<GeoIpInfo> geoIpInfo = getIpInfoImpl(ip);
+        geoIpInfo.ifPresent(info -> cacheProvider.put(session, ip, info));
+        return geoIpInfo.orElseGet(() -> getEmptyGeoIpInfo(ip));
+    }
+
+    private boolean shouldLookupIp(String ip) {
+        InetAddress inetAddress = getInetAddress(ip);
+        return null != inetAddress && !inetAddress.isSiteLocalAddress() && !inetAddress.isLoopbackAddress();
+    }
+
+    private GeoIpInfo getEmptyGeoIpInfo(String ip) {
+        return GeoIpInfo.builder().ip(ip).build();
     }
 
     /**
@@ -60,7 +75,16 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
         }
     }
 
-    protected abstract GeoIpInfo getIpInfoImpl(@NotNull String ipAddress);
+    protected InetAddress getInetAddress(String ipAddress) {
+        try {
+            return InetAddress.getByName(ipAddress);
+        } catch (UnknownHostException e) {
+            log.errorf("Failed to resolve IP address '%s'", ipAddress, e);
+            return null;
+        }
+    }
+
+    protected abstract Optional<GeoIpInfo> getIpInfoImpl(@NotNull String ipAddress);
 
     @Override
     public void close() {

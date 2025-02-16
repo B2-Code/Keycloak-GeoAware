@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.representations.idm.*;
+import org.keycloak.testframework.mail.MailServer;
+import org.keycloak.testframework.mail.annotations.InjectMailServer;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,9 @@ import java.util.Map;
 abstract class BaseAuthenticatorProviderTest extends BaseTest {
 
     private static final String FLOW_ALIAS = "test-flow";
+
+    @InjectMailServer
+    MailServer mailServer;
 
     @BeforeEach
     void setupFlow() {

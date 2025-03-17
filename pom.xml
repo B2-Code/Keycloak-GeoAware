@@ -25,7 +25,7 @@
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.1</version.validation-api>
 
-        <version.junit>5.11.4</version.junit>
+        <version.junit>5.12.1</version.junit>
         <version.restassured>5.5.0</version.restassured>
         <version.jboss.slf4j-logmanager>2.0.1.Final</version.jboss.slf4j-logmanager>
         <version.jacoco-maven-plugin>0.8.12</version.jacoco-maven-plugin>

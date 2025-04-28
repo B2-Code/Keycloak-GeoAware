@@ -18,7 +18,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.keycloak>26.1.2</version.keycloak>
+        <version.keycloak>26.2.1</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
         <version.ipinfo>3.0.0</version.ipinfo>
         <version.lombok>1.18.36</version.lombok>

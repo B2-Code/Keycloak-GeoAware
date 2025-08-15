@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        keycloak_version: [ 26.1.0, 26.1.1, 26.1.2 ]
+        keycloak_version: [ 26.3.0, 26.3.1, 26.3.2 ]
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4

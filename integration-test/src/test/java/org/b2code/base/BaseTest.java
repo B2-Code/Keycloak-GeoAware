@@ -2,8 +2,6 @@ package org.b2code.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nimbusds.oauth2.sdk.AuthorizationResponse;
-import com.nimbusds.oauth2.sdk.TokenResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.PluginConstants;
 import org.b2code.config.RealmAConfig;
@@ -15,17 +13,13 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.annotations.InjectUser;
 import org.keycloak.testframework.injection.LifeCycle;
-import org.keycloak.testframework.oauth.nimbus.OAuthClient;
-import org.keycloak.testframework.oauth.nimbus.annotations.InjectOAuthClient;
+import org.keycloak.testframework.oauth.OAuthClient;
+import org.keycloak.testframework.oauth.annotations.InjectOAuthClient;
 import org.keycloak.testframework.realm.ManagedRealm;
 import org.keycloak.testframework.realm.ManagedUser;
-import org.keycloak.testframework.ui.annotations.InjectPage;
-import org.keycloak.testframework.ui.annotations.InjectWebDriver;
-import org.keycloak.testframework.ui.page.LoginPage;
-import org.openqa.selenium.WebDriver;
+import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
+import org.keycloak.testsuite.util.oauth.AuthorizationEndpointResponse;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,12 +32,6 @@ public abstract class BaseTest {
 
     @InjectOAuthClient
     protected OAuthClient oAuthClient;
-
-    @InjectWebDriver
-    protected WebDriver webDriver;
-
-    @InjectPage
-    protected LoginPage loginPage;
 
     @InjectUser(config = TestUserConfig.class)
     protected ManagedUser user;
@@ -71,20 +59,20 @@ public abstract class BaseTest {
         realm.admin().users().get(user.getId()).logout();
     }
 
-    protected void login() throws Exception {
+    protected void login() {
         this.login(false);
     }
 
-    protected void loginAndExpectFail() throws Exception {
+    protected void loginAndExpectFail() {
         this.login(true);
     }
 
-    protected void loginFromIp(String ip) throws Exception {
+    protected void loginFromIp(String ip) {
         setMockIp(ip);
         login(false);
     }
 
-    protected void loginFromIpAndExpectFail(String ip) throws Exception {
+    protected void loginFromIpAndExpectFail(String ip) {
         setMockIp(ip);
         login(true);
     }
@@ -96,32 +84,24 @@ public abstract class BaseTest {
         realm.admin().update(realmRep);
     }
 
-    private void login(boolean expectFail) throws Exception {
+    private void login(boolean expectFail) {
         log.info("Logging in");
         log.info(expectFail ? "Expecting login to fail" : "Expecting login to succeed");
 
-        URL authorizationRequestURL = oAuthClient.authorizationRequest();
-        webDriver.navigate().to(authorizationRequestURL);
-        loginPage.fillLogin(user.getUsername(), user.getPassword());
-        loginPage.submit();
+        AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient.doLogin(user.getUsername(), user.getPassword());
 
         if (expectFail) {
-            Assertions.assertEquals(0, oAuthClient.getCallbacks().size());
+            Assertions.assertFalse(authorizationEndpointResponse.isRedirected());
             log.info("Login failed as expected");
             return;
         }
 
-        Assertions.assertEquals(1, oAuthClient.getCallbacks().size());
+        Assertions.assertTrue(authorizationEndpointResponse.isRedirected());
+        Assertions.assertNotNull(authorizationEndpointResponse.getCode());
 
-        URI callbackUri = oAuthClient.getCallbacks().removeFirst();
-
-        AuthorizationResponse authorizationResponse = AuthorizationResponse.parse(callbackUri);
-        Assertions.assertTrue(authorizationResponse.indicatesSuccess());
-        Assertions.assertNotNull(authorizationResponse.toSuccessResponse().getAuthorizationCode());
-
-        TokenResponse tokenResponse = oAuthClient.tokenRequest(authorizationResponse.toSuccessResponse().getAuthorizationCode());
-        Assertions.assertTrue(tokenResponse.indicatesSuccess());
-        Assertions.assertNotNull(tokenResponse.toSuccessResponse().getTokens().getAccessToken());
+        AccessTokenResponse accessTokenResponse = oAuthClient.doAccessTokenRequest(authorizationEndpointResponse.getCode());
+        Assertions.assertTrue(accessTokenResponse.isSuccess());
+        Assertions.assertNotNull(accessTokenResponse.getAccessToken());
 
         log.info("Login successful");
     }

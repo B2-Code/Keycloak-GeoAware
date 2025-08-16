@@ -91,7 +91,7 @@ public abstract class BaseTest {
         AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient.doLogin(user.getUsername(), user.getPassword());
 
         if (expectFail) {
-            Assertions.assertFalse(authorizationEndpointResponse.isRedirected());
+            Assertions.assertNull(authorizationEndpointResponse.getCode());
             log.info("Login failed as expected");
             return;
         }

@@ -72,6 +72,13 @@
             <artifactId>jakarta.validation-api</artifactId>
             <version>${version.validation-api}</version>
         </dependency>
+
+        <!-- Apache Commons Compress -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${version.apache-commons-compress}</version>
+        </dependency>
     </dependencies>
 
     <build>

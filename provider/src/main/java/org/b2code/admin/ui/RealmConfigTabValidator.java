@@ -6,6 +6,7 @@ import org.b2code.PluginConstants;
 import org.b2code.admin.PluginConfigOptions;
 import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.ipinfo.IpInfoProviderFactory;
+import org.b2code.geoip.maxmind.MaxmindFileAutodownloadProviderFactory;
 import org.b2code.geoip.maxmind.MaxmindFileProviderFactory;
 import org.b2code.geoip.maxmind.MaxmindWebServiceProviderFactory;
 import org.keycloak.component.ComponentModel;
@@ -67,6 +68,10 @@ public class RealmConfigTabValidator {
                 helper.checkRequired(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
                 helper.checkRequired(PluginConfigOptions.MAXMIND_LICENSE_KEY);
                 helper.checkRequired(PluginConfigOptions.MAXMIND_WEB_DATABASE);
+
+            } else if (model.get(PluginConfigOptions.GEOIP_PROVIDER.getName()).equals(MaxmindFileAutodownloadProviderFactory.PROVIDER_ID)){
+                helper.checkRequired(PluginConfigOptions.MAXMIND_ACCOUNT_ID);
+                helper.checkRequired(PluginConfigOptions.MAXMIND_LICENSE_KEY);
             } else if (model.get(PluginConfigOptions.GEOIP_PROVIDER.getName()).equals(IpInfoProviderFactory.PROVIDER_ID)) {
                 helper.checkRequired(PluginConfigOptions.IPINFO_TOKEN);
             } else {

@@ -25,6 +25,7 @@
         <version.auto-service>1.1.1</version.auto-service>
         <version.validation-api>3.1.1</version.validation-api>
         <version.apache-commons-compress>1.28.0</version.apache-commons-compress>
+        <version.apache-commons-lang>3.18.0</version.apache-commons-lang>
 
         <version.junit>5.11.4</version.junit>
         <version.restassured>5.5.1</version.restassured>

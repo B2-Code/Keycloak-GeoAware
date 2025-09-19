@@ -20,7 +20,11 @@ public class LoginTrackerEventListenerProvider implements EventListenerProvider 
         if (EventType.LOGIN == event.getType()) {
             if (PluginConfigWrapper.of(session).isPluginEnabled()) {
                 log.debug("Tracking login event");
-                session.getProvider(LoginHistoryProvider.class).track();
+                try {
+                    session.getProvider(LoginHistoryProvider.class).track();
+                } catch (Exception e) {
+                    log.error("Failed to track login event", e);
+                }
             } else {
                 log.debug("Login tracking is disabled for realm " + event.getRealmName());
             }

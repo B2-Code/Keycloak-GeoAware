@@ -19,6 +19,9 @@ public abstract class MaxmindProvider extends CachingGeoIpProvider {
 
     protected MaxmindProvider(KeycloakSession session, GeoIp2Provider geoIpProvider) {
         super(session);
+        if (geoIpProvider == null) {
+            throw new RuntimeException("GeoIp2Provider is not initialized");
+        }
         this.geoIpProvider = geoIpProvider;
     }
 

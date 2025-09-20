@@ -18,7 +18,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.keycloak>26.1.2</version.keycloak>
+        <version.keycloak>26.3.4</version.keycloak>
         <version.geoip2>4.2.1</version.geoip2>
         <version.ipinfo>3.0.0</version.ipinfo>
         <version.lombok>1.18.36</version.lombok>
@@ -27,7 +27,7 @@
         <version.apache-commons-compress>1.28.0</version.apache-commons-compress>
         <version.apache-commons-lang>3.18.0</version.apache-commons-lang>
 
-        <version.junit>5.11.4</version.junit>
+        <version.junit>5.13.4</version.junit>
         <version.restassured>5.5.1</version.restassured>
         <version.jboss.slf4j-logmanager>2.0.1.Final</version.jboss.slf4j-logmanager>
         <version.jacoco-maven-plugin>0.8.12</version.jacoco-maven-plugin>

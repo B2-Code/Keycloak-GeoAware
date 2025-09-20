@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Integration Tests [dev]" type="JUnit" factoryName="JUnit">
-    <module name="integration-test" />
+    <module name="keycloak-geoaware-integration-test" />
     <shortenClasspath name="ARGS_FILE" />
     <option name="ALTERNATIVE_JRE_PATH" value="21" />
     <option name="PACKAGE_NAME" value="" />

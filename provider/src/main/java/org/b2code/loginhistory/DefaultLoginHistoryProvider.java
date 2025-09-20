@@ -45,7 +45,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         this.retentionTime = retentionTime;
         this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
-        this.geoipProvider = GeoIpProviderFactory.getProvider(session);
+        this.geoipProvider = session.getProvider(GeoIpProvider.class);
         this.loginRecords = getLoginRecords();
     }
 
@@ -68,7 +68,7 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
     public boolean isKnownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        GeoIpProvider provider = GeoIpProviderFactory.getProvider(session);
+        GeoIpProvider provider =  session.getProvider(GeoIpProvider.class);
         GeoIpInfo ipInfo = provider.getIpInfo(ip);
         return getHistoryStream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
     }

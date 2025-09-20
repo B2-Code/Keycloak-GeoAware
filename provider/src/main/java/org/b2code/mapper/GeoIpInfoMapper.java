@@ -5,7 +5,6 @@ import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.GeoIpProvider;
-import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
@@ -35,7 +34,7 @@ public class GeoIpInfoMapper extends AbstractOIDCProtocolMapper implements AllTo
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
         log.tracef("Mapping GeoIp info to claim '%s'", mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME));
-        GeoIpProvider geoipProvider = GeoIpProviderFactory.getProvider(keycloakSession);
+        GeoIpProvider geoipProvider = keycloakSession.getProvider(GeoIpProvider.class);
         GeoIpInfo geoIpInfo = geoipProvider.getIpInfo(userSession.getIpAddress());
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, geoIpInfo);
     }

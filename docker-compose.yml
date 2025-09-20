@@ -18,7 +18,7 @@ services:
       KC_LOG_CONSOLE_INCLUDE_TRACE: 'false'
       KC_SPI_GEOAWARE_GLOBAL_ENABLED: 'true'
       KC_SPI_GEOAWARE_REALM_MASTER_ENABLED: 'false'
-    command: [ 'start-dev', '--debug', '--db', 'postgres', '--features', 'opentelemetry,declarative-ui', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
+    command: [ 'start-dev', '--debug', '--verbose', '--db', 'postgres', '--features', 'opentelemetry,declarative-ui', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
     ports:
       - "8080:8080"
       - "8443:8443"

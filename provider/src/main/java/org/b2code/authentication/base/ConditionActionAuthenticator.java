@@ -2,8 +2,6 @@ package org.b2code.authentication.base;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.PluginConstants;
-import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.authentication.base.action.AuthenticatorAction;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
@@ -21,13 +19,6 @@ public class ConditionActionAuthenticator implements Authenticator {
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        PluginConfigWrapper pluginConfigWrapper = PluginConfigWrapper.of(context.getSession());
-        if (!pluginConfigWrapper.isPluginEnabled()) {
-            log.warnf("%s is disabled, but it is used in the '%s' flow", PluginConstants.PLUGIN_NAME, context.getTopLevelFlow().getAlias());
-            context.success();
-            return;
-        }
-
         ConditionActionAuthenticatorConfig config = new ConditionActionAuthenticatorConfig(context.getAuthenticatorConfig());
 
         if (config.getCondition().check(session)) {

@@ -17,9 +17,9 @@ public class MaxmindWebserviceServerConfig extends ServerConfig {
             throw new IllegalStateException("MAXMIND_ACCOUNT_ID and MAXMIND_LICENSE_KEY must be set as environment variables");
         }
         Map<String, String> options = new HashMap<>();
-        options.put("spi-geoaware-global-geoip-provider", PROVIDER_ID);
-        options.put("spi-geoaware-global-maxmind-account-id", ACCOUNT_ID);
-        options.put("spi-geoaware-global-maxmind-license-key", LICENSE_KEY);
+        options.put("spi-geoaware-geoip--provider", PROVIDER_ID);
+        options.put("spi-geoaware-geoip--maxmind-webservice--account-id", ACCOUNT_ID);
+        options.put("spi-geoaware-geoip--maxmind-webservice--license-key", LICENSE_KEY);
         return options;
     }
 }

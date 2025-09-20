@@ -13,7 +13,7 @@ import java.net.InetAddress;
 import java.util.Optional;
 
 @JBossLog
-public abstract class MaxmindProvider extends CachingGeoIpProvider {
+public class MaxmindProvider extends CachingGeoIpProvider {
 
     private final GeoIp2Provider geoIpProvider;
 

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.GeoIpInfo;
+import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 
 import java.util.HashMap;
@@ -20,6 +21,9 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
     private final Map<String, Cache<String, GeoIpInfo>> perRealmCache = new HashMap<>();
 
     private Cache<String, GeoIpInfo> createCache(KeycloakSession session) {
+
+        Config.scope("")
+
         PluginConfigWrapper config = PluginConfigWrapper.of(session);
         log.debugf("Creating cache with size %d and expiration after %d hours", config.getGeoIpDatabaseCacheSize(), config.getGeoIpDatabaseCacheHours());
         return CacheBuilder.newBuilder()

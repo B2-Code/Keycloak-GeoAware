@@ -21,7 +21,7 @@ public class SendIpWarningEmailAction implements AuthenticatorAction {
 
     @Override
     public void execute(KeycloakSession session, AuthenticationFlowContext context) {
-        GeoIpProvider geoipProvider = GeoIpProviderFactory.getProvider(session);
+        GeoIpProvider geoipProvider = session.getProvider(GeoIpProvider.class);
         DeviceRepresentationProvider userAgentParserProvider = session.getProvider(DeviceRepresentationProvider.class);
         String ip = session.getContext().getConnection().getRemoteAddr();
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();

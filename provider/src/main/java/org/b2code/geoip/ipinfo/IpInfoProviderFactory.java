@@ -5,7 +5,6 @@ import io.ipinfo.api.IPinfo;
 import io.ipinfo.api.cache.NoCache;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.ServerInfoAwareFactory;
-import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.GeoIpProvider;
 import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.Config;
@@ -18,36 +17,35 @@ public class IpInfoProviderFactory extends ServerInfoAwareFactory implements Geo
 
     public static final String PROVIDER_ID = "ipinfo-webservice";
 
+    private static final String IPINFO_TOKEN_CONFIG_PARM = "token";
+
+    private Config.Scope config;
+
     private IPinfo client;
 
     @Override
     public GeoIpProvider create(KeycloakSession session) {
         log.tracef("Creating new %s", IpInfoProvider.class.getSimpleName());
-        if (client == null) {
-            client = createClient(session);
-        }
         return new IpInfoProvider(session, client);
     }
 
-    private IPinfo createClient(KeycloakSession keycloakSession) {
+    private IPinfo createClient() {
         log.trace("Creating new IpInfo file reader");
-        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
-
         return new IPinfo
                 .Builder()
-                .setToken(pluginConfig.getIpInfoToken())
+                .setToken(config.get(IPINFO_TOKEN_CONFIG_PARM))
                 .setCache(new NoCache())
                 .build();
     }
 
     @Override
     public void init(Config.Scope config) {
-        // NOOP
+        this.config = config;
     }
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-        // NOOP
+        client = createClient();
     }
 
     @Override

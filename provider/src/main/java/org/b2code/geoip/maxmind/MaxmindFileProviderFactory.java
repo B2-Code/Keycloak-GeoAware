@@ -2,11 +2,9 @@ package org.b2code.geoip.maxmind;
 
 import com.google.auto.service.AutoService;
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.GeoIp2Provider;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.ServerInfoAwareFactory;
-import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.GeoIpProviderFactory;
-import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
@@ -15,25 +13,20 @@ import java.io.IOException;
 
 @JBossLog
 @AutoService(GeoIpProviderFactory.class)
-public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implements GeoIpProviderFactory {
+public class MaxmindFileProviderFactory extends MaxmindProviderFactory {
 
     public static final String PROVIDER_ID = "maxmind-file";
 
-    private DatabaseReader reader;
-
     @Override
-    public MaxmindFileProvider create(KeycloakSession keycloakSession) {
-        log.tracef("Creating new %s", MaxmindFileProvider.class.getSimpleName());
-        if (reader == null) {
-            reader = createReader(keycloakSession);
-        }
-        return new MaxmindFileProvider(keycloakSession, reader);
+    public MaxmindProvider create(KeycloakSession keycloakSession) {
+        log.tracef("Creating new %s", MaxmindProvider.class.getSimpleName());
+        return new MaxmindProvider(keycloakSession, reader);
     }
 
-    private DatabaseReader createReader(KeycloakSession keycloakSession) {
+    @Override
+    public GeoIp2Provider createReader() {
         log.trace("Creating new Maxmind file reader");
-        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(keycloakSession);
-        String databasePath = pluginConfig.getMaxmindDatabaseFilePath();
+        String databasePath = getDbPath();
 
         File database;
         try {
@@ -49,26 +42,6 @@ public class MaxmindFileProviderFactory extends ServerInfoAwareFactory implement
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);
             return null;
-        }
-    }
-
-    @Override
-    public void init(Config.Scope scope) {
-    }
-
-    @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-
-    }
-
-    @Override
-    public void close() {
-        try {
-            if (this.reader != null) {
-                this.reader.close();
-            }
-        } catch (IOException e) {
-            log.warn("Failed to close Maxmind database reader", e);
         }
     }
 

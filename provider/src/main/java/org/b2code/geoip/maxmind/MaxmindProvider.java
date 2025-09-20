@@ -13,12 +13,15 @@ import java.net.InetAddress;
 import java.util.Optional;
 
 @JBossLog
-public abstract class MaxmindProvider extends CachingGeoIpProvider {
+public class MaxmindProvider extends CachingGeoIpProvider {
 
     private final GeoIp2Provider geoIpProvider;
 
     protected MaxmindProvider(KeycloakSession session, GeoIp2Provider geoIpProvider) {
         super(session);
+        if (geoIpProvider == null) {
+            throw new RuntimeException("GeoIp2Provider is not initialized");
+        }
         this.geoIpProvider = geoIpProvider;
     }
 

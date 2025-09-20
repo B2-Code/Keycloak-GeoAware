@@ -2,7 +2,6 @@ package org.b2code.loginhistory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.admin.PluginConfigWrapper;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventType;
@@ -18,15 +17,11 @@ public class LoginTrackerEventListenerProvider implements EventListenerProvider 
     @Override
     public void onEvent(Event event) {
         if (EventType.LOGIN == event.getType()) {
-            if (PluginConfigWrapper.of(session).isPluginEnabled()) {
-                log.debug("Tracking login event");
-                try {
-                    session.getProvider(LoginHistoryProvider.class).track();
-                } catch (Exception e) {
-                    log.error("Failed to track login event", e);
-                }
-            } else {
-                log.debug("Login tracking is disabled for realm " + event.getRealmName());
+            log.debug("Tracking login event");
+            try {
+                session.getProvider(LoginHistoryProvider.class).track();
+            } catch (Exception e) {
+                log.error("Failed to track login event", e);
             }
         }
     }

@@ -11,25 +11,38 @@ import org.keycloak.models.KeycloakSessionFactory;
 @AutoService(GeoIpCacheProviderFactory.class)
 public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory implements GeoIpCacheProviderFactory {
 
-    private static final DefaultGeoIpCacheProvider INSTANCE = new DefaultGeoIpCacheProvider();
+
+    private static final int DEFAULT_MAX_CACHE_ENTRIES = 1000;
+    private static final String MAX_CACHE_ENTRIES_CONFIG_PARM = "maxCacheEntries";
+
+    private static final int DEFAULT_EXPIRE_AFTER_ACCESS_HOURS = 6;
+    private static final String EXPIRE_AFTER_ACCESS_HOURS_CONFIG_PARM = "maxCacheHours";
+
+    private Config.Scope config;
+    private DefaultGeoIpCacheProvider instance;
+
 
     @Override
     public DefaultGeoIpCacheProvider create(KeycloakSession keycloakSession) {
-        return INSTANCE;
+        return instance;
     }
 
     @Override
     public void init(Config.Scope scope) {
+        this.config = scope;
     }
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-
+        int maxCacheEntries = config.getInt(MAX_CACHE_ENTRIES_CONFIG_PARM, DEFAULT_MAX_CACHE_ENTRIES);
+        int expireAfterAccessHours = config.getInt(EXPIRE_AFTER_ACCESS_HOURS_CONFIG_PARM, DEFAULT_EXPIRE_AFTER_ACCESS_HOURS);
+        instance = new DefaultGeoIpCacheProvider(maxCacheEntries, expireAfterAccessHours);
+        log.infof("Configured GeoIP cache with max entries: %d, expire after access hours: %d", maxCacheEntries, expireAfterAccessHours);
     }
 
     @Override
     public void close() {
-        INSTANCE.invalidateAll();
+        instance.invalidateAll();
     }
 
     @Override

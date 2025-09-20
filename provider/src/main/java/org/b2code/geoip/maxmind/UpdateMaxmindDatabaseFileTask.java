@@ -43,7 +43,7 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
     }
 
     public DatabaseReader getReader(){
-        return getUpdatedDatabaseReader(KeycloakSessionUtil.getKeycloakSession(), factory.createReader());
+        return getUpdatedDatabaseReader(KeycloakSessionUtil.getKeycloakSession(), null);
     }
 
     public DatabaseReader getUpdatedDatabaseReader(KeycloakSession session, DatabaseReader currentReader) {

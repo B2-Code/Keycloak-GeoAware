@@ -4,9 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.admin.PluginConfigWrapper;
 import org.b2code.geoip.GeoIpInfo;
-import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 
 import java.util.HashMap;
@@ -20,15 +18,14 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
 
     private final Map<String, Cache<String, GeoIpInfo>> perRealmCache = new HashMap<>();
 
+    private final int cacheSize;
+    private final int cacheHours;
+
     private Cache<String, GeoIpInfo> createCache(KeycloakSession session) {
-
-        Config.scope("")
-
-        PluginConfigWrapper config = PluginConfigWrapper.of(session);
-        log.debugf("Creating cache with size %d and expiration after %d hours", config.getGeoIpDatabaseCacheSize(), config.getGeoIpDatabaseCacheHours());
+        log.debugf("Creating cache with size %d and expiration after %d hours", cacheSize, cacheHours);
         return CacheBuilder.newBuilder()
-                .maximumSize(config.getGeoIpDatabaseCacheSize())
-                .expireAfterWrite(config.getGeoIpDatabaseCacheHours(), TimeUnit.HOURS)
+                .maximumSize(cacheSize)
+                .expireAfterWrite(cacheHours, TimeUnit.HOURS)
                 .build();
     }
 

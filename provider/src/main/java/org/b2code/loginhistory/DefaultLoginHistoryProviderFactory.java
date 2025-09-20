@@ -1,8 +1,8 @@
 package org.b2code.loginhistory;
 
 import com.google.auto.service.AutoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.admin.PluginConfigWrapper;
 import org.keycloak.Config;
 import org.keycloak.common.util.Environment;
 import org.keycloak.models.KeycloakSession;
@@ -23,22 +23,37 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @JBossLog
 @AutoService(LoginHistoryProviderFactory.class)
 public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
 
     private static final String USER_PROFILE_ATTRIBUTE_GROUP_NAME = "login-history";
 
+    private static final String LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM = "loginHistoryRetentionHours";
+    private static final int LOGIN_HISTORY_RETENTION_HOURS_DEFAULT = 24 * 7;
+
+    private static final String LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM = "loginHistoryMaxRecords";
+    private static final int LOGIN_HISTORY_MAX_RECORDS_DEFAULT = 10;
+
+    private Config.Scope config;
+
     @Override
     public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        PluginConfigWrapper pluginConfig = PluginConfigWrapper.of(session);
-        Duration retentionTime = Duration.ofDays(pluginConfig.getLoginHistoryRetentionDays());
-        int maxRecords = pluginConfig.getLoginHistoryMaxRecords();
-        return new DefaultLoginHistoryProvider(session, retentionTime, maxRecords);
+        return new DefaultLoginHistoryProvider(session, Duration.ofHours(getLoginHistoryRetentionHours()), getLoginHistoryMaxRecords());
     }
 
     @Override
     public void init(Config.Scope scope) {
+        this.config = scope;
+    }
+
+    private int getLoginHistoryMaxRecords() {
+        return config.getInt(LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM, LOGIN_HISTORY_MAX_RECORDS_DEFAULT);
+    }
+
+    private int getLoginHistoryRetentionHours() {
+        return config.getInt(LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM, LOGIN_HISTORY_RETENTION_HOURS_DEFAULT);
     }
 
     @Override

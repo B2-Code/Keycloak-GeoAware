@@ -4,7 +4,6 @@ import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.action.AuthenticatorAction;
 import org.b2code.geoip.GeoIpInfo;
 import org.b2code.geoip.GeoIpProvider;
-import org.b2code.geoip.GeoIpProviderFactory;
 import org.b2code.mail.EmailHelper;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.device.DeviceRepresentationProvider;
@@ -21,7 +20,7 @@ public class SendDeviceWarningEmailAction implements AuthenticatorAction {
 
     @Override
     public void execute(KeycloakSession session, AuthenticationFlowContext context) {
-        GeoIpProvider geoipProvider = GeoIpProviderFactory.getProvider(session);
+        GeoIpProvider geoipProvider = session.getProvider(GeoIpProvider.class);
         DeviceRepresentationProvider userAgentParserProvider = session.getProvider(DeviceRepresentationProvider.class);
         String ip = session.getContext().getConnection().getRemoteAddr();
         UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();

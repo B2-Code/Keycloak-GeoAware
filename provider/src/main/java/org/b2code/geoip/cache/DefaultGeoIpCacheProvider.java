@@ -21,7 +21,7 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
     private final int cacheSize;
     private final int cacheHours;
 
-    private Cache<String, GeoIpInfo> createCache(KeycloakSession session) {
+    private Cache<String, GeoIpInfo> createCache() {
         log.debugf("Creating cache with size %d and expiration after %d hours", cacheSize, cacheHours);
         return CacheBuilder.newBuilder()
                 .maximumSize(cacheSize)
@@ -35,7 +35,7 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
             return perRealmCache.get(realmId);
         } else {
             log.debugf("Creating cache for realm '%s'", realmId);
-            Cache<String, GeoIpInfo> cache = createCache(session);
+            Cache<String, GeoIpInfo> cache = createCache();
             perRealmCache.put(realmId, cache);
             return cache;
         }

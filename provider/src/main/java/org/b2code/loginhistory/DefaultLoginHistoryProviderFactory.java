@@ -30,10 +30,10 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
 
     private static final String USER_PROFILE_ATTRIBUTE_GROUP_NAME = "login-history";
 
-    private static final String LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM = "loginHistoryRetentionHours";
+    private static final String LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM = "retentionHours";
     private static final int LOGIN_HISTORY_RETENTION_HOURS_DEFAULT = 24 * 7;
 
-    private static final String LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM = "loginHistoryMaxRecords";
+    private static final String LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM = "maxRecords";
     private static final int LOGIN_HISTORY_MAX_RECORDS_DEFAULT = 10;
 
     private Config.Scope config;

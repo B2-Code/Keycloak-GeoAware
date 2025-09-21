@@ -7,9 +7,7 @@ import org.b2code.PluginConstants;
 import org.b2code.config.RealmAConfig;
 import org.b2code.config.TestUserConfig;
 import org.b2code.loginhistory.LoginRecord;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.keycloak.platform.Platform;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testframework.annotations.InjectRealm;
@@ -22,14 +20,9 @@ import org.keycloak.testframework.realm.ManagedUser;
 import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 import org.keycloak.testsuite.util.oauth.AuthorizationEndpointResponse;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 @Slf4j
 public abstract class BaseTest {
@@ -42,30 +35,6 @@ public abstract class BaseTest {
 
     @InjectUser(config = TestUserConfig.class)
     protected ManagedUser user;
-
-    @AfterAll
-    public static void afterClass() {
-        if (!Platform.getPlatform().getTmpDirectory().exists()) {
-            log.info("Keycloak tmp directory does not exist, skipping cleanup");
-            return;
-        }
-        log.info("Deleting temporary files in Keycloak tmp directory");
-        try (Stream<Path> files = Files.walk(Platform.getPlatform().getTmpDirectory().toPath())) {
-            files.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(file -> {
-                        boolean deleted = file.delete();
-                        if (!deleted) {
-                            log.warn("Could not delete temporary {}: {}", file.isDirectory() ? "directory" : "file", file.getAbsolutePath());
-                        } else {
-                            log.debug("Deleted temporary {}: {}", file.isDirectory() ? "directory" : "file", file.getAbsolutePath());
-                        }
-                    });
-            log.info("Temporary files have been deleted");
-        } catch (IOException e) {
-            log.error("Error while deleting temporary files", e);
-        }
-    }
 
     protected List<LoginRecord> getLoginRecords() {
         UserRepresentation userRep = realm.admin().users().get(user.getId()).toRepresentation();

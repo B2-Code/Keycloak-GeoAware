@@ -8,8 +8,12 @@ import org.b2code.geoip.GeoIpInfo;
 import org.infinispan.Cache;
 import org.keycloak.Config;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
+import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.provider.Provider;
+
+import java.util.Set;
 
 @JBossLog
 @AutoService(GeoIpCacheProviderFactory.class)
@@ -48,6 +52,11 @@ public class InfinispanGeoIpCacheProviderFactory extends ServerInfoAwareFactory 
     @Override
     public void close() {
         // NOOP
+    }
+
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(JpaConnectionProvider.class);
     }
 
     @Override

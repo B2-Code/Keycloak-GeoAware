@@ -14,6 +14,6 @@ public class InfinispanCacheServerConfig extends MaxmindGeoLiteFileServerConfig 
 
     @Override
     String cacheConfigFile() {
-        return "/geoip-cache-ispn.xml";
+        return "/embedded-infinispan-config/geoip-cache-ispn.xml";
     }
 }

@@ -69,18 +69,31 @@ public abstract class BaseTest {
 
     protected void loginFromIp(String ip) {
         setMockIp(ip);
-        login(false);
+        try {
+            login(false);
+        } finally {
+            setMockIp(null);
+        }
     }
 
     protected void loginFromIpAndExpectFail(String ip) {
         setMockIp(ip);
-        login(true);
+        try {
+            login(true);
+        } finally {
+            setMockIp(null);
+        }
     }
 
     private void setMockIp(String ip) {
         RealmRepresentation realmRep = realm.admin().toRepresentation();
         Map<String, String> attributes = realmRep.getAttributes();
-        attributes.put(PluginConstants.PLUGIN_NAME_LOWER_CASE + "-mock-ip", ip);
+        String attrName = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-mock-ip";
+        if (ip == null) {
+            attributes.remove(attrName);
+        } else {
+            attributes.put(attrName, ip);
+        }
         realm.admin().update(realmRep);
     }
 

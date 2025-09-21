@@ -13,6 +13,7 @@ public abstract class ServerConfig implements KeycloakServerConfig {
         Map<String, String> options = new HashMap<>();
         options.put("spi-geoaware-geoip-cache--default--max-cache-entries", "42");
         options.put("spi-geoaware-login-history--default--max-records", "5");
+        options.put("spi-geoaware-geoip-cache--provider", "default");
         options.putAll(getOptions());
         return keycloakServerConfigBuilder
                 .dependency("org.b2code", "keycloak-geoaware-provider")

@@ -15,7 +15,8 @@ public class IpInfoServerConfig extends ServerConfig {
             throw new IllegalStateException("IPINFO_TOKEN must be set as environment variable");
         }
         Map<String, String> options = new HashMap<>();
-        options.put("spi-geoaware-geoip--provider", PROVIDER_ID);
+        options.put("spi-geoaware-geoip--provider", "mock");
+        options.put("spi-geoaware-geoip--mock--provider", PROVIDER_ID);
         options.put("spi-geoaware-geoip--ipinfo-webservice--token", TOKEN);
         return options;
     }

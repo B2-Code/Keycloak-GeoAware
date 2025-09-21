@@ -26,13 +26,9 @@ public class MaxmindFileProviderFactory extends MaxmindProviderFactory {
     @Override
     public GeoIp2Provider createReader() {
         log.trace("Creating new Maxmind file reader");
-        String databasePath = getDbPath();
-
-        File database;
-        try {
-            database = new File(databasePath);
-        } catch (NullPointerException e) {
-            log.errorf("No Maxmind database file found at '%s'", databasePath, e);
+        File database = findMmdbFile();
+        if (database == null || !database.exists() || !database.canRead()) {
+            log.errorf("Maxmind database file not found or not readable at path: %s", getDbPath());
             return null;
         }
         try {

@@ -32,7 +32,6 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
     public static final String TASK_NAME = UpdateMaxmindDatabaseFileTask.class.getSimpleName();
 
-    private static final String MMDB_FILE_SUFFIX = ".mmdb";
     private static final String MMDB_FILE_NAME = "maxmind-db";
 
     private final MaxmindFileAutodownloadProviderFactory factory;
@@ -86,7 +85,7 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
     private Optional<DatabaseReader> updateDatabase(KeycloakSession session, String accountId, String licenseKey) {
         try {
-            Path tempFile = Files.createTempFile(MMDB_FILE_NAME, MMDB_FILE_SUFFIX);
+            Path tempFile = Files.createTempFile(MMDB_FILE_NAME, MaxmindProviderFactory.MMDB_FILE_EXTENSION);
             if (downloadDatabase(session, accountId, licenseKey, tempFile)) {
                 DatabaseReader reader = extractDatabase(tempFile);
                 Files.delete(tempFile);
@@ -150,8 +149,8 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
             // Find the .mmdb file in the archive
             while (tarInput.getNextEntry() != null) {
-                if (tarInput.getCurrentEntry().getName().endsWith(MMDB_FILE_SUFFIX)) {
-                    Path dbPath = Path.of(factory.getDbPath() + File.separator + MMDB_FILE_NAME + MMDB_FILE_SUFFIX);
+                if (tarInput.getCurrentEntry().getName().endsWith(MaxmindProviderFactory.MMDB_FILE_EXTENSION)) {
+                    Path dbPath = Path.of(factory.getDbPath() + File.separator + MMDB_FILE_NAME + MaxmindProviderFactory.MMDB_FILE_EXTENSION);
                     Files.createDirectories(dbPath.getParent());
                     Files.copy(tarInput, dbPath, StandardCopyOption.REPLACE_EXISTING);
                     return new DatabaseReader.Builder(dbPath.toFile()).build();

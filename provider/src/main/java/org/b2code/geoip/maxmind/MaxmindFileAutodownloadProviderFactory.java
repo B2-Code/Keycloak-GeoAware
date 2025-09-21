@@ -23,7 +23,6 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
     private static final String MAXMIND_DB_DOWNLOAD_URL_CONFIG_PARAM = "downloadUrl";
     private static final String MAXMIND_DB_DOWNLOAD_URL_DEFAULT = "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz";
 
-
     private final UpdateMaxmindDatabaseFileTask TASK_INSTANCE = new UpdateMaxmindDatabaseFileTask(this);
 
     @Override
@@ -45,7 +44,7 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
         KeycloakSession keycloakSession = keycloakSessionFactory.create();
         TimerProvider timer = keycloakSession.getProvider(TimerProvider.class);
         timer.scheduleTask(TASK_INSTANCE, Duration.ofHours(getUpdateIntervalHours()).toMillis());
-        log.infof("Scheduled Maxmind database update task to run every %d hours", DB_UPDATE_INTERVAL_HOURS_DEFAULT);
+                log.infof("Scheduled Maxmind database update task to run every %d hours", getUpdateIntervalHours());
         TASK_INSTANCE.run(keycloakSession);
     }
 

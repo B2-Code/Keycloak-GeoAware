@@ -42,11 +42,11 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+        super.postInit(keycloakSessionFactory);
         KeycloakSession keycloakSession = keycloakSessionFactory.create();
         TimerProvider timer = keycloakSession.getProvider(TimerProvider.class);
         timer.scheduleTask(TASK_INSTANCE, Duration.ofHours(getUpdateIntervalHours()).toMillis());
         log.infof("Scheduled Maxmind database update task to run every %d hours", getUpdateIntervalHours());
-        TASK_INSTANCE.run(keycloakSession);
     }
 
     @Override

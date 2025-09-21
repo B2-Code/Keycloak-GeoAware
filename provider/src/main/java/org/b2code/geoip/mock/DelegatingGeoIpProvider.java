@@ -21,6 +21,8 @@ public class DelegatingGeoIpProvider implements GeoIpProvider {
 
     @Override
     public void close() {
-        delegate.close();
+        if (delegate != null) {
+            delegate.close();
+        }
     }
 }

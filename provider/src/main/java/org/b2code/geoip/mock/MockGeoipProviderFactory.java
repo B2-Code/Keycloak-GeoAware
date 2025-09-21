@@ -23,22 +23,27 @@ public class MockGeoipProviderFactory implements GeoIpProviderFactory {
 
     private Config.Scope config;
     private GeoIpProvider provider;
+    private GeoIpProviderFactory factory;
 
     @Override
     public GeoIpProvider create(KeycloakSession keycloakSession) {
         if (!Environment.isDevMode()) {
             throw new IllegalStateException("The 'mock' GeoIP provider can only be used in dev mode");
         }
-        if (provider == null) {
-            log.warnf("Using '%s' GeoIP provider. This should only be used for development and testing purposes.", PROVIDER_ID);
-            String providerName = config.get(PROVIDER_IMPL_NAME_CONFIG_PARM);
-            log.infof("Using provider: %s", providerName);
-            GeoIpProviderFactory factory = getProviderFactory(providerName);
-            if (factory != null) {
-                factory.init(Config.scope("geoaware-geoip--" + providerName));
-                factory.postInit(keycloakSession.getKeycloakSessionFactory());
-                provider = factory.create(keycloakSession);
+        log.warnf("Using '%s' GeoIP provider. This should only be used for development and testing purposes.", PROVIDER_ID);
+        String providerName = config.get(PROVIDER_IMPL_NAME_CONFIG_PARM);
+        if (factory == null) {
+            GeoIpProviderFactory newFactory = getProviderFactory(providerName);
+            if (newFactory == null) {
+                throw new IllegalStateException("No GeoIP provider factory found for name: " + providerName);
             }
+            newFactory.init(Config.scope("geoaware-geoip--" + providerName));
+            newFactory.postInit(keycloakSession.getKeycloakSessionFactory());
+            this.factory = newFactory;
+        }
+        if (provider == null) {
+            log.infof("Using provider: %s", providerName);
+            this.provider = factory.create(keycloakSession);
         }
         String mockIp = keycloakSession.getContext().getRealm().getAttribute(PluginConstants.PLUGIN_NAME_LOWER_CASE + "-mock-ip");
         if (mockIp != null) {
@@ -80,7 +85,9 @@ public class MockGeoipProviderFactory implements GeoIpProviderFactory {
 
     @Override
     public void close() {
-
+        if (factory != null) {
+            factory.close();
+        }
     }
 
     @Override

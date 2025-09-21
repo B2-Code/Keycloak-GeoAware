@@ -7,7 +7,6 @@ import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.timer.TimerProvider;
-import org.keycloak.utils.KeycloakSessionUtil;
 
 import java.time.Duration;
 
@@ -52,13 +51,6 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
     @Override
     public DatabaseReader createReader() {
         return TASK_INSTANCE.getReader();
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        TimerProvider timer = KeycloakSessionUtil.getKeycloakSession().getProvider(TimerProvider.class);
-        timer.cancelTask(TASK_INSTANCE.getTaskName());
     }
 
     @Override

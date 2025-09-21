@@ -18,6 +18,7 @@ public abstract class ServerConfig implements KeycloakServerConfig {
         String cacheConfigFile = cacheConfigFile();
         if (cacheConfigFile != null) {
             keycloakServerConfigBuilder.cacheConfigFile(cacheConfigFile);
+            options.put("cache", "ispn");
         }
         return keycloakServerConfigBuilder
                 .dependency("org.b2code", "keycloak-geoaware-provider")

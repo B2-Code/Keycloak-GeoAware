@@ -40,6 +40,6 @@ public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
 
     @Override
     public void close() {
-        // No action performed on close
+        // NOOP
     }
 }

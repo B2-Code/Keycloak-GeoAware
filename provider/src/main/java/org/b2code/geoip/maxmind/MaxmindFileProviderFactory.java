@@ -6,7 +6,6 @@ import com.maxmind.geoip2.GeoIp2Provider;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakSessionFactory;
 
 import java.io.File;
 import java.io.IOException;

@@ -23,6 +23,7 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
     private static final String MAXMIND_DB_DOWNLOAD_URL_CONFIG_PARAM = "downloadUrl";
     private static final String MAXMIND_DB_DOWNLOAD_URL_DEFAULT = "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz";
 
+
     private final UpdateMaxmindDatabaseFileTask TASK_INSTANCE = new UpdateMaxmindDatabaseFileTask(this);
 
     @Override

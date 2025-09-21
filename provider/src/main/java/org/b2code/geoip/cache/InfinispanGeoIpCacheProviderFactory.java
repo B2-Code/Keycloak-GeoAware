@@ -45,6 +45,12 @@ public class InfinispanGeoIpCacheProviderFactory extends ServerInfoAwareFactory 
         log.debugf("Using config: %s", cache.getCacheConfiguration().toString());
     }
 
+
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(InfinispanConnectionProvider.class, JpaConnectionProvider.class);
+    }
+
     private String getCacheName() {
         return config.get(CACHE_NAME_CONFIG_PARM, DEFAULT_CACHE_NAME);
     }
@@ -52,11 +58,6 @@ public class InfinispanGeoIpCacheProviderFactory extends ServerInfoAwareFactory 
     @Override
     public void close() {
         // NOOP
-    }
-
-    @Override
-    public Set<Class<? extends Provider>> dependsOn() {
-        return Set.of(JpaConnectionProvider.class);
     }
 
     @Override

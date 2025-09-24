@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.DateUtils;
@@ -12,6 +13,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.platform.Platform;
 import org.keycloak.timer.ScheduledTask;
 import org.keycloak.utils.KeycloakSessionUtil;
 
@@ -32,7 +34,6 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
     public static final String TASK_NAME = UpdateMaxmindDatabaseFileTask.class.getSimpleName();
 
-    private static final String MMDB_FILE_SUFFIX = ".mmdb";
     private static final String MMDB_FILE_NAME = "maxmind-db";
 
     private final MaxmindFileAutodownloadProviderFactory factory;
@@ -42,7 +43,7 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
         factory.setReader(getUpdatedDatabaseReader(session, factory.createReader()));
     }
 
-    public DatabaseReader getReader(){
+    public DatabaseReader getReader() {
         return getUpdatedDatabaseReader(KeycloakSessionUtil.getKeycloakSession(), null);
     }
 
@@ -86,7 +87,18 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
     private Optional<DatabaseReader> updateDatabase(KeycloakSession session, String accountId, String licenseKey) {
         try {
-            Path tempFile = Files.createTempFile(MMDB_FILE_NAME, MMDB_FILE_SUFFIX);
+            File tempDir = Platform.getPlatform().getTmpDirectory();
+            if (!tempDir.exists()) {
+                if (!tempDir.mkdirs()) {
+                    log.errorf("Temporary directory %s does not exist and could not be created.", tempDir.getAbsolutePath());
+                    return Optional.empty();
+                }
+            }
+            if (!tempDir.canWrite()) {
+                log.errorf("Temporary directory %s is not writable.", tempDir.getAbsolutePath());
+                return Optional.empty();
+            }
+            Path tempFile = Files.createTempFile(tempDir.toPath(), MMDB_FILE_NAME, MaxmindProviderFactory.MMDB_FILE_EXTENSION);
             if (downloadDatabase(session, accountId, licenseKey, tempFile)) {
                 DatabaseReader reader = extractDatabase(tempFile);
                 Files.delete(tempFile);
@@ -107,6 +119,7 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
             HttpGet request = new HttpGet(factory.getMaxmindDbDownloadUrl());
             String auth = Base64.getEncoder().encodeToString((accountId + ":" + licenseKey).getBytes());
             request.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + auth);
+            request.setConfig(RequestConfig.custom().setRedirectsEnabled(false).build());
 
             try (CloseableHttpResponse response = client.execute(request)) {
                 int status = response.getStatusLine().getStatusCode();
@@ -150,8 +163,8 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
             // Find the .mmdb file in the archive
             while (tarInput.getNextEntry() != null) {
-                if (tarInput.getCurrentEntry().getName().endsWith(MMDB_FILE_SUFFIX)) {
-                    Path dbPath = Path.of(factory.getDbPath() + File.separator + MMDB_FILE_NAME + MMDB_FILE_SUFFIX);
+                if (tarInput.getCurrentEntry().getName().endsWith(MaxmindProviderFactory.MMDB_FILE_EXTENSION)) {
+                    Path dbPath = Path.of(factory.getDbPath() + File.separator + MMDB_FILE_NAME + MaxmindProviderFactory.MMDB_FILE_EXTENSION);
                     Files.createDirectories(dbPath.getParent());
                     Files.copy(tarInput, dbPath, StandardCopyOption.REPLACE_EXISTING);
                     return new DatabaseReader.Builder(dbPath.toFile()).build();

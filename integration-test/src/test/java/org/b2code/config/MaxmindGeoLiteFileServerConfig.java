@@ -11,10 +11,12 @@ public class MaxmindGeoLiteFileServerConfig extends ServerConfig {
     @Override
     Map<String, String> getOptions() {
         // data source: https://github.com/maxmind/MaxMind-DB/blob/main/source-data/GeoLite2-City-Test.json
-        String path = Paths.get("src", "test", "resources", "GeoLite2-City-Test.mmdb").toFile().getAbsolutePath();
+        String path = Paths.get("src", "test", "resources").toFile().getAbsolutePath();
         Map<String, String> options = new HashMap<>();
-        options.put("spi-geoaware-geoip--provider", PROVIDER_ID);
+        options.put("spi-geoaware-geoip--provider", "mock");
+        options.put("spi-geoaware-geoip--mock--provider", PROVIDER_ID);
         options.put("spi-geoaware-geoip--maxmind-file--db-path", path);
+        options.put("spi-geoaware-geoip--maxmind-file--db-name", "GeoLite2-City-Test.mmdb");
         return options;
     }
 

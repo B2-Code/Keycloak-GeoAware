@@ -6,10 +6,11 @@ import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.provider.Provider;
 import org.keycloak.timer.TimerProvider;
-import org.keycloak.utils.KeycloakSessionUtil;
 
 import java.time.Duration;
+import java.util.Set;
 
 @JBossLog
 @AutoService(GeoIpProviderFactory.class)
@@ -42,23 +43,21 @@ public class MaxmindFileAutodownloadProviderFactory extends MaxmindProviderFacto
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+        super.postInit(keycloakSessionFactory);
         KeycloakSession keycloakSession = keycloakSessionFactory.create();
         TimerProvider timer = keycloakSession.getProvider(TimerProvider.class);
         timer.scheduleTask(TASK_INSTANCE, Duration.ofHours(getUpdateIntervalHours()).toMillis());
-        log.infof("Scheduled Maxmind database update task to run every %d hours", DB_UPDATE_INTERVAL_HOURS_DEFAULT);
-        TASK_INSTANCE.run(keycloakSession);
+        log.infof("Scheduled Maxmind database update task to run every %d hours", getUpdateIntervalHours());
+    }
+
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(TimerProvider.class);
     }
 
     @Override
     public DatabaseReader createReader() {
         return TASK_INSTANCE.getReader();
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        TimerProvider timer = KeycloakSessionUtil.getKeycloakSession().getProvider(TimerProvider.class);
-        timer.cancelTask(TASK_INSTANCE.getTaskName());
     }
 
     @Override

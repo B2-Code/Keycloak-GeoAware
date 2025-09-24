@@ -6,7 +6,6 @@ import com.maxmind.geoip2.GeoIp2Provider;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.GeoIpProviderFactory;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakSessionFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,13 +25,9 @@ public class MaxmindFileProviderFactory extends MaxmindProviderFactory {
     @Override
     public GeoIp2Provider createReader() {
         log.trace("Creating new Maxmind file reader");
-        String databasePath = getDbPath();
-
-        File database;
-        try {
-            database = new File(databasePath);
-        } catch (NullPointerException e) {
-            log.errorf("No Maxmind database file found at '%s'", databasePath, e);
+        File database = findMmdbFile();
+        if (database == null || !database.exists() || !database.canRead()) {
+            log.errorf("Maxmind database file not found or not readable at path: %s", getDbPath());
             return null;
         }
         try {

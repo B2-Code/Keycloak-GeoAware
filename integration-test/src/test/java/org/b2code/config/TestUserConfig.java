@@ -6,8 +6,8 @@ import org.keycloak.testframework.realm.UserConfigBuilder;
 public class TestUserConfig implements UserConfig {
 
     @Override
-    public UserConfigBuilder configure(UserConfigBuilder user) {
-        return user.username("test-user")
+    public UserConfigBuilder configure(UserConfigBuilder userConfigBuilder) {
+        return userConfigBuilder.username("test-user")
                 .name("Test", "User")
                 .email("test-user@test-domain.com")
                 .password("test-password")

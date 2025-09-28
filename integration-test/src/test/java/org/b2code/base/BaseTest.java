@@ -4,17 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.PluginConstants;
-import org.b2code.config.RealmAConfig;
+import org.b2code.config.TestClientConfig;
+import org.b2code.config.TestRealmConfig;
 import org.b2code.config.TestUserConfig;
 import org.b2code.loginhistory.LoginRecord;
 import org.junit.jupiter.api.Assertions;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.testframework.annotations.InjectClient;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.annotations.InjectUser;
 import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.oauth.OAuthClient;
 import org.keycloak.testframework.oauth.annotations.InjectOAuthClient;
+import org.keycloak.testframework.realm.ManagedClient;
 import org.keycloak.testframework.realm.ManagedRealm;
 import org.keycloak.testframework.realm.ManagedUser;
 import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
@@ -27,8 +30,11 @@ import java.util.Objects;
 @Slf4j
 public abstract class BaseTest {
 
-    @InjectRealm(lifecycle = LifeCycle.METHOD, config = RealmAConfig.class)
+    @InjectRealm(lifecycle = LifeCycle.METHOD, config = TestRealmConfig.class)
     protected ManagedRealm realm;
+
+    @InjectClient(config = TestClientConfig.class)
+    protected ManagedClient client;
 
     @InjectOAuthClient
     protected OAuthClient oAuthClient;
@@ -59,8 +65,8 @@ public abstract class BaseTest {
         realm.admin().users().get(user.getId()).logout();
     }
 
-    protected void login() {
-        this.login(false);
+    protected AccessTokenResponse login() {
+        return this.login(false);
     }
 
     protected void loginAndExpectFail() {
@@ -97,16 +103,18 @@ public abstract class BaseTest {
         realm.admin().update(realmRep);
     }
 
-    private void login(boolean expectFail) {
+    private AccessTokenResponse login(boolean expectFail) {
         log.info("Logging in");
         log.info(expectFail ? "Expecting login to fail" : "Expecting login to succeed");
 
-        AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient.doLogin(user.getUsername(), user.getPassword());
+        AuthorizationEndpointResponse authorizationEndpointResponse = oAuthClient
+                .client(client.getClientId())
+                .doLogin(user.getUsername(), user.getPassword());
 
         if (expectFail) {
             Assertions.assertNull(authorizationEndpointResponse.getCode());
             log.info("Login failed as expected");
-            return;
+            return null;
         }
 
         Assertions.assertTrue(authorizationEndpointResponse.isRedirected());
@@ -117,6 +125,7 @@ public abstract class BaseTest {
         Assertions.assertNotNull(accessTokenResponse.getAccessToken());
 
         log.info("Login successful");
+        return accessTokenResponse;
     }
 
     protected ObjectMapper getObjectMapper() {

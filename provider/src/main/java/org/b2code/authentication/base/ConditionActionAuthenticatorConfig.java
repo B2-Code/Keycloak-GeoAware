@@ -1,14 +1,14 @@
 package org.b2code.authentication.base;
 
 import lombok.RequiredArgsConstructor;
-import org.b2code.authentication.base.action.AuthenticatorActionOption;
 import org.b2code.authentication.base.action.AuthenticatorAction;
+import org.b2code.authentication.base.action.AuthenticatorActionOption;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
 import org.b2code.authentication.base.condition.AuthenticatorConditionOption;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.Constants;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class ConditionActionAuthenticatorConfig {
@@ -20,8 +20,8 @@ public class ConditionActionAuthenticatorConfig {
         return AuthenticatorConditionOption.getConditionByLabel(label);
     }
 
-    public List<AuthenticatorAction> getActions() {
+    public Stream<AuthenticatorAction> getActions() {
         String labels = authenticatorConfigModel.getConfig().get(AuthenticatorAction.CONFIG_PROPERTY_NAME);
-        return Constants.CFG_DELIMITER_PATTERN.splitAsStream(labels).map(AuthenticatorActionOption::getActionByLabel).toList();
+        return Constants.CFG_DELIMITER_PATTERN.splitAsStream(labels).map(AuthenticatorActionOption::getActionByLabel);
     }
 }

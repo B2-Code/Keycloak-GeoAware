@@ -2,14 +2,11 @@ package org.b2code.authentication.base;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.authentication.base.action.AuthenticatorAction;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-
-import java.util.List;
 
 @JBossLog
 @RequiredArgsConstructor
@@ -22,11 +19,10 @@ public class ConditionActionAuthenticator implements Authenticator {
         ConditionActionAuthenticatorConfig config = new ConditionActionAuthenticatorConfig(context.getAuthenticatorConfig());
 
         if (config.getCondition().check(session)) {
-            List<AuthenticatorAction> actions = config.getActions();
-            for (AuthenticatorAction action : actions) {
+            config.getActions().forEach(action -> {
                 log.debugf("Executing action: %s", action.getLabel());
                 action.execute(session, context);
-            }
+            });
         }
 
         if (context.getStatus() == null) {

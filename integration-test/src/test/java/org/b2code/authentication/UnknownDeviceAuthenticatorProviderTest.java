@@ -21,7 +21,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     }
 
     @Test
-    public void testSendAlwaysDeviceEmail() throws Exception {
+    void testSendAlwaysDeviceEmail() throws Exception {
         MimeMessage lastReceivedMessage;
         setConditionAndAction("Always", "Notification Email (Device)");
 
@@ -41,7 +41,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     }
 
     @Test
-    public void testSendNeverNewDeviceEmail() throws Exception {
+    void testSendNeverNewDeviceEmail() {
         setConditionAndAction("Never", "Notification Email (Device)");
 
         login();
@@ -51,7 +51,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     }
 
     @Test
-    public void testSendDeviceChangedEmail() throws Exception {
+    void testSendDeviceChangedEmail() throws Exception {
         setConditionAndAction("Device Changed", "Notification Email (Device)");
 
         login();
@@ -67,4 +67,20 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
         logout();
     }
 
+    @Test
+    void testSendEmailOmStrictOnUnknownDevice() throws Exception {
+        setConditionAndAction("Unknown Device", "Notification Email (Device)");
+
+        login();
+        mailServer.waitForIncomingEmail(1);
+        Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
+        MimeMessage lastReceivedMessage = mailServer.getLastReceivedMessage();
+        Assertions.assertEquals("New login alert", lastReceivedMessage.getSubject());
+        logout();
+
+        login();
+        mailServer.waitForIncomingEmail(0);
+        Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
+        logout();
+    }
 }

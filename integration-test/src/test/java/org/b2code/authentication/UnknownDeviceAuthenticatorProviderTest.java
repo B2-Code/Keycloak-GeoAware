@@ -68,7 +68,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     }
 
     @Test
-    void testSendEmailOmStrictOnUnknownDevice() throws Exception {
+    void testSendEmailStrictONUnknownDevice() throws Exception {
         setConditionAndAction("Unknown Device", "Notification Email (Device)");
 
         login();

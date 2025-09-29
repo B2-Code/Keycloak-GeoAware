@@ -66,11 +66,11 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         return getHistoryStream().anyMatch(r -> r.getDevice().equals(device));
     }
 
-    public boolean isKnownLocation() {
+    public boolean isUnknownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
         GeoIpProvider provider =  session.getProvider(GeoIpProvider.class);
         GeoIpInfo ipInfo = provider.getIpInfo(ip);
-        return getHistoryStream().anyMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
+        return getHistoryStream().noneMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
     }
 
     public Optional<LoginRecord> getLastLogin() {

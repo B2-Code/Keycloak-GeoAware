@@ -24,7 +24,7 @@ public interface LoginHistoryProvider extends Provider {
      *
      * @return true if the location is already in the history, false otherwise
      */
-    boolean isKnownLocation();
+    boolean isUnknownLocation();
 
     /**
      * @return the history of logins as stream

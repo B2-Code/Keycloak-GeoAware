@@ -15,7 +15,7 @@ public class StrictOnUnknownDeviceCondition implements AuthenticatorCondition {
     @Override
     public boolean check(KeycloakSession session) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
-        return loginHistoryProvider.isKnownDevice();
+        return loginHistoryProvider.isUnknownDevice();
     }
 
     @Override

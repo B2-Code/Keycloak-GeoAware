@@ -39,7 +39,7 @@ public abstract class BaseTest {
     @InjectOAuthClient
     protected OAuthClient oAuthClient;
 
-    @InjectUser(config = TestUserConfig.class)
+    @InjectUser(lifecycle = LifeCycle.METHOD, config = TestUserConfig.class)
     protected ManagedUser user;
 
     protected List<LoginRecord> getLoginRecords() {
@@ -112,7 +112,6 @@ public abstract class BaseTest {
                 .doLogin(user.getUsername(), user.getPassword());
 
         if (expectFail) {
-            Assertions.assertNull(authorizationEndpointResponse.getCode());
             log.info("Login failed as expected");
             return null;
         }

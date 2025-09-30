@@ -69,15 +69,26 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     }
 
     @Test
-    public void testUnknownLocationEmail() throws Exception {
+    public void testOnIpChangeEmail() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Unknown Location", "Notification Email (IP)");
+        setConditionAndAction("On IP Change", "Notification Email (IP)");
 
         login();
         mailServer.waitForIncomingEmail(1);
         Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
         lastReceivedMessage = mailServer.getLastReceivedMessage();
         Assertions.assertEquals("New login alert", lastReceivedMessage.getSubject());
+        logout();
+    }
+  
+    @Test
+    public void testUnknownLocationEmail() throws Exception {
+        MimeMessage lastReceivedMessage;
+        setConditionAndAction("Unknown Location", "Notification Email (IP)");
+
+        login();
+        mailServer.waitForIncomingEmail(0);
+        Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
         logout();
     }
 }

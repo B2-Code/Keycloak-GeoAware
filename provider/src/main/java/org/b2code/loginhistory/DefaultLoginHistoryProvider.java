@@ -60,10 +60,10 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         return getHistoryStream().anyMatch(r -> r.getIp().equals(ip));
     }
 
-    public boolean isKnownDevice() {
+    public boolean isUnknownDevice() {
         DeviceRepresentation deviceRep = deviceRepresentationProvider.deviceRepresentation();
         LoginRecord.Device device = LoginRecord.Device.fromDeviceRepresentation(deviceRep);
-        return getHistoryStream().anyMatch(r -> r.getDevice().equals(device));
+        return getHistoryStream().noneMatch(r -> r.getDevice().equals(device));
     }
 
     public boolean isKnownLocation() {

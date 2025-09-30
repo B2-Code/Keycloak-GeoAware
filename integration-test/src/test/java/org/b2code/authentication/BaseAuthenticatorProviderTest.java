@@ -61,17 +61,30 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
         this.setConditionAndAction("Never", "Log");
         login();
     }
-
-    @Test
-    void testLoginNeverDenyAccess() throws Exception {
+  
+    void testLoginNeverDenyAccess() {
         this.setConditionAndAction("Never", "Deny Access");
         login();
     }
 
     @Test
-    void testLoginAlwaysDenyAccess() throws Exception {
+    void testLoginAlwaysDenyAccess() {
         this.setConditionAndAction("Always", "Deny Access");
         loginAndExpectFail();
+    }
+
+    @Test
+    void testLoginNeverDisableUser() {
+        this.setConditionAndAction("Never", "Disable user");
+        login();
+        Assertions.assertTrue(user.admin().toRepresentation().isEnabled());
+    }
+
+    @Test
+    void testLoginAlwaysDisableUser() {
+        this.setConditionAndAction("Always", "Disable user");
+        loginAndExpectFail();
+        Assertions.assertFalse(user.admin().toRepresentation().isEnabled());
     }
 
     private AuthenticationFlowRepresentation getFlow() {

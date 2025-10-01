@@ -1,0 +1,91 @@
+name: Bug Report
+description: Report a non-security sensitive bug
+labels: ["bug", "triage"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Before reporting an issue
+      description: |
+        Please search to see if the issue is already reported, and try to reproduce the issue on the latest release.
+
+        Any reported issues must be reproducible in the latest version of Geoaware.
+
+        **⚠️ Failing to follow these guidelines may result in your issue being closed without action. ⚠️**
+      options:
+        - label: I have read and understood the above terms for submitting issues, and I understand that my issue may be closed without action if I do not follow them.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Affected area
+      options:
+        -
+        - Maxmind Autodownload
+        - Maxmind Web Service
+        - Maxmind File
+        - IpInfo Web Service
+        - Unknown Ip Authenticator
+        - Unknown Device Authenticator
+        - E-Mails
+        - GeoIp Info Mapper
+        - User Agent Mapper
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: Provide a clear and concise description of what the problem is.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Keycloak are you running?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: regression
+    attributes:
+      label: Regression
+      description: Was the issue introduced only after upgrading Keycloak or Geoaware, and it worked as expected in the past?
+      options:
+        - label: The issue is a regression
+
+  - type: textarea
+    id: behaviorExpected
+    attributes:
+      label: Expected behavior
+      description: Describe the expected behavior clearly and concisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: behaviorActual
+    attributes:
+      label: Actual behavior
+      description: Describe the actual behavior clearly and concisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: How to Reproduce?
+      description: Provide clear and concise steps to reproduce the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else?
+      description: Links? References? Anything that will give us more context about the issue you are encountering!
+    validations:
+      required: false

@@ -14,9 +14,9 @@ public interface LoginHistoryProvider extends Provider {
     boolean isKnownIp();
 
     /**
-     * @return true if the device is already in the history, false otherwise
+     * @return true if the device is not already in the history, false otherwise
      */
-    boolean isKnownDevice();
+    boolean isUnknownDevice();
 
     /**
      * The location is determined by the IP address.

@@ -3,7 +3,7 @@ package org.b2code.geoip.cache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.keycloak.models.KeycloakSession;
 
 import java.util.Optional;

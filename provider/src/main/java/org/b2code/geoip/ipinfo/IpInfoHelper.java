@@ -2,7 +2,7 @@ package org.b2code.geoip.ipinfo;
 
 import io.ipinfo.api.model.IPResponse;
 import lombok.experimental.UtilityClass;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 
 @UtilityClass
 public class IpInfoHelper {

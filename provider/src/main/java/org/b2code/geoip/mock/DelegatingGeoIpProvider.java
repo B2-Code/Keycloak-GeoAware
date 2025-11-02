@@ -1,7 +1,7 @@
 package org.b2code.geoip.mock;
 
 import lombok.RequiredArgsConstructor;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.GeoIpProvider;
 
 @RequiredArgsConstructor

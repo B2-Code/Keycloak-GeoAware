@@ -2,7 +2,7 @@ package org.b2code.geoip.cache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.infinispan.Cache;
 import org.keycloak.models.KeycloakSession;
 

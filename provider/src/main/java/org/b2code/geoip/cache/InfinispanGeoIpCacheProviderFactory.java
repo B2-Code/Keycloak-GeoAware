@@ -4,7 +4,7 @@ import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
 import org.b2code.ServerInfoAwareFactory;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.infinispan.Cache;
 import org.keycloak.Config;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;

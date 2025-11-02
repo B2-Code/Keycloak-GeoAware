@@ -4,7 +4,7 @@ import com.maxmind.geoip2.GeoIp2Provider;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.cache.CachingGeoIpProvider;
 import org.keycloak.models.KeycloakSession;
 

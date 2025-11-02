@@ -1,10 +1,10 @@
 package org.b2code.loginhistory;
 
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
+import org.keycloak.events.Event;
 import org.keycloak.provider.Provider;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface LoginHistoryProvider extends Provider {
 
@@ -27,23 +27,13 @@ public interface LoginHistoryProvider extends Provider {
     boolean isKnownLocation();
 
     /**
-     * @return the history of logins as stream
-     */
-    Stream<LoginRecord> getHistoryStream();
-
-    /**
-     * @return the history of logins as list
-     */
-    List<LoginRecord> getHistory();
-
-    /**
      * Tracks the current login
      * Is automatically called by the {@link LoginTrackerEventListenerProvider}
      */
-    void track();
+    void track(Event event);
 
     /**
      * @return the last login record
      */
-    Optional<LoginRecord> getLastLogin();
+    Optional<LoginRecordEntity> getLastLogin();
 }

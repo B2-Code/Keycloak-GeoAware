@@ -7,7 +7,7 @@ import org.b2code.PluginConstants;
 import org.b2code.config.TestClientConfig;
 import org.b2code.config.TestRealmConfig;
 import org.b2code.config.TestUserConfig;
-import org.b2code.loginhistory.LoginRecord;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.junit.jupiter.api.Assertions;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -42,7 +42,7 @@ public abstract class BaseTest {
     @InjectUser(lifecycle = LifeCycle.METHOD, config = TestUserConfig.class)
     protected ManagedUser user;
 
-    protected List<LoginRecord> getLoginRecords() {
+    protected List<LoginRecordEntity> getLoginRecords() {
         UserRepresentation userRep = realm.admin().users().get(user.getId()).toRepresentation();
         Assertions.assertNotNull(userRep);
 
@@ -53,7 +53,7 @@ public abstract class BaseTest {
         Assertions.assertNotNull(ipAddresses);
         return ipAddresses.stream().map(ip -> {
             try {
-                return getObjectMapper().readValue(ip, LoginRecord.class);
+                return getObjectMapper().readValue(ip, LoginRecordEntity.class);
             } catch (Exception e) {
                 log.error("Failed to parse login record", e);
                 return null;

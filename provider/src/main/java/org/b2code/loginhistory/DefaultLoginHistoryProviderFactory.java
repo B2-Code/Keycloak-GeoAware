@@ -3,44 +3,32 @@ package org.b2code.loginhistory;
 import com.google.auto.service.AutoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.geoip.persistence.repository.LoginRecordRepository;
 import org.keycloak.Config;
-import org.keycloak.common.util.Environment;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
-import org.keycloak.models.RealmProvider;
-import org.keycloak.models.utils.KeycloakModelUtils;
-import org.keycloak.models.utils.PostMigrationEvent;
-import org.keycloak.representations.userprofile.config.UPAttribute;
-import org.keycloak.representations.userprofile.config.UPAttributePermissions;
-import org.keycloak.representations.userprofile.config.UPConfig;
-import org.keycloak.representations.userprofile.config.UPGroup;
-import org.keycloak.userprofile.UserProfileConstants;
-import org.keycloak.userprofile.UserProfileProvider;
+import org.keycloak.models.UserModel;
+import org.keycloak.timer.TimerProvider;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @JBossLog
 @AutoService(LoginHistoryProviderFactory.class)
 public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
 
-    private static final String USER_PROFILE_ATTRIBUTE_GROUP_NAME = "login-history";
-
     private static final String LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM = "retentionHours";
     private static final int LOGIN_HISTORY_RETENTION_HOURS_DEFAULT = 24 * 7;
 
-    private static final String LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM = "maxRecords";
-    private static final int LOGIN_HISTORY_MAX_RECORDS_DEFAULT = 10;
+    private static final String LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_CONFIG_PARM = "cleanupIntervalMinutes";
+    private static final int LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_DEFAULT = 60;
 
     private Config.Scope config;
 
     @Override
     public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        return new DefaultLoginHistoryProvider(session, Duration.ofHours(getLoginHistoryRetentionHours()), getLoginHistoryMaxRecords());
+        return new DefaultLoginHistoryProvider(session);
     }
 
     @Override
@@ -48,87 +36,55 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
         this.config = scope;
     }
 
-    private int getLoginHistoryMaxRecords() {
-        return config.getInt(LOGIN_HISTORY_MAX_RECORDS_CONFIG_PARM, LOGIN_HISTORY_MAX_RECORDS_DEFAULT);
+
+    @Override
+    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+        keycloakSessionFactory.register(event -> {
+            if (event instanceof UserModel.UserRemovedEvent userRemovedEvent) {
+                handleUserRemoved(userRemovedEvent);
+            } else if (event instanceof RealmModel.RealmRemovedEvent realmRemovedEvent) {
+                handleRealmRemoved(realmRemovedEvent);
+            }
+        });
+        KeycloakSession session = keycloakSessionFactory.create();
+        initCleanUpTimer(session);
+    }
+
+    private void handleUserRemoved(UserModel.UserRemovedEvent event) {
+        LoginRecordRepository repo = event.getKeycloakSession().getProvider(LoginRecordRepository.class);
+        repo.deleteByUserId(event.getUser().getId());
+    }
+
+    private void handleRealmRemoved(RealmModel.RealmRemovedEvent event) {
+        LoginRecordRepository repo = event.getKeycloakSession().getProvider(LoginRecordRepository.class);
+        repo.deleteByRealmId(event.getRealm().getId());
     }
 
     private int getLoginHistoryRetentionHours() {
         return config.getInt(LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM, LOGIN_HISTORY_RETENTION_HOURS_DEFAULT);
     }
 
-    @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        keycloakSessionFactory.register(event -> {
-            if (event instanceof RealmModel.RealmPostCreateEvent postCreateEvent) {
-                if (postCreateEvent.getKeycloakSession().getContext().getRealm() == null) {
-                    // For some reason the realm context is set for creations, but null for imports
-                    postCreateEvent.getKeycloakSession().getContext().setRealm(postCreateEvent.getCreatedRealm());
-                    this.updateUserProfile(postCreateEvent.getKeycloakSession());
-                    postCreateEvent.getKeycloakSession().getContext().setRealm(null);
-                } else {
-                    this.updateUserProfile(postCreateEvent.getKeycloakSession());
-                }
-            } else if (event instanceof PostMigrationEvent) {
-                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> session.getProvider(RealmProvider.class).getRealmsStream().forEach(realm -> {
-                    session.getContext().setRealm(realm);
-                    this.updateUserProfile(session);
-                }));
-            }
-        });
+    private int getLoginHistoryCleanupIntervalMinutes() {
+        return config.getInt(LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_CONFIG_PARM, LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_DEFAULT);
     }
 
-    private void updateUserProfile(KeycloakSession session) {
-        UserProfileProvider userProfileProvider = session.getProvider(UserProfileProvider.class);
-        UPConfig existingUpConfig = userProfileProvider.getConfiguration().clone();
-        UPGroup expectedGroup = getExpectedUpGroup();
-
-        List<UPGroup> existingGroups = existingUpConfig.getGroups().stream()
-                .filter(group -> group.getName().equals(expectedGroup.getName()))
-                .toList();
-
-        if (existingGroups.size() != 1) {
-            if (existingGroups.size() > 1) {
-                log.warnf("Multiple user profile groups with name '%s' found in realm '%s'", expectedGroup.getName(), session.getContext().getRealm().getName());
-                List<UPGroup> groups = existingUpConfig.getGroups();
-                groups.removeIf(group -> group.getName().equals(expectedGroup.getName()));
-                existingUpConfig.setGroups(groups);
-            }
-            log.debugf("Adding user profile group '%s' to realm '%s'", expectedGroup.getName(), session.getContext().getRealm().getName());
-            UPConfig newUpConfig = existingUpConfig.addGroup(expectedGroup);
-            userProfileProvider.setConfiguration(newUpConfig);
-        } else {
-            UPGroup existingGroup = existingGroups.getFirst();
-            if (!existingGroup.equals(expectedGroup)) {
-                log.debugf("Updating user profile group '%s' in realm '%s'", expectedGroup.getName(), session.getContext().getRealm().getName());
-                existingUpConfig.getGroups().removeIf(group -> group.getName().equals(existingGroup.getName()));
-                UPConfig newUpConfig = existingUpConfig.addGroup(expectedGroup);
-                userProfileProvider.setConfiguration(newUpConfig);
-            }
+    private void initCleanUpTimer(KeycloakSession session) {
+        int retentionHours = getLoginHistoryRetentionHours();
+        if (retentionHours <= 0) {
+            log.infof("Login history retention hours is set to %d hours. Cleanup timer will not be initialized.", retentionHours);
+            return;
         }
-
-        UPAttribute expectedAttribute = getExpectedUpAttribute();
-        UPAttribute existingAttribute = existingUpConfig.getAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS);
-        if (existingAttribute == null || !existingAttribute.equals(expectedAttribute)) {
-            log.debugf("Updating user profile attribute '%s' in realm '%s'", DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, session.getContext().getRealm().getName());
-            UPConfig newUpConfig = existingUpConfig.addOrReplaceAttribute(expectedAttribute);
-            userProfileProvider.setConfiguration(newUpConfig);
+        int cleanupIntervalMinutes = getLoginHistoryCleanupIntervalMinutes();
+        if (cleanupIntervalMinutes <= 0) {
+            log.infof("Login history cleanup interval is set to %d minutes. Cleanup timer will not be initialized.", cleanupIntervalMinutes);
+            return;
         }
-    }
-
-    private static UPAttribute getExpectedUpAttribute() {
-        Set<String> viewPermissions = Set.of(UserProfileConstants.ROLE_ADMIN);
-        Set<String> editPermissions = Environment.isDevMode() ? Set.of(UserProfileConstants.ROLE_ADMIN) : Collections.emptySet();
-        UPAttribute expectedAttribute = new UPAttribute(DefaultLoginHistoryProvider.USER_ATTRIBUTE_LAST_IPS, true, new UPAttributePermissions(viewPermissions, editPermissions));
-        expectedAttribute.setDisplayName("${loginHistoryUserProfileAttribute}");
-        expectedAttribute.setGroup(USER_PROFILE_ATTRIBUTE_GROUP_NAME);
-        return expectedAttribute;
-    }
-
-    private static UPGroup getExpectedUpGroup() {
-        UPGroup expectedGroup = new UPGroup(USER_PROFILE_ATTRIBUTE_GROUP_NAME);
-        expectedGroup.setDisplayHeader("${loginHistoryUserProfileAttributeGroup}");
-        expectedGroup.setDisplayDescription("${loginHistoryUserProfileAttributeGroupDescription}");
-        return expectedGroup;
+        long cleanupIntervalMillis = Duration.ofMinutes(cleanupIntervalMinutes).toMillis();
+        TimerProvider timer = session.getProvider(TimerProvider.class);
+        LoginHistoryCleanupTask cleanupTask = new LoginHistoryCleanupTask(retentionHours);
+        timer.cancelTask(cleanupTask.getTaskName());
+        log.infof("Initializing login history cleanup timer with retention period of %d hours and cleanup interval of %d minutes", retentionHours, cleanupIntervalMinutes);
+        timer.scheduleTask(cleanupTask, cleanupIntervalMillis);
     }
 
     @Override

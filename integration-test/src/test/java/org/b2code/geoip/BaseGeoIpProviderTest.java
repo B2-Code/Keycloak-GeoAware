@@ -2,7 +2,7 @@ package org.b2code.geoip;
 
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.base.BaseTest;
-import org.b2code.loginhistory.LoginRecord;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -26,7 +26,7 @@ abstract class BaseGeoIpProviderTest extends BaseTest {
         List<String> ipAddresses = attributes.get("loginHistoryRecord");
         Assertions.assertNotNull(ipAddresses);
         Assertions.assertEquals(1, ipAddresses.size());
-        LoginRecord loginRecord = getObjectMapper().readValue(ipAddresses.getFirst(), LoginRecord.class);
+        LoginRecordEntity loginRecord = getObjectMapper().readValue(ipAddresses.getFirst(), LoginRecordEntity.class);
 
         Assertions.assertNotNull(loginRecord);
         Assertions.assertNotNull(loginRecord.getIp());
@@ -39,7 +39,7 @@ abstract class BaseGeoIpProviderTest extends BaseTest {
             login();
             logout();
         }
-        List<LoginRecord> ipAddresses = getLoginRecords();
+        List<LoginRecordEntity> ipAddresses = getLoginRecords();
         Assertions.assertEquals(5, ipAddresses.size());
     }
 

@@ -2,7 +2,7 @@ package org.b2code.geoip.maxmind;
 
 import com.maxmind.geoip2.model.CityResponse;
 import lombok.experimental.UtilityClass;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 
 @UtilityClass
 public class MaxmindHelper {

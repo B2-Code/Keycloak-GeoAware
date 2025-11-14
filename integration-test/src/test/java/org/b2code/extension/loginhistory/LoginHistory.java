@@ -1,6 +1,7 @@
 package org.b2code.extension.loginhistory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.b2code.geoip.persistence.entity.Device;
 import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
@@ -10,6 +11,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class LoginHistory implements AutoCloseable {
 
@@ -20,6 +22,11 @@ public class LoginHistory implements AutoCloseable {
     private Connection connection;
 
     private Connection getConnection() throws SQLException {
+        log.debug("Connecting to database: {}", dbUrl);
+        log.debug("Database user: {}", dbUser);
+        log.debug("Database password: {}", dbPassword);
+        log.debug("Connection: {}", connection);
+
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         }

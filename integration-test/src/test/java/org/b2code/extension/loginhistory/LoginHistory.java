@@ -28,7 +28,7 @@ public class LoginHistory implements AutoCloseable {
 
     public List<LoginRecordEntity> getAllByUserId(String userId) {
         List<LoginRecordEntity> results = new ArrayList<>();
-        final String sql = "SELECT * FROM geoip_login_record WHERE USER_ID = ? ORDER BY TIMESTAMP DESC";
+        final String sql = "SELECT * FROM geoaware_login_record WHERE USER_ID = ? ORDER BY TIMESTAMP DESC";
         try {
             Connection conn = getConnection();
             try (PreparedStatement ps = conn.prepareStatement(sql)) {

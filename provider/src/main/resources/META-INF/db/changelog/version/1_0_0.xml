@@ -8,7 +8,7 @@
     <changeSet id="init-geoip-login-record-table" author="BenLad17">
         <createTable tableName="geoaware_login_record">
             <column name="ID" type="VARCHAR(36)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_geoip_login_record"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_geoaware_login_record"/>
             </column>
             <column name="USER_ID" type="VARCHAR(36)">
                 <constraints nullable="false"/>

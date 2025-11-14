@@ -11,6 +11,8 @@ import org.keycloak.models.KeycloakSessionFactory;
 @AutoService(EventListenerProviderFactory.class)
 public class LoginTrackerEventListenerProviderFactory implements EventListenerProviderFactory {
 
+    public static final String ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-login-tracker";;
+
     @Override
     public EventListenerProvider create(KeycloakSession session) {
         return new LoginTrackerEventListenerProvider(session);
@@ -33,6 +35,6 @@ public class LoginTrackerEventListenerProviderFactory implements EventListenerPr
 
     @Override
     public String getId() {
-        return PluginConstants.PLUGIN_NAME_LOWER_CASE + "-login-tracker";
+        return ID;
     }
 }

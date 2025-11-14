@@ -26,7 +26,6 @@ public class JpaLoginRecordRepository implements LoginRecordRepository {
 
     private EntityManager getEntityManager() {
         return session.getProvider(JpaConnectionProvider.class).getEntityManager();
-
     }
 
     @Override

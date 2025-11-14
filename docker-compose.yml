@@ -6,7 +6,7 @@ services:
     depends_on:
       - postgres
     environment:
-      # DEBUG_PORT: '*:8787'
+      DEBUG_PORT: '*:8787'
       DEBUG: 'true'
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin

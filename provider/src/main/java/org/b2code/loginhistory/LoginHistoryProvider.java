@@ -22,7 +22,7 @@ public interface LoginHistoryProvider extends Provider {
      * The location is determined by the IP address.
      * As this is quite imprecise, an accuracy radius is used to determine whether two locations are considered the same.
      *
-     * @return true if the location is already in the history, false otherwise
+     * @return true if the location is unknown, false otherwise
      */
     boolean isUnknownLocation();
 

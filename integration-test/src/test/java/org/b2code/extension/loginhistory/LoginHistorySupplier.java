@@ -18,12 +18,12 @@ public class LoginHistorySupplier implements Supplier<LoginHistory, InjectLoginH
 
     @Override
     public LifeCycle getDefaultLifecycle() {
-        return LifeCycle.GLOBAL;
+        return LifeCycle.CLASS;
     }
 
     @Override
     public boolean compatible(InstanceContext<LoginHistory, InjectLoginHistory> a, RequestedInstance<LoginHistory, InjectLoginHistory> b) {
-        return true;
+        return false;
     }
 
 }

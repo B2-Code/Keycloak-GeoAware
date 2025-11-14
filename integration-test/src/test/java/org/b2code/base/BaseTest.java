@@ -40,8 +40,8 @@ public abstract class BaseTest {
     @InjectUser(lifecycle = LifeCycle.METHOD, config = TestUserConfig.class)
     protected ManagedUser user;
 
-    @InjectLoginHistory
-    LoginHistory loginHistory;
+    @InjectLoginHistory(lifecycle = LifeCycle.METHOD)
+    protected LoginHistory loginHistory;
 
     protected List<LoginRecordEntity> getLoginRecords() {
         return loginHistory.getAllByUserId(user.getId());

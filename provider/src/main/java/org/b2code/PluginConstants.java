@@ -1,8 +1,8 @@
 package org.b2code;
 
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@UtilityClass
 public final class PluginConstants {
 
     public static final String PLUGIN_NAME = "GeoAware";

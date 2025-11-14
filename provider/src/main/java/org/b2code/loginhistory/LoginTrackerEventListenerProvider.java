@@ -31,7 +31,7 @@ public class LoginTrackerEventListenerProvider implements EventListenerProvider 
     private void trackLogin(Event event) {
         log.debug("Tracking login event");
         try {
-            KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), s -> s.getProvider(LoginHistoryProvider.class).track(event));
+            KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), session.getContext(), s -> s.getProvider(LoginHistoryProvider.class).track(event));
         } catch (Exception e) {
             log.error("Failed to track login event", e);
         }

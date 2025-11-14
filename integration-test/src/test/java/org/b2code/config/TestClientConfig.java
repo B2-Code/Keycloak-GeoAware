@@ -12,6 +12,6 @@ public class TestClientConfig implements ClientConfig {
                 .secret("test-secret")
                 .redirectUris("*")
                 .protocol("openid-connect")
-                .directAccessGrants();
+                .directAccessGrantsEnabled(true);
     }
 }

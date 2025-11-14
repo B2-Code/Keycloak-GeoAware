@@ -1,11 +1,11 @@
 package org.b2code.loginhistory;
 
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpProvider;
 import org.b2code.geoip.persistence.entity.Device;
 import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.b2code.geoip.persistence.repository.LoginRecordRepository;
+import org.b2code.geoip.provider.GeoIpProvider;
 import org.keycloak.device.DeviceActivityManager;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.events.Event;

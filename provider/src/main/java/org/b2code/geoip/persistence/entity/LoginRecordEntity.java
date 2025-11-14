@@ -19,8 +19,12 @@ import java.time.Instant;
 @Immutable
 @NamedQueries({
         @NamedQuery(
-                name = "geoaware_getLatestLoginRecordByUserId",
+                name = "geoaware_getLoginRecordsByUserId",
                 query = "SELECT r FROM LoginRecordEntity r WHERE r.userId = :userId ORDER BY r.time DESC"
+        ),
+        @NamedQuery(
+                name = "geoaware_getLoginRecordByIpAndTimestampAfter",
+                query = "SELECT r FROM LoginRecordEntity r WHERE r.geoIpInfo.ip = :ipAddress AND r.time >= :afterTime ORDER BY r.time DESC"
         ),
         @NamedQuery(
                 name = "geoaware_isKnownIp",
@@ -51,6 +55,8 @@ import java.time.Instant;
         name = "geoip_login_record",
         indexes = {
                 @Index(name = "idx_login_record_userid", columnList = "USER_ID"),
+                @Index(name = "idx_login_record_ip_time", columnList = "IP_ADDRESS,TIMESTAMP"),
+                @Index(name = "idx_login_record_time", columnList = "TIMESTAMP")
         }
 )
 public class LoginRecordEntity {

@@ -9,9 +9,12 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.provider.Provider;
 import org.keycloak.timer.TimerProvider;
 
 import java.time.Duration;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @JBossLog
@@ -36,27 +39,27 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
         this.config = scope;
     }
 
-
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
         keycloakSessionFactory.register(event -> {
             if (event instanceof UserModel.UserRemovedEvent userRemovedEvent) {
-                handleUserRemoved(userRemovedEvent);
+                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> handleUserRemoved(session, userRemovedEvent));
             } else if (event instanceof RealmModel.RealmRemovedEvent realmRemovedEvent) {
-                handleRealmRemoved(realmRemovedEvent);
+                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> handleRealmRemoved(session, realmRemovedEvent));
             }
         });
+
         KeycloakSession session = keycloakSessionFactory.create();
         initCleanUpTimer(session);
     }
 
-    private void handleUserRemoved(UserModel.UserRemovedEvent event) {
-        LoginRecordRepository repo = event.getKeycloakSession().getProvider(LoginRecordRepository.class);
+    private void handleUserRemoved(KeycloakSession session, UserModel.UserRemovedEvent event) {
+        LoginRecordRepository repo = session.getProvider(LoginRecordRepository.class);
         repo.deleteByUserId(event.getUser().getId());
     }
 
-    private void handleRealmRemoved(RealmModel.RealmRemovedEvent event) {
-        LoginRecordRepository repo = event.getKeycloakSession().getProvider(LoginRecordRepository.class);
+    private void handleRealmRemoved(KeycloakSession session, RealmModel.RealmRemovedEvent event) {
+        LoginRecordRepository repo = session.getProvider(LoginRecordRepository.class);
         repo.deleteByRealmId(event.getRealm().getId());
     }
 
@@ -85,6 +88,11 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
         timer.cancelTask(cleanupTask.getTaskName());
         log.infof("Initializing login history cleanup timer with retention period of %d hours and cleanup interval of %d minutes", retentionHours, cleanupIntervalMinutes);
         timer.scheduleTask(cleanupTask, cleanupIntervalMillis);
+    }
+
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(LoginRecordRepository.class);
     }
 
     @Override

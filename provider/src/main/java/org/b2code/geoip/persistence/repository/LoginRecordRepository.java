@@ -5,6 +5,8 @@ import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.keycloak.provider.Provider;
 
+import java.time.Instant;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface LoginRecordRepository extends Provider {
@@ -12,6 +14,10 @@ public interface LoginRecordRepository extends Provider {
     LoginRecordEntity create(LoginRecordEntity loginRecord);
 
     Optional<LoginRecordEntity> findLatestByUserId(String userId);
+
+    Optional<LoginRecordEntity> findByIpAndTimestampAfter(String ipAddress, Instant timestamp);
+
+    Collection<LoginRecordEntity> findAllByUserId(String userId);
 
     boolean isKnownIp(String userId, String ipAddress);
 

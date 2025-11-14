@@ -41,8 +41,7 @@ public class LoginTrackerEventListenerProviderFactory implements EventListenerPr
 
     private void activateEventListenerInRealm(RealmModel realm) {
         Set<String> evenListeners = realm.getEventsListenersStream().collect(Collectors.toSet());
-        if (!evenListeners.contains(getId())) {
-            evenListeners.add(getId());
+        if (evenListeners.add(getId())) {
             realm.setEventsListeners(evenListeners);
         }
     }

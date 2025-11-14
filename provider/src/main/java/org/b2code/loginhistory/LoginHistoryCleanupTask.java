@@ -16,10 +16,4 @@ public class LoginHistoryCleanupTask implements ScheduledTask {
         loginRecordRepository.cleanupOldRecords(retentionHours);
     }
 
-    @Override
-    public String getTaskName() {
-        return getClass().getSimpleName();
-    }
-
-
 }

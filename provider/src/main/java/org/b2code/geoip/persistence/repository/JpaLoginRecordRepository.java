@@ -3,8 +3,8 @@ package org.b2code.geoip.persistence.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
-import org.b2code.geoip.geo.BoundingBox;
-import org.b2code.geoip.geo.GeoCalculator;
+import org.b2code.geoip.helper.BoundingBox;
+import org.b2code.geoip.helper.GeoCalculator;
 import org.b2code.geoip.persistence.entity.Device;
 import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
@@ -26,6 +26,7 @@ public class JpaLoginRecordRepository implements LoginRecordRepository {
 
     private EntityManager getEntityManager() {
         return session.getProvider(JpaConnectionProvider.class).getEntityManager();
+
     }
 
     @Override
@@ -43,12 +44,33 @@ public class JpaLoginRecordRepository implements LoginRecordRepository {
     @Override
     public Optional<LoginRecordEntity> findLatestByUserId(String userId) {
         TypedQuery<LoginRecordEntity> query = getEntityManager()
-                .createNamedQuery("geoaware_getLatestLoginRecordByUserId", LoginRecordEntity.class)
+                .createNamedQuery("geoaware_getLoginRecordsByUserId", LoginRecordEntity.class)
                 .setParameter("userId", userId)
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
                 .setMaxResults(1);
         List<LoginRecordEntity> results = query.getResultList();
         return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+    }
+
+    @Override
+    public Optional<LoginRecordEntity> findByIpAndTimestampAfter(String ipAddress, Instant timestamp) {
+        TypedQuery<LoginRecordEntity> query = getEntityManager()
+                .createNamedQuery("geoaware_getLoginRecordByIpAndTimestampAfter", LoginRecordEntity.class)
+                .setParameter("ipAddress", ipAddress)
+                .setParameter("afterTime", timestamp)
+                .setHint(AvailableHints.HINT_READ_ONLY, true)
+                .setMaxResults(1);
+        List<LoginRecordEntity> results = query.getResultList();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+    }
+
+    @Override
+    public List<LoginRecordEntity> findAllByUserId(String userId) {
+        return getEntityManager()
+                .createNamedQuery("geoaware_getLoginRecordsByUserId", LoginRecordEntity.class)
+                .setParameter("userId", userId)
+                .setHint(AvailableHints.HINT_READ_ONLY, true)
+                .getResultList();
     }
 
     @Override

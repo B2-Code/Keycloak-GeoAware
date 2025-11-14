@@ -52,7 +52,7 @@ import java.time.Instant;
         )
 })
 @Table(
-        name = "geoip_login_record",
+        name = "geoaware_login_record",
         indexes = {
                 @Index(name = "idx_login_record_userid", columnList = "USER_ID"),
                 @Index(name = "idx_login_record_ip_time", columnList = "IP_ADDRESS,TIMESTAMP"),

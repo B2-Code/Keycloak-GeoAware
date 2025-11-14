@@ -11,6 +11,8 @@ public class MaxmindWebserviceServerConfig extends ServerConfig {
 
     private static final String LICENSE_KEY = System.getenv("MAXMIND_LICENSE_KEY");
 
+    private static final String HOST = System.getenv("geolite.info");
+
     @Override
     Map<String, String> getOptions() {
         if (ACCOUNT_ID == null || LICENSE_KEY == null) {
@@ -21,6 +23,7 @@ public class MaxmindWebserviceServerConfig extends ServerConfig {
         options.put("spi-geoaware-geoip--mock--provider", PROVIDER_ID);
         options.put("spi-geoaware-geoip--maxmind-webservice--account-id", ACCOUNT_ID);
         options.put("spi-geoaware-geoip--maxmind-webservice--license-key", LICENSE_KEY);
+        options.put("spi-geoaware-geoip--maxmind-webservice--host", HOST);
         return options;
     }
 }

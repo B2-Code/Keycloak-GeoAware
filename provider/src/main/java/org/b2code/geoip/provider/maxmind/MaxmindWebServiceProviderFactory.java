@@ -13,7 +13,7 @@ public class MaxmindWebServiceProviderFactory extends MaxmindProviderFactory imp
 
     public static final String PROVIDER_ID = "maxmind-webservice";
 
-    private static final String MAXMIND_WEB_HOSTNAME_CONFIG_PARM = "webHost";
+    private static final String MAXMIND_WEB_HOSTNAME_CONFIG_PARM = "host";
 
     @Override
     public MaxmindProvider create(KeycloakSession keycloakSession) {

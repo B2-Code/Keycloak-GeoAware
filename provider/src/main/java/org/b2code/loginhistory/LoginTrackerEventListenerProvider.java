@@ -1,13 +1,14 @@
 package org.b2code.loginhistory;
 
 import lombok.extern.jbosslog.JBossLog;
+import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventListenerTransaction;
 import org.keycloak.events.EventType;
 import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 @JBossLog
 public class LoginTrackerEventListenerProvider implements EventListenerProvider {
@@ -31,7 +32,9 @@ public class LoginTrackerEventListenerProvider implements EventListenerProvider 
     private void trackLogin(Event event) {
         log.debug("Tracking login event");
         try {
-            KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), session.getContext(), s -> s.getProvider(LoginHistoryProvider.class).track(event));
+            DeviceRepresentationProvider deviceRepProvider = session.getProvider(DeviceRepresentationProvider.class);
+            DeviceRepresentation deviceRep = deviceRepProvider.deviceRepresentation();
+            session.getProvider(LoginHistoryProvider.class).track(deviceRep, event);
         } catch (Exception e) {
             log.error("Failed to track login event", e);
         }

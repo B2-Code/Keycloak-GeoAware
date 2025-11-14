@@ -3,6 +3,7 @@ package org.b2code.loginhistory;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.keycloak.events.Event;
 import org.keycloak.provider.Provider;
+import org.keycloak.representations.account.DeviceRepresentation;
 
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public interface LoginHistoryProvider extends Provider {
      * Tracks the current login
      * Is automatically called by the {@link LoginTrackerEventListenerProvider}
      */
-    void track(Event event);
+    void track(DeviceRepresentation device, Event event);
 
     /**
      * @return the last login record

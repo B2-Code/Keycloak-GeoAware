@@ -6,12 +6,10 @@ import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.b2code.geoip.persistence.repository.LoginRecordRepository;
 import org.b2code.geoip.provider.GeoIpProvider;
-import org.keycloak.device.DeviceActivityManager;
 import org.keycloak.device.DeviceRepresentationProvider;
 import org.keycloak.events.Event;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.representations.account.DeviceRepresentation;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
@@ -35,10 +33,12 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     }
 
     @Override
-    public void track(Event event) {
-        LoginRecordEntity newRecord = generateRecord(event);
-        loginRecordRepository.create(newRecord);
-        log.debug("Successfully tracked login");
+    public void track(DeviceRepresentation device, Event event) {
+        LoginRecordEntity newRecord = generateRecord(device, event);
+        KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), sessionWithTransaction -> {
+            sessionWithTransaction.getProvider(LoginRecordRepository.class).create(newRecord);
+            log.debug("Successfully tracked login");
+        });
     }
 
     @Override
@@ -66,18 +66,8 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
         return loginRecordRepository.findLatestByUserId(getAuthenticatedUserId());
     }
 
-    private LoginRecordEntity generateRecord(Event event) {
+    private LoginRecordEntity generateRecord(DeviceRepresentation deviceRep, Event event) {
         String ip = event.getIpAddress();
-        RealmModel realm = session.realms().getRealm(event.getRealmId());
-        UserSessionModel userSession = session.sessions().getUserSession(realm, event.getSessionId());
-
-        DeviceRepresentation deviceRep;
-        if (userSession == null) {
-            log.warnf("User session with id %s not found, cannot generate device representation", event.getSessionId());
-            deviceRep = DeviceRepresentation.unknown();
-        } else {
-            deviceRep = DeviceActivityManager.getCurrentDevice(userSession);
-        }
         Device device = Device.fromDeviceRepresentation(deviceRep);
 
         GeoIpInfo geoIpInfo = geoipProvider.getIpInfo(ip);

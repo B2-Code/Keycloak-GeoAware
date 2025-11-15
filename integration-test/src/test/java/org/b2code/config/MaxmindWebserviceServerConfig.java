@@ -11,7 +11,7 @@ public class MaxmindWebserviceServerConfig extends ServerConfig {
 
     private static final String LICENSE_KEY = System.getenv("MAXMIND_LICENSE_KEY");
 
-    private static final String HOST = System.getenv("geolite.info");
+    private static final String HOST = "geolite.info";
 
     @Override
     Map<String, String> getOptions() {

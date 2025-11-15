@@ -5,14 +5,17 @@ import org.b2code.PluginConstants;
 import org.b2code.config.TestClientConfig;
 import org.b2code.config.TestRealmConfig;
 import org.b2code.config.TestUserConfig;
-import org.b2code.extension.loginhistory.InjectLoginHistory;
-import org.b2code.extension.loginhistory.LoginHistory;
+import org.b2code.util.LoginHistory;
 import org.b2code.geoip.persistence.entity.LoginRecordEntity;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testframework.annotations.InjectClient;
 import org.keycloak.testframework.annotations.InjectRealm;
+import org.keycloak.testframework.annotations.InjectTestDatabase;
 import org.keycloak.testframework.annotations.InjectUser;
+import org.keycloak.testframework.database.TestDatabase;
 import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.oauth.OAuthClient;
 import org.keycloak.testframework.oauth.annotations.InjectOAuthClient;
@@ -40,10 +43,26 @@ public abstract class BaseTest {
     @InjectUser(lifecycle = LifeCycle.METHOD, config = TestUserConfig.class)
     protected ManagedUser user;
 
-    @InjectLoginHistory(lifecycle = LifeCycle.METHOD)
+    @InjectTestDatabase
+    protected TestDatabase testDatabase;
+
     protected LoginHistory loginHistory;
 
+    @BeforeEach
+    public void beforeEach() {
+        Map<String, String> config = testDatabase.serverConfig();
+        loginHistory = new LoginHistory(config.get("db-url"), config.get("db-username"), config.get("db-password"));
+    }
+
+    @AfterEach
+    public void afterEach() {
+        if (loginHistory != null) {
+            loginHistory.close();
+        }
+    }
+
     protected List<LoginRecordEntity> getLoginRecords() {
+
         return loginHistory.getAllByUserId(user.getId());
     }
 

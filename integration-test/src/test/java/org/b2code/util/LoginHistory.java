@@ -1,4 +1,4 @@
-package org.b2code.extension.loginhistory;
+package org.b2code.util;
 
 import lombok.RequiredArgsConstructor;
 import org.b2code.geoip.persistence.entity.Device;

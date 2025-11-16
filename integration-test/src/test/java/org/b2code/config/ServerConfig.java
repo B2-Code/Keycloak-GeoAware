@@ -10,16 +10,7 @@ public abstract class ServerConfig implements KeycloakServerConfig {
 
     @Override
     public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder keycloakServerConfigBuilder) {
-        Map<String, String> options = new HashMap<>();
-        options.put("spi-geoaware-geoip-cache--default--max-cache-entries", "42");
-        options.put("spi-geoaware-login-history--default--max-records", "5");
-        options.put("spi-geoaware-geoip-cache--provider", "default");
-        options.putAll(getOptions());
-        String cacheConfigFile = cacheConfigFile();
-        if (cacheConfigFile != null) {
-            keycloakServerConfigBuilder.cacheConfigFile(cacheConfigFile);
-            options.put("cache", "ispn");
-        }
+        Map<String, String> options = new HashMap<>(getOptions());
         return keycloakServerConfigBuilder
                 .dependency("org.b2code", "keycloak-geoaware-provider")
                 .options(options);
@@ -27,7 +18,4 @@ public abstract class ServerConfig implements KeycloakServerConfig {
 
     abstract Map<String, String> getOptions();
 
-    String cacheConfigFile() {
-        return null;
-    }
 }

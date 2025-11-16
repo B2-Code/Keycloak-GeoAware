@@ -1,7 +1,7 @@
 package org.b2code.geoip.cache;
 
 import jakarta.validation.constraints.NotNull;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.Provider;
 

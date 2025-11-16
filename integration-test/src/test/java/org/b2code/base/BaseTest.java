@@ -1,19 +1,21 @@
 package org.b2code.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.PluginConstants;
 import org.b2code.config.TestClientConfig;
 import org.b2code.config.TestRealmConfig;
 import org.b2code.config.TestUserConfig;
-import org.b2code.loginhistory.LoginRecord;
+import org.b2code.util.LoginHistory;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testframework.annotations.InjectClient;
 import org.keycloak.testframework.annotations.InjectRealm;
+import org.keycloak.testframework.annotations.InjectTestDatabase;
 import org.keycloak.testframework.annotations.InjectUser;
+import org.keycloak.testframework.database.TestDatabase;
 import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.oauth.OAuthClient;
 import org.keycloak.testframework.oauth.annotations.InjectOAuthClient;
@@ -25,7 +27,6 @@ import org.keycloak.testsuite.util.oauth.AuthorizationEndpointResponse;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public abstract class BaseTest {
@@ -42,23 +43,27 @@ public abstract class BaseTest {
     @InjectUser(lifecycle = LifeCycle.METHOD, config = TestUserConfig.class)
     protected ManagedUser user;
 
-    protected List<LoginRecord> getLoginRecords() {
-        UserRepresentation userRep = realm.admin().users().get(user.getId()).toRepresentation();
-        Assertions.assertNotNull(userRep);
+    @InjectTestDatabase
+    protected TestDatabase testDatabase;
 
-        Map<String, List<String>> attributes = userRep.getAttributes();
-        Assertions.assertNotNull(attributes);
+    protected LoginHistory loginHistory;
 
-        List<String> ipAddresses = attributes.get("loginHistoryRecord");
-        Assertions.assertNotNull(ipAddresses);
-        return ipAddresses.stream().map(ip -> {
-            try {
-                return getObjectMapper().readValue(ip, LoginRecord.class);
-            } catch (Exception e) {
-                log.error("Failed to parse login record", e);
-                return null;
-            }
-        }).filter(Objects::nonNull).toList();
+    @BeforeEach
+    public void beforeEach() {
+        Map<String, String> config = testDatabase.serverConfig();
+        loginHistory = new LoginHistory(config.get("db-url"), config.get("db-username"), config.get("db-password"));
+    }
+
+    @AfterEach
+    public void afterEach() {
+        if (loginHistory != null) {
+            loginHistory.close();
+        }
+    }
+
+    protected List<LoginRecordEntity> getLoginRecords() {
+
+        return loginHistory.getAllByUserId(user.getId());
     }
 
     protected void logout() {
@@ -127,7 +132,4 @@ public abstract class BaseTest {
         return accessTokenResponse;
     }
 
-    protected ObjectMapper getObjectMapper() {
-        return new ObjectMapper().registerModule(new JavaTimeModule());
-    }
 }

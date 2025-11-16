@@ -30,7 +30,7 @@ services:
   postgres:
     container_name: postgres
     hostname: postgres
-    image: postgres:16
+    image: postgres:18
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak

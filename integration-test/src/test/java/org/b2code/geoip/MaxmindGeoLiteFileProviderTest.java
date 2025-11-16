@@ -1,7 +1,8 @@
 package org.b2code.geoip;
 
 import org.b2code.config.MaxmindGeoLiteFileServerConfig;
-import org.b2code.loginhistory.LoginRecord;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
@@ -14,7 +15,7 @@ class MaxmindGeoLiteFileProviderTest extends MaxmindFileProviderTest {
     @Test
     void testKnownIp1() throws Exception {
         loginFromIp("2.125.160.217");
-        List<LoginRecord> loginRecords = getLoginRecords();
+        List<LoginRecordEntity> loginRecords = getLoginRecords();
         Assertions.assertEquals(1, loginRecords.size());
         GeoIpInfo expected = GeoIpInfo.builder()
                 .ip("2.125.160.217")
@@ -33,7 +34,7 @@ class MaxmindGeoLiteFileProviderTest extends MaxmindFileProviderTest {
     @Test
     void testKnownIp2() throws Exception {
         loginFromIp("216.160.83.58");
-        List<LoginRecord> loginRecords = getLoginRecords();
+        List<LoginRecordEntity> loginRecords = getLoginRecords();
         Assertions.assertEquals(1, loginRecords.size());
         GeoIpInfo expected = GeoIpInfo.builder()
                 .ip("216.160.83.58")

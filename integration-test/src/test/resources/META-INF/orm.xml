@@ -1,0 +1,9 @@
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" version="1.0">
+
+    <package>org.b2code</package>
+
+    <entity class="org.b2code.geoip.persistence.entity.LoginRecordEntity"></entity>
+    <embeddable class="org.b2code.geoip.persistence.entity.Device"></embeddable>
+    <embeddable class="org.b2code.geoip.persistence.entity.GeoIpInfo"></embeddable>
+
+</entity-mappings>

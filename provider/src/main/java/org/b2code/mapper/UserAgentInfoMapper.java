@@ -3,7 +3,7 @@ package org.b2code.mapper;
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
-import org.b2code.loginhistory.LoginRecord;
+import org.b2code.geoip.persistence.entity.Device;
 import org.keycloak.device.DeviceActivityManager;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
@@ -37,7 +37,7 @@ public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements A
         log.tracef("Mapping user agent info to claim '%s'", mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME));
         DeviceRepresentation deviceRep = DeviceActivityManager.getCurrentDevice(userSession);
         if (deviceRep != null) {
-            LoginRecord.Device device = LoginRecord.Device.fromDeviceRepresentation(deviceRep);
+            Device device = Device.fromDeviceRepresentation(deviceRep);
             OIDCAttributeMapperHelper.mapClaim(token, mappingModel, device);
         } else {
             log.warn("No device information attached to the user session");

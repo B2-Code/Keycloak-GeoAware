@@ -2,6 +2,8 @@ package org.b2code.geoip;
 
 import com.google.auto.service.AutoService;
 import org.b2code.PluginConstants;
+import org.b2code.geoip.provider.GeoIpProvider;
+import org.b2code.geoip.provider.GeoIpProviderFactory;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.Spi;

@@ -15,18 +15,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        keycloak_version: [ 26.3.0, 26.3.1, 26.3.2, 26.3.3, 26.3.4, 26.3.5 ]
+        keycloak_version: [ 26.4.0, 26.4.1, 26.4.2, 26.4.3, 26.4.4, 26.4.5 ]
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
+
       - name: Compile
         run: mvn -B -U -DskipTests=true install --file pom.xml
+
       - name: Run test
         run: mvn -B -U -DskipUTs=true clean test --file pom.xml -Dversion.keycloak=${{ matrix.keycloak_version }}
         env:

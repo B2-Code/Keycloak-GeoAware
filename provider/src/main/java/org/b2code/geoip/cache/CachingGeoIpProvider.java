@@ -2,9 +2,10 @@ package org.b2code.geoip.cache;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoIpProvider;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
+import org.b2code.geoip.provider.GeoIpProvider;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.tracing.TracingProvider;
 import org.keycloak.tracing.TracingProviderUtil;
 
@@ -50,6 +51,9 @@ public abstract class CachingGeoIpProvider implements GeoIpProvider {
     }
 
     private boolean shouldLookupIp(String ip) {
+        if (Environment.isDevMode()) {
+            return true;
+        }
         InetAddress inetAddress = getInetAddress(ip);
         return null != inetAddress && !inetAddress.isSiteLocalAddress() && !inetAddress.isLoopbackAddress();
     }

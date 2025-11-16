@@ -1,138 +1,90 @@
 package org.b2code.loginhistory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
-import org.b2code.geoip.GeoIpProvider;
-import org.b2code.geoip.GeoIpProviderFactory;
+import org.b2code.geoip.persistence.entity.Device;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
+import org.b2code.geoip.persistence.repository.LoginRecordRepository;
+import org.b2code.geoip.provider.GeoIpProvider;
 import org.keycloak.device.DeviceRepresentationProvider;
+import org.keycloak.events.Event;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.UserModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.representations.account.DeviceRepresentation;
+import org.keycloak.sessions.AuthenticationSessionModel;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @JBossLog
 public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
 
-    public static final String USER_ATTRIBUTE_LAST_IPS = "loginHistoryRecord";
-
-    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
     private final KeycloakSession session;
-
     private final DeviceRepresentationProvider deviceRepresentationProvider;
-
     private final GeoIpProvider geoipProvider;
+    private final LoginRecordRepository loginRecordRepository;
 
-    private final Duration retentionTime;
-
-    private final int maxRecords;
-
-    // The list is sorted by time, newest first
-    private final List<LoginRecord> loginRecords;
-
-    public DefaultLoginHistoryProvider(KeycloakSession session, Duration retentionTime, int maxRecords) {
+    public DefaultLoginHistoryProvider(KeycloakSession session) {
         log.tracef("Creating new %s", DefaultLoginHistoryProvider.class.getSimpleName());
         this.session = session;
-        this.retentionTime = retentionTime;
-        this.maxRecords = maxRecords;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
         this.geoipProvider = session.getProvider(GeoIpProvider.class);
-        this.loginRecords = getLoginRecords();
+        this.loginRecordRepository = session.getProvider(LoginRecordRepository.class);
     }
 
-    public void track() {
-        Stream<LoginRecord> newRecords = Stream.concat(Stream.of(generateRecord()), getHistoryStream()).limit(maxRecords);
-        setLoginRecords(newRecords);
-        log.debug("Successfully tracked login");
+    @Override
+    public void track(DeviceRepresentation device, Event event) {
+        LoginRecordEntity newRecord = generateRecord(device, event);
+        KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), sessionWithTransaction -> {
+            sessionWithTransaction.getProvider(LoginRecordRepository.class).create(newRecord);
+            log.debug("Successfully tracked login");
+        });
     }
 
+    @Override
     public boolean isKnownIp() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        return getHistoryStream().anyMatch(r -> r.getIp().equals(ip));
+        return loginRecordRepository.isKnownIp(getAuthenticatedUserId(), ip);
     }
 
+    @Override
     public boolean isUnknownDevice() {
         DeviceRepresentation deviceRep = deviceRepresentationProvider.deviceRepresentation();
-        LoginRecord.Device device = LoginRecord.Device.fromDeviceRepresentation(deviceRep);
-        return getHistoryStream().noneMatch(r -> r.getDevice().equals(device));
+        Device device = Device.fromDeviceRepresentation(deviceRep);
+        return !loginRecordRepository.hasDeviceBeenUsed(getAuthenticatedUserId(), device);
     }
 
-    public boolean isUnknownLocation() {
+    @Override
+    public boolean isKnownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
-        GeoIpProvider provider =  session.getProvider(GeoIpProvider.class);
-        GeoIpInfo ipInfo = provider.getIpInfo(ip);
-        return getHistoryStream().noneMatch(r -> r.getGeoIpInfo().radiusOverlapsWith(ipInfo));
+        GeoIpInfo ipInfo = geoipProvider.getIpInfo(ip);
+        return loginRecordRepository.hasLocationBeenUsed(getAuthenticatedUserId(), ipInfo);
     }
 
-    public Optional<LoginRecord> getLastLogin() {
-        return getHistory().isEmpty() ? Optional.empty() : Optional.of(getHistory().getFirst());
+    @Override
+    public Optional<LoginRecordEntity> getLastLogin() {
+        return loginRecordRepository.findLatestByUserId(getAuthenticatedUserId());
     }
 
-    public List<LoginRecord> getHistory() {
-        return this.loginRecords;
-    }
+    private LoginRecordEntity generateRecord(DeviceRepresentation deviceRep, Event event) {
+        String ip = event.getIpAddress();
+        Device device = Device.fromDeviceRepresentation(deviceRep);
 
-    public Stream<LoginRecord> getHistoryStream() {
-        return this.loginRecords.stream();
-    }
-
-    private LoginRecord generateRecord() {
-        String ip = session.getContext().getConnection().getRemoteAddr();
-        DeviceRepresentation device = deviceRepresentationProvider.deviceRepresentation();
         GeoIpInfo geoIpInfo = geoipProvider.getIpInfo(ip);
-        return LoginRecord.builder()
+        return LoginRecordEntity.builder()
                 .geoIpInfo(geoIpInfo)
-                .device(LoginRecord.Device.fromDeviceRepresentation(device))
-                .time(Instant.now())
+                .device(device)
+                .time(Instant.ofEpochMilli(event.getTime()))
+                .userId(event.getUserId())
                 .build();
     }
 
-    private List<LoginRecord> getLoginRecords() {
-        UserModel user = session.getContext().getAuthenticationSession().getAuthenticatedUser();
-        Instant now = Instant.now();
-        return user.getAttributeStream(USER_ATTRIBUTE_LAST_IPS)
-                .map(this::mapFromString)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(r -> r.getTime().isAfter(now.minus(retentionTime)))
-                .sorted(Comparator.comparing(LoginRecord::getTime).reversed())
-                .toList();
-    }
-
-    private Optional<LoginRecord> mapFromString(String str) {
-        try {
-            return Optional.of(objectMapper.readValue(str, LoginRecord.class));
-        } catch (JsonProcessingException ex) {
-            log.errorf("Failed to parse last IP record: %s", ex.getMessage());
-            return Optional.empty();
+    private String getAuthenticatedUserId() {
+        AuthenticationSessionModel authSession = session.getContext().getAuthenticationSession();
+        if (authSession != null) {
+            return authSession.getAuthenticatedUser().getId();
         }
-    }
-
-    private void setLoginRecords(Stream<LoginRecord> newRecords) {
-        List<String> newValues = newRecords
-                .map(this::mapToString)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-        session.getContext().getAuthenticationSession().getAuthenticatedUser().setAttribute(USER_ATTRIBUTE_LAST_IPS, newValues);
-    }
-
-    private Optional<String> mapToString(LoginRecord record) {
-        try {
-            return Optional.of(objectMapper.writeValueAsString(record));
-        } catch (JsonProcessingException ex) {
-            log.errorf("Failed to write last IP record: %s", ex.getMessage());
-            return Optional.empty();
-        }
+        return null;
     }
 
     @Override

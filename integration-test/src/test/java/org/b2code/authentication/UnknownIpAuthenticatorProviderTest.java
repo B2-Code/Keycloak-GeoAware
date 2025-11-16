@@ -82,13 +82,40 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     }
   
     @Test
-    public void testUnknownLocationEmail() throws Exception {
+    public void testUnknownLocationEmail_01() throws Exception {
         MimeMessage lastReceivedMessage;
         setConditionAndAction("Unknown Location", "Notification Email (IP)");
 
-        login();
+        loginFromIp("2.125.160.217");
+        mailServer.waitForIncomingEmail(1);
+        Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
+        lastReceivedMessage = mailServer.getLastReceivedMessage();
+        Assertions.assertEquals("New login alert", lastReceivedMessage.getSubject());
+        logout();
+
+        loginFromIp("2.125.160.217");
         mailServer.waitForIncomingEmail(0);
         Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
         logout();
     }
+    @Test
+    public void testUnknownLocationEmail_02() throws Exception {
+        MimeMessage lastReceivedMessage;
+        setConditionAndAction("Unknown Location", "Notification Email (IP)");
+
+        loginFromIp("2.125.160.217");
+        mailServer.waitForIncomingEmail(1);
+        Assertions.assertEquals(1, mailServer.getReceivedMessages().length);
+        lastReceivedMessage = mailServer.getLastReceivedMessage();
+        Assertions.assertEquals("New login alert", lastReceivedMessage.getSubject());
+        logout();
+
+        loginFromIp("216.160.83.58");
+        mailServer.waitForIncomingEmail(1);
+        Assertions.assertEquals(2, mailServer.getReceivedMessages().length);
+        lastReceivedMessage = mailServer.getLastReceivedMessage();
+        Assertions.assertEquals("New login alert", lastReceivedMessage.getSubject());
+        logout();
+    }
+
 }

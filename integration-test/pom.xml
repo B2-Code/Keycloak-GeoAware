@@ -42,42 +42,31 @@
             <artifactId>keycloak-geoaware-provider</artifactId>
             <version>${project.version}</version>
             <classifier>shaded</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak.testframework</groupId>
-            <artifactId>keycloak-test-framework-junit5-config</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testframework</groupId>
             <artifactId>keycloak-test-framework-core</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak.testframework</groupId>
+            <artifactId>keycloak-test-framework-junit5-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testframework</groupId>
             <artifactId>keycloak-test-framework-oauth</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testframework</groupId>
             <artifactId>keycloak-test-framework-ui</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testframework</groupId>
             <artifactId>keycloak-test-framework-email-server</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${version.restassured}</version>
-            <scope>test</scope>
+            <groupId>org.keycloak.testframework</groupId>
+            <artifactId>keycloak-test-framework-db-postgres</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

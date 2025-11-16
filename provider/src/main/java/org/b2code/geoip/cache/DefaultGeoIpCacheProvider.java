@@ -1,41 +1,35 @@
 package org.b2code.geoip.cache;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
-import org.b2code.geoip.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.GeoIpInfo;
+import org.b2code.geoip.persistence.entity.LoginRecordEntity;
+import org.b2code.geoip.persistence.repository.LoginRecordRepository;
+import org.keycloak.common.util.Time;
 import org.keycloak.models.KeycloakSession;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @JBossLog
+@RequiredArgsConstructor
 public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
 
-    private final Cache<String, GeoIpInfo> cache;
-
-    public DefaultGeoIpCacheProvider(int cacheSize, int cacheHours) {
-        log.debugf("Creating cache with size %d and expiration after %d hours", cacheSize, cacheHours);
-        this.cache = CacheBuilder.newBuilder()
-                .maximumSize(cacheSize)
-                .expireAfterWrite(cacheHours, TimeUnit.HOURS)
-                .build();
-    }
+    private final KeycloakSession session;
+    private final int cacheDurationMinutes;
 
     @Override
     public void put(KeycloakSession session, String ipAddress, GeoIpInfo geoIpInfo) {
-        log.tracef("Putting '%s' into cache", ipAddress);
-        cache.put(ipAddress, geoIpInfo);
+        // NOOP - caching is handled when saving the LoginRecordEntity
     }
 
     @Override
     public Optional<GeoIpInfo> get(KeycloakSession session, String ipAddress) {
+        LoginRecordRepository loginRecordRepository = this.session.getProvider(LoginRecordRepository.class);
         log.tracef("Getting '%s' from cache", ipAddress);
-        return Optional.ofNullable(cache.getIfPresent(ipAddress));
-    }
-
-    protected void invalidateAll() {
-        cache.invalidateAll();
+        Instant afterTime = Instant.ofEpochMilli(Time.currentTimeMillis()).minus(cacheDurationMinutes, ChronoUnit.MINUTES);
+        return loginRecordRepository.findByIpAndTimestampAfter(ipAddress, afterTime).map(LoginRecordEntity::getGeoIpInfo);
     }
 
     @Override

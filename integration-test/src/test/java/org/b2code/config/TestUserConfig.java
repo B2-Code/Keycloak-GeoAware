@@ -11,7 +11,7 @@ public class TestUserConfig implements UserConfig {
                 .name("Test", "User")
                 .email("test-user@test-domain.com")
                 .password("test-password")
-                .emailVerified();
+                .emailVerified(true);
     }
 
 }

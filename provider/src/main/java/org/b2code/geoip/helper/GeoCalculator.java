@@ -9,7 +9,7 @@ import org.locationtech.jts.geom.Envelope;
 @UtilityClass
 public class GeoCalculator {
 
-    private static final double FALLBACK_RADIUS_KM = 25;
+    private static final double FALLBACK_RADIUS_KM = 50;
 
     public static BoundingBox calculateBoundingBox(double lat, double lon, Integer radiusKm) {
         Envelope bbox = boundingBox(lat, lon, radiusKm);

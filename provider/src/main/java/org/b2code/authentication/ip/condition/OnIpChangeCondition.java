@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip.condition;
+package org.b2code.authentication.ip.condition;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;
@@ -6,16 +6,16 @@ import org.b2code.loginhistory.LoginHistoryProvider;
 import org.keycloak.models.KeycloakSession;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class UnknownLocationCondition implements AuthenticatorCondition {
+public class OnIpChangeCondition implements AuthenticatorCondition {
 
-    public static final String LABEL = "Unknown Location";
+    public static final String LABEL = "On IP change";
 
-    private static final UnknownLocationCondition INSTANCE = new UnknownLocationCondition();
+    private static final OnIpChangeCondition INSTANCE = new OnIpChangeCondition();
 
     @Override
     public boolean check(KeycloakSession session) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
-        return loginHistoryProvider.isUnknownLocation();
+        return loginHistoryProvider.getLastLogin().map(l -> !l.getIp().equals(session.getContext().getConnection().getRemoteAddr())).orElse(true);
     }
 
     @Override
@@ -25,10 +25,10 @@ public class UnknownLocationCondition implements AuthenticatorCondition {
 
     @Override
     public String getHelpText() {
-        return "Triggers when the location is unknown.";
+        return "Triggers when the IP address changes.";
     }
 
-    public static UnknownLocationCondition instance() {
+    public static OnIpChangeCondition instance() {
         return INSTANCE;
     }
 }

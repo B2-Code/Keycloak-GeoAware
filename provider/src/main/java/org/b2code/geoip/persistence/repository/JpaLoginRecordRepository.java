@@ -3,6 +3,7 @@ package org.b2code.geoip.persistence.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.helper.BoundingBox;
 import org.b2code.geoip.helper.GeoCalculator;
 import org.b2code.geoip.persistence.entity.Device;
@@ -16,57 +17,67 @@ import org.keycloak.models.utils.KeycloakModelUtils;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+@JBossLog
 @RequiredArgsConstructor
 public class JpaLoginRecordRepository implements LoginRecordRepository {
 
     private final KeycloakSession session;
+    private final int compareLimit;
 
-    private EntityManager getEntityManager() {
+    private EntityManager em() {
         return session.getProvider(JpaConnectionProvider.class).getEntityManager();
     }
 
     @Override
     public LoginRecordEntity create(LoginRecordEntity loginRecord) {
         if (loginRecord.getId() == null) {
-            String id = KeycloakModelUtils.generateId();
-            loginRecord.setId(id);
+            loginRecord.setId(KeycloakModelUtils.generateId());
         }
-        EntityManager em = getEntityManager();
-        em.persist(loginRecord);
-        em.flush();
+        em().persist(loginRecord);
         return loginRecord;
     }
 
     @Override
     public Optional<LoginRecordEntity> findLatestByUserId(String userId) {
-        TypedQuery<LoginRecordEntity> query = getEntityManager()
-                .createNamedQuery("geoaware_getLoginRecordsByUserId", LoginRecordEntity.class)
+        if (userId == null) {
+            return Optional.empty();
+        }
+        List<LoginRecordEntity> list = em()
+                .createNamedQuery(LoginRecordEntity.Q_BY_USER, LoginRecordEntity.class)
                 .setParameter("userId", userId)
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
-                .setMaxResults(1);
-        List<LoginRecordEntity> results = query.getResultList();
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+                .setMaxResults(1)
+                .getResultList();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.getFirst());
     }
 
     @Override
     public Optional<LoginRecordEntity> findByIpAndTimestampAfter(String ipAddress, Instant timestamp) {
-        TypedQuery<LoginRecordEntity> query = getEntityManager()
-                .createNamedQuery("geoaware_getLoginRecordByIpAndTimestampAfter", LoginRecordEntity.class)
+        if (ipAddress == null || timestamp == null) {
+            return Optional.empty();
+        }
+        List<LoginRecordEntity> list = em()
+                .createNamedQuery(LoginRecordEntity.Q_BY_IP_AFTER, LoginRecordEntity.class)
                 .setParameter("ipAddress", ipAddress)
                 .setParameter("afterTime", timestamp)
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
-                .setMaxResults(1);
-        List<LoginRecordEntity> results = query.getResultList();
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+                .setMaxResults(1)
+                .getResultList();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.getFirst());
     }
 
     @Override
     public List<LoginRecordEntity> findAllByUserId(String userId) {
-        return getEntityManager()
-                .createNamedQuery("geoaware_getLoginRecordsByUserId", LoginRecordEntity.class)
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        return em()
+                .createNamedQuery(LoginRecordEntity.Q_BY_USER, LoginRecordEntity.class)
                 .setParameter("userId", userId)
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
                 .getResultList();
@@ -74,73 +85,91 @@ public class JpaLoginRecordRepository implements LoginRecordRepository {
 
     @Override
     public boolean isKnownIp(String userId, String ipAddress) {
-        Long count = getEntityManager()
-                .createNamedQuery("geoaware_isKnownIp", Long.class)
+        if (userId == null || ipAddress == null) {
+            return false;
+        }
+        Long count = em()
+                .createNamedQuery(LoginRecordEntity.Q_IS_KNOWN_IP, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("ipAddress", ipAddress)
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
                 .getSingleResult();
-        return count > 0;
+        return count != null && count > 0;
     }
 
     @Override
     public void deleteByUserId(String userId) {
-        getEntityManager()
-                .createNamedQuery("geoaware_deleteLoginRecordsByUserId")
+        if (userId == null) {
+            return;
+        }
+        em().createNamedQuery(LoginRecordEntity.Q_DELETE_BY_USER)
                 .setParameter("userId", userId)
                 .executeUpdate();
     }
 
     @Override
     public void deleteByRealmId(String realmId) {
-        getEntityManager()
-                .createNamedQuery("geoaware_deleteLoginRecordsByRealmId")
+        if (realmId == null) {
+            return;
+        }
+        em().createNamedQuery(LoginRecordEntity.Q_DELETE_BY_REALM)
                 .setParameter("realmId", realmId)
                 .executeUpdate();
     }
 
     @Override
-    public void cleanupOldRecords(int hoursToKeep) {
-        Instant cutoffTime = Instant.ofEpochSecond(Time.currentTime()).minus(Duration.ofHours(hoursToKeep));
-        getEntityManager()
-                .createNamedQuery("geoaware_cleanupOldLoginRecords")
+    public long cleanupOldRecords(int hoursToKeep) {
+        if (hoursToKeep < 0) {
+            return 0;
+        }
+        Instant cutoffTime = Instant.ofEpochSecond(Time.currentTime())
+                .minus(Duration.ofHours(hoursToKeep));
+        return em().createNamedQuery(LoginRecordEntity.Q_CLEANUP)
                 .setParameter("cutoffTime", cutoffTime)
                 .executeUpdate();
     }
 
     @Override
     public boolean hasDeviceBeenUsed(String userId, Device device) {
-        return getEntityManager()
-                .createNamedQuery("geoaware_hasDeviceBeenUsed", Boolean.class)
+        if (userId == null || device == null) {
+            return false;
+        }
+        TypedQuery<Boolean> q = em()
+                .createNamedQuery(LoginRecordEntity.Q_HAS_DEVICE, Boolean.class)
                 .setParameter("userId", userId)
                 .setParameter("os", device.getOs())
                 .setParameter("osVersion", device.getOsVersion())
                 .setParameter("browser", device.getBrowser())
-                .setHint(AvailableHints.HINT_READ_ONLY, true)
-                .getSingleResult();
+                .setHint(AvailableHints.HINT_READ_ONLY, true);
+        Boolean result = q.getSingleResult();
+        return Boolean.TRUE.equals(result);
     }
 
     @Override
     public boolean hasLocationBeenUsed(String userId, GeoIpInfo location) {
-        if (location == null) {
+        if (userId == null || location == null) {
             return false;
         }
 
-        BoundingBox bbox = GeoCalculator.calculateBoundingBox(location.getLatitude(), location.getLongitude(), location.getAccuracyRadius());
+        BoundingBox bbox = GeoCalculator.calculateBoundingBox(
+                location.getLatitude(),
+                location.getLongitude(),
+                location.getAccuracyRadius()
+        );
 
-        // first get candidates in bounding box
-        List<LoginRecordEntity> candidates = getEntityManager()
-                .createNamedQuery("geoaware_findLocationsInBoundingBox", LoginRecordEntity.class)
+        return em()
+                .createNamedQuery(LoginRecordEntity.Q_LOCATIONS_IN_BBOX, LoginRecordEntity.class)
                 .setParameter("userId", userId)
                 .setParameter("minLat", bbox.getMinLatitude())
                 .setParameter("maxLat", bbox.getMaxLatitude())
                 .setParameter("minLon", bbox.getMinLongitude())
                 .setParameter("maxLon", bbox.getMaxLongitude())
                 .setHint(AvailableHints.HINT_READ_ONLY, true)
-                .getResultList();
-
-        // then do precise check
-        return candidates.stream().anyMatch(record -> GeoCalculator.isLocationWithinRadius(location, record.getGeoIpInfo()));
+                .setMaxResults(compareLimit)
+                .getResultStream()
+                .map(LoginRecordEntity::getGeoIpInfo)
+                .filter(Objects::nonNull)
+                .anyMatch(info -> GeoCalculator.circlesOverlap(location, info));
     }
 
     @Override

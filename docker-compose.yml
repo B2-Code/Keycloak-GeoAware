@@ -14,9 +14,9 @@ services:
       KC_DB_USER: keycloak
       KC_DB_PASSWORD: keycloak
       KC_LOG_CONSOLE_COLOR: 'true'
-      KC_LOG_LEVEL: INFO,org.b2code:ALL
+      KC_LOG_LEVEL: INFO,org.b2code:TRACE
       KC_LOG_CONSOLE_INCLUDE_TRACE: 'false'
-    command: [ 'start-dev', '--debug', '--verbose', '--db', 'postgres', '--features', 'opentelemetry,declarative-ui', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
+    command: [ 'start-dev', '--debug', '--verbose', '--db', 'postgres', '--features', 'opentelemetry', '--tracing-enabled', 'true', '--tracing-sampler-type', 'always_on', '--tracing-endpoint', 'http://jaeger:4317' ]
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -38,7 +38,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
 
   jaeger:
     container_name: jaeger

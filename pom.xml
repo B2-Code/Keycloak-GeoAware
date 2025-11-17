@@ -26,6 +26,7 @@
         <version.validation-api>3.1.1</version.validation-api>
         <version.apache-commons-compress>1.28.0</version.apache-commons-compress>
         <version.apache-commons-lang>3.20.0</version.apache-commons-lang>
+        <version.geotools>34.0</version.geotools>
 
         <version.junit>6.0.1</version.junit>
         <version.restassured>5.5.1</version.restassured>
@@ -43,6 +44,20 @@
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-parent</artifactId>
                 <version>${version.keycloak}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-bom</artifactId>
+                <version>${version.geotools}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.junit}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -80,4 +95,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 </project>

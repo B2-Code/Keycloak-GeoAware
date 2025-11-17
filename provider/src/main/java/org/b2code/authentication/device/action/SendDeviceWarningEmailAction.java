@@ -14,7 +14,7 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class SendDeviceWarningEmailAction implements AuthenticatorAction {
 
-    public static final String LABEL = "Notification Email (Device)";
+    public static final String LABEL = "Notification email (device)";
 
     private static final SendDeviceWarningEmailAction INSTANCE = new SendDeviceWarningEmailAction();
 

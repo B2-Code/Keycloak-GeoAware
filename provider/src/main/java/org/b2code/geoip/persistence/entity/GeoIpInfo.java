@@ -1,6 +1,5 @@
 package org.b2code.geoip.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Embeddable
 public class GeoIpInfo {
 

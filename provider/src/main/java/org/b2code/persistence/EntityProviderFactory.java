@@ -2,6 +2,7 @@ package org.b2code.persistence;
 
 import com.google.auto.service.AutoService;
 import org.b2code.PluginConstants;
+import org.b2code.ServerInfoAwareFactory;
 import org.keycloak.Config;
 import org.keycloak.connections.jpa.entityprovider.JpaEntityProvider;
 import org.keycloak.connections.jpa.entityprovider.JpaEntityProviderFactory;
@@ -9,7 +10,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
 @AutoService(JpaEntityProviderFactory.class)
-public class EntityProviderFactory implements JpaEntityProviderFactory {
+public class EntityProviderFactory extends ServerInfoAwareFactory implements JpaEntityProviderFactory {
 
     protected static final String ID = PluginConstants.PLUGIN_NAME_LOWER_CASE;
 

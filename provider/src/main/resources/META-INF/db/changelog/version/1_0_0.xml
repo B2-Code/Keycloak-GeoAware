@@ -50,4 +50,12 @@
             <column name="TIMESTAMP"/>
         </createIndex>
     </changeSet>
+    <changeSet id="init-geoip-login-record-table-userid-lat-lon-time" author="BenLad17">
+        <createIndex indexName="idx_login_record_user_lat_lon_time" tableName="geoaware_login_record">
+            <column name="USER_ID"/>
+            <column name="LATITUDE"/>
+            <column name="LONGITUDE"/>
+            <column name="TIMESTAMP"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

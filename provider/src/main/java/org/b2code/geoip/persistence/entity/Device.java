@@ -1,6 +1,5 @@
 package org.b2code.geoip.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -14,7 +13,6 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Embeddable
 public class Device {
 

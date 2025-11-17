@@ -2,9 +2,9 @@ package org.b2code.authentication.base.condition;
 
 import org.b2code.authentication.device.condition.StrictOnDeviceChangeCondition;
 import org.b2code.authentication.device.condition.StrictOnUnknownDeviceCondition;
-import org.b2code.authentication.unknownip.condition.OnIpChangeCondition;
-import org.b2code.authentication.unknownip.condition.UnknownIpCondition;
-import org.b2code.authentication.unknownip.condition.UnknownLocationCondition;
+import org.b2code.authentication.ip.condition.OnIpChangeCondition;
+import org.b2code.authentication.ip.condition.UnknownIpCondition;
+import org.b2code.authentication.ip.condition.UnknownLocationCondition;
 
 import java.util.stream.Stream;
 

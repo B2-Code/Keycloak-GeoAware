@@ -1,4 +1,4 @@
-package org.b2code.authentication.device;
+package org.b2code.authentication.ip;
 
 import org.b2code.authentication.base.action.AuthenticatorActionConfigPropertyBuilder;
 import org.b2code.authentication.base.action.AuthenticatorActionOption;
@@ -9,9 +9,10 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 
 import java.util.List;
 
-public final class UnknownDeviceAuthenticatorConfigProperties {
-    private static final List<AuthenticatorConditionOption> CONDITION_OPTIONS = List.of(AuthenticatorConditionOption.ALWAYS, AuthenticatorConditionOption.STRICT_ON_DEVICE_CHANGE, AuthenticatorConditionOption.STRICT_ON_UNKNOWN_DEVICE, AuthenticatorConditionOption.NEVER);
-    private static final List<AuthenticatorActionOption> ACTION_OPTIONS = List.of(AuthenticatorActionOption.SEND_DEVICE_WARNING_EMAIL, AuthenticatorActionOption.DENY_ACCESS, AuthenticatorActionOption.LOG, AuthenticatorActionOption.DISABLE_USER);
+public final class IpAuthenticatorConfigProperties {
+
+    private static final List<AuthenticatorConditionOption> CONDITION_OPTIONS = List.of(AuthenticatorConditionOption.ALWAYS, AuthenticatorConditionOption.ON_IP_CHANGE, AuthenticatorConditionOption.UNKNOWN_IP, AuthenticatorConditionOption.UNKNOWN_LOCATION, AuthenticatorConditionOption.NEVER);
+    private static final List<AuthenticatorActionOption> ACTION_OPTIONS = List.of(AuthenticatorActionOption.SEND_IP_WARNING_EMAIL, AuthenticatorActionOption.DENY_ACCESS, AuthenticatorActionOption.LOG, AuthenticatorActionOption.DISABLE_USER);
 
     private static final ProviderConfigProperty CONDITION_PROPERTY = AuthenticatorConditionConfigPropertyBuilder.getChooseConditionConfigProperty(CONDITION_OPTIONS);
     private static final ProviderConfigProperty ACTION_PROPERTY = AuthenticatorActionConfigPropertyBuilder.getChooseActionConfigProperty(ACTION_OPTIONS);
@@ -21,7 +22,6 @@ public final class UnknownDeviceAuthenticatorConfigProperties {
             .property(ACTION_PROPERTY)
             .build();
 
-    private UnknownDeviceAuthenticatorConfigProperties() {
+    private IpAuthenticatorConfigProperties() {
     }
-
 }

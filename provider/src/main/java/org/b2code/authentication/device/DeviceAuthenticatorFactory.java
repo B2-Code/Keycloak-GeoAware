@@ -17,10 +17,10 @@ import java.util.List;
 
 @JBossLog
 @AutoService(AuthenticatorFactory.class)
-public class UnknownDeviceAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
+public class DeviceAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-device";
-    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown Device";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-device";
+    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Device";
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
@@ -51,12 +51,12 @@ public class UnknownDeviceAuthenticatorFactory extends ServerInfoAwareFactory im
 
     @Override
     public String getHelpText() {
-        return "";
+        return "Detects the user's device via the User-Agent header and performs actions based on the conditions configured";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return UnknownDeviceAuthenticatorConfigProperties.CONFIG_PROPERTIES;
+        return DeviceAuthenticatorConfigProperties.CONFIG_PROPERTIES;
     }
 
     @Override

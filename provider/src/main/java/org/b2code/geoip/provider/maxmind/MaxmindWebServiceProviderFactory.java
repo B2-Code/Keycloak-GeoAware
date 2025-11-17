@@ -9,7 +9,7 @@ import org.keycloak.models.KeycloakSession;
 
 @JBossLog
 @AutoService(GeoIpProviderFactory.class)
-public class MaxmindWebServiceProviderFactory extends MaxmindProviderFactory implements GeoIpProviderFactory {
+public class MaxmindWebServiceProviderFactory extends MaxmindProviderFactory {
 
     public static final String PROVIDER_ID = "maxmind-webservice";
 

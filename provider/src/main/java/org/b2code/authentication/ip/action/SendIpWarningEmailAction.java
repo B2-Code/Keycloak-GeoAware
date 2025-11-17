@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip.action;
+package org.b2code.authentication.ip.action;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.action.AuthenticatorAction;
@@ -14,7 +14,7 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class SendIpWarningEmailAction implements AuthenticatorAction {
 
-    public static final String LABEL = "Notification Email (IP)";
+    public static final String LABEL = "Notification email (IP)";
 
     private static final SendIpWarningEmailAction INSTANCE = new SendIpWarningEmailAction();
 

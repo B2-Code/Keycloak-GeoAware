@@ -3,6 +3,7 @@ package org.b2code.loginhistory;
 import com.google.auto.service.AutoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
+import org.b2code.ServerInfoAwareFactory;
 import org.b2code.geoip.persistence.repository.LoginRecordRepository;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
@@ -11,6 +12,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.provider.Provider;
+import org.keycloak.services.scheduled.ClusterAwareScheduledTaskRunner;
 import org.keycloak.timer.TimerProvider;
 
 import java.time.Duration;
@@ -19,19 +21,19 @@ import java.util.Set;
 @RequiredArgsConstructor
 @JBossLog
 @AutoService(LoginHistoryProviderFactory.class)
-public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderFactory {
+public class JpaLoginHistoryProviderFactory extends ServerInfoAwareFactory implements LoginHistoryProviderFactory {
 
     private static final String LOGIN_HISTORY_RETENTION_HOURS_CONFIG_PARM = "retentionHours";
     private static final int LOGIN_HISTORY_RETENTION_HOURS_DEFAULT = 24 * 7;
 
     private static final String LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_CONFIG_PARM = "cleanupIntervalMinutes";
-    private static final int LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_DEFAULT = 60;
+    private static final int LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_DEFAULT = 5;
 
     private Config.Scope config;
 
     @Override
-    public DefaultLoginHistoryProvider create(KeycloakSession session) {
-        return new DefaultLoginHistoryProvider(session);
+    public JpaLoginHistoryProvider create(KeycloakSession session) {
+        return new JpaLoginHistoryProvider(session);
     }
 
     @Override
@@ -49,8 +51,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
             }
         });
 
-        KeycloakSession session = keycloakSessionFactory.create();
-        initCleanUpTimer(session);
+        initCleanUpTimer(keycloakSessionFactory);
     }
 
     private void handleUserRemoved(KeycloakSession session, UserModel.UserRemovedEvent event) {
@@ -71,7 +72,7 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
         return config.getInt(LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_CONFIG_PARM, LOGIN_HISTORY_CLEANUP_INTERVAL_MINUTES_DEFAULT);
     }
 
-    private void initCleanUpTimer(KeycloakSession session) {
+    private void initCleanUpTimer(KeycloakSessionFactory sessionFactory) {
         int retentionHours = getLoginHistoryRetentionHours();
         if (retentionHours <= 0) {
             log.infof("Login history retention hours is set to %d hours. Cleanup timer will not be initialized.", retentionHours);
@@ -83,11 +84,14 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
             return;
         }
         long cleanupIntervalMillis = Duration.ofMinutes(cleanupIntervalMinutes).toMillis();
-        TimerProvider timer = session.getProvider(TimerProvider.class);
-        LoginHistoryCleanupTask cleanupTask = new LoginHistoryCleanupTask(retentionHours);
-        timer.cancelTask(cleanupTask.getTaskName());
-        log.infof("Initializing login history cleanup timer with retention period of %d hours and cleanup interval of %d minutes", retentionHours, cleanupIntervalMinutes);
-        timer.scheduleTask(cleanupTask, cleanupIntervalMillis);
+
+        try (KeycloakSession session = sessionFactory.create()) {
+            TimerProvider timer = session.getProvider(TimerProvider.class);
+            log.infof("Initializing login history cleanup timer with retention period of %d hours and cleanup interval of %d minutes", retentionHours, cleanupIntervalMinutes);
+            LoginHistoryCleanupTask cleanupTask = new LoginHistoryCleanupTask(retentionHours);
+            ClusterAwareScheduledTaskRunner runner = new ClusterAwareScheduledTaskRunner(sessionFactory, cleanupTask, cleanupIntervalMillis);
+            timer.schedule(runner, cleanupIntervalMillis);
+        }
     }
 
     @Override
@@ -102,6 +106,6 @@ public class DefaultLoginHistoryProviderFactory implements LoginHistoryProviderF
 
     @Override
     public String getId() {
-        return "default";
+        return "jpa";
     }
 }

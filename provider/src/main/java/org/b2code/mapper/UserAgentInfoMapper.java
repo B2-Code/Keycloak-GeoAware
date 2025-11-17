@@ -10,7 +10,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.ProtocolMapper;
-import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
@@ -21,7 +20,7 @@ import java.util.List;
 
 @JBossLog
 @AutoService(ProtocolMapper.class)
-public class UserAgentInfoMapper extends AbstractOIDCProtocolMapper implements AllTokenTypesMapper {
+public class UserAgentInfoMapper extends AllTokenTypesMapper {
 
     public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-oidc-user-agent-info-mapper";
 

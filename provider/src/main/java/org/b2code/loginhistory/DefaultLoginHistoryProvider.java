@@ -55,10 +55,10 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
     }
 
     @Override
-    public boolean isKnownLocation() {
+    public boolean isUnknownLocation() {
         String ip = session.getContext().getConnection().getRemoteAddr();
         GeoIpInfo ipInfo = geoipProvider.getIpInfo(ip);
-        return loginRecordRepository.hasLocationBeenUsed(getAuthenticatedUserId(), ipInfo);
+        return !loginRecordRepository.hasLocationBeenUsed(getAuthenticatedUserId(), ipInfo);
     }
 
     @Override

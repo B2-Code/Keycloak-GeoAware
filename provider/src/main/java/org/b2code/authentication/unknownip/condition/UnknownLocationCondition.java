@@ -15,7 +15,7 @@ public class UnknownLocationCondition implements AuthenticatorCondition {
     @Override
     public boolean check(KeycloakSession session) {
         LoginHistoryProvider loginHistoryProvider = session.getProvider(LoginHistoryProvider.class);
-        return !loginHistoryProvider.isKnownLocation();
+        return loginHistoryProvider.isUnknownLocation();
     }
 
     @Override

@@ -28,7 +28,7 @@ class GeoCalculatorTest {
     void calculateBoundingBox_FallbackRadius() {
         double lat = 48.1372;
         double lon = 11.5756;
-        int fallbackRadiusKm = 25; // internal constant
+        int fallbackRadiusKm = 50; // internal constant
         double deltaDeg = fallbackRadiusKm / 111.32d;
 
         BoundingBox box = GeoCalculator.calculateBoundingBox(lat, lon, null);

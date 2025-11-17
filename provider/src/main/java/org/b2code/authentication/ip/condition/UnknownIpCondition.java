@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip.condition;
+package org.b2code.authentication.ip.condition;
 
 import lombok.NoArgsConstructor;
 import org.b2code.authentication.base.condition.AuthenticatorCondition;

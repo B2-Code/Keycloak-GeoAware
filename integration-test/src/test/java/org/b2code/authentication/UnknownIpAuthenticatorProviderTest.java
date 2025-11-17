@@ -10,7 +10,7 @@ import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
 class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
-    private static final String PROVIDER_ID = "geoaware-unknown-ip";
+    private static final String PROVIDER_ID = "geoaware-ip";
 
     @Override
     AuthenticationExecutionRepresentation getAuthenticatorToTest() {
@@ -23,7 +23,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     @Test
     public void testSendAlwaysIpEmail() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Always", "Notification Email (IP)");
+        setConditionAndAction("Always", "Notification email (IP)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -42,7 +42,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
     @Test
     public void testSendNeverNewIpEmail() throws Exception {
-        setConditionAndAction("Never", "Notification Email (IP)");
+        setConditionAndAction("Never", "Notification email (IP)");
 
         login();
         mailServer.waitForIncomingEmail(0);
@@ -53,7 +53,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     @Test
     public void testUnknownIpEmail() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Unknown IP", "Notification Email (IP)");
+        setConditionAndAction("Unknown IP", "Notification email (IP)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -71,7 +71,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     @Test
     public void testOnIpChangeEmail() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("On IP Change", "Notification Email (IP)");
+        setConditionAndAction("On IP change", "Notification email (IP)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -84,7 +84,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     @Test
     public void testUnknownLocationEmail_01() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Unknown Location", "Notification Email (IP)");
+        setConditionAndAction("Unknown location", "Notification email (IP)");
 
         loginFromIp("2.125.160.217");
         mailServer.waitForIncomingEmail(1);
@@ -101,7 +101,7 @@ class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
     @Test
     public void testUnknownLocationEmail_02() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Unknown Location", "Notification Email (IP)");
+        setConditionAndAction("Unknown location", "Notification email (IP)");
 
         loginFromIp("2.125.160.217");
         mailServer.waitForIncomingEmail(1);

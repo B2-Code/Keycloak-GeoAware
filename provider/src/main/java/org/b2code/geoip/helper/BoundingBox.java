@@ -1,12 +1,13 @@
 package org.b2code.geoip.helper;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Value
+@Data
+@AllArgsConstructor
 public class BoundingBox {
-    double minLatitude;
-    double maxLatitude;
-    double minLongitude;
-    double maxLongitude;
-
+    private double minLatitude;
+    private double maxLatitude;
+    private double minLongitude;
+    private double maxLongitude;
 }

@@ -10,7 +10,7 @@ import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
 class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
-    private static final String PROVIDER_ID = "geoaware-unknown-device";
+    private static final String PROVIDER_ID = "geoaware-device";
 
     @Override
     AuthenticationExecutionRepresentation getAuthenticatorToTest() {
@@ -23,7 +23,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     @Test
     void testSendAlwaysDeviceEmail() throws Exception {
         MimeMessage lastReceivedMessage;
-        setConditionAndAction("Always", "Notification Email (Device)");
+        setConditionAndAction("Always", "Notification email (device)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -42,7 +42,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
 
     @Test
     void testSendNeverNewDeviceEmail() {
-        setConditionAndAction("Never", "Notification Email (Device)");
+        setConditionAndAction("Never", "Notification email (device)");
 
         login();
         mailServer.waitForIncomingEmail(0);
@@ -52,7 +52,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
 
     @Test
     void testSendDeviceChangedEmail() throws Exception {
-        setConditionAndAction("Device Changed", "Notification Email (Device)");
+        setConditionAndAction("Device changed", "Notification email (device)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -69,7 +69,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
 
     @Test
     void testSendEmailStrictONUnknownDevice() throws Exception {
-        setConditionAndAction("Unknown Device", "Notification Email (Device)");
+        setConditionAndAction("Unknown device", "Notification email (device)");
 
         login();
         mailServer.waitForIncomingEmail(1);

@@ -8,7 +8,7 @@ import org.keycloak.models.KeycloakSession;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class StrictOnUnknownDeviceCondition implements AuthenticatorCondition {
 
-    public static final String LABEL = "Unknown Device";
+    public static final String LABEL = "Unknown device";
 
     private static final StrictOnUnknownDeviceCondition INSTANCE = new StrictOnUnknownDeviceCondition();
 

@@ -1529,7 +1529,7 @@
       "userSetupAllowed" : false
     }, {
       "authenticatorConfig" : "geoaware",
-      "authenticator" : "geoaware-unknown-ip",
+      "authenticator" : "geoaware-ip",
       "authenticatorFlow" : false,
       "requirement" : "REQUIRED",
       "priority" : 1,

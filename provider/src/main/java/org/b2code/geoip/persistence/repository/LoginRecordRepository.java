@@ -25,7 +25,7 @@ public interface LoginRecordRepository extends Provider {
 
     void deleteByRealmId(String realmId);
 
-    void cleanupOldRecords(int hoursToKeep);
+    long cleanupOldRecords(int hoursToKeep);
 
     boolean hasDeviceBeenUsed(String userId, Device device);
 

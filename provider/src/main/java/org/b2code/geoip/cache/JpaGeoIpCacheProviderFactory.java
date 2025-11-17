@@ -9,7 +9,7 @@ import org.keycloak.models.KeycloakSessionFactory;
 
 @JBossLog
 @AutoService(GeoIpCacheProviderFactory.class)
-public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory implements GeoIpCacheProviderFactory {
+public class JpaGeoIpCacheProviderFactory extends ServerInfoAwareFactory implements GeoIpCacheProviderFactory {
 
     private static final String DURATION_CONFIG_KEY = "cacheDurationMinutes";
     private static final int DEFAULT_DURATION_DEFAULT = 60;
@@ -17,8 +17,8 @@ public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory imp
     private Config.Scope config;
 
     @Override
-    public DefaultGeoIpCacheProvider create(KeycloakSession keycloakSession) {
-        return new DefaultGeoIpCacheProvider(keycloakSession, getCacheDurationMinutes());
+    public JpaGeoIpCacheProvider create(KeycloakSession keycloakSession) {
+        return new JpaGeoIpCacheProvider(keycloakSession, getCacheDurationMinutes());
     }
 
     private int getCacheDurationMinutes() {
@@ -42,6 +42,6 @@ public class DefaultGeoIpCacheProviderFactory extends ServerInfoAwareFactory imp
 
     @Override
     public String getId() {
-        return "default";
+        return "jpa";
     }
 }

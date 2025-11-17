@@ -10,11 +10,9 @@ import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RealmRepresentation;
-import org.keycloak.testframework.annotations.InjectClient;
-import org.keycloak.testframework.annotations.InjectRealm;
-import org.keycloak.testframework.annotations.InjectTestDatabase;
-import org.keycloak.testframework.annotations.InjectUser;
+import org.keycloak.testframework.annotations.*;
 import org.keycloak.testframework.database.TestDatabase;
 import org.keycloak.testframework.injection.LifeCycle;
 import org.keycloak.testframework.oauth.OAuthClient;
@@ -45,6 +43,9 @@ public abstract class BaseTest {
 
     @InjectTestDatabase
     protected TestDatabase testDatabase;
+
+    @InjectAdminClient
+    protected Keycloak adminClient;
 
     protected LoginHistory loginHistory;
 

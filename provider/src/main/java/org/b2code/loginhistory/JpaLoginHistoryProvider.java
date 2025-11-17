@@ -17,19 +17,20 @@ import java.time.Instant;
 import java.util.Optional;
 
 @JBossLog
-public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
+public class JpaLoginHistoryProvider implements LoginHistoryProvider {
 
     private final KeycloakSession session;
     private final DeviceRepresentationProvider deviceRepresentationProvider;
     private final GeoIpProvider geoipProvider;
     private final LoginRecordRepository loginRecordRepository;
 
-    public DefaultLoginHistoryProvider(KeycloakSession session) {
-        log.tracef("Creating new %s", DefaultLoginHistoryProvider.class.getSimpleName());
+    public JpaLoginHistoryProvider(KeycloakSession session) {
+        log.tracef("Creating new %s", JpaLoginHistoryProvider.class.getSimpleName());
         this.session = session;
         this.deviceRepresentationProvider = session.getProvider(DeviceRepresentationProvider.class);
         this.geoipProvider = session.getProvider(GeoIpProvider.class);
         this.loginRecordRepository = session.getProvider(LoginRecordRepository.class);
+        checkEventListenerConfigured();
     }
 
     @Override
@@ -85,6 +86,13 @@ public class DefaultLoginHistoryProvider implements LoginHistoryProvider {
             return authSession.getAuthenticatedUser().getId();
         }
         return null;
+    }
+
+    private void checkEventListenerConfigured() {
+        boolean eventListenerConfigured = session.getContext().getRealm().getEventsListenersStream().anyMatch(el -> el.equals(LoginTrackerEventListenerProviderFactory.ID));
+        if (!eventListenerConfigured) {
+            log.errorf("The '%s' event listener is not configured for realm '%s'. Login history tracking will not work properly!", LoginTrackerEventListenerProviderFactory.ID, session.getContext().getRealm().getName());
+        }
     }
 
     @Override

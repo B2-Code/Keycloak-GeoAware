@@ -1,4 +1,4 @@
-package org.b2code.authentication.unknownip;
+package org.b2code.authentication.ip;
 
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
@@ -17,10 +17,10 @@ import java.util.List;
 
 @JBossLog
 @AutoService(AuthenticatorFactory.class)
-public class UnknownIPAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
+public class IpAuthenticatorFactory extends ServerInfoAwareFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-unknown-ip";
-    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " Unknown IP";
+    public static final String PROVIDER_ID = PluginConstants.PLUGIN_NAME_LOWER_CASE + "-ip";
+    public static final String DISPLAY_TYPE = PluginConstants.PLUGIN_NAME + " IP";
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED};
 
@@ -51,12 +51,12 @@ public class UnknownIPAuthenticatorFactory extends ServerInfoAwareFactory implem
 
     @Override
     public String getHelpText() {
-        return "";
+        return "Analyses the user's IP address, retrieves geo-location information and performs actions based on the conditions configured";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return UnknownIPAuthenticatorConfigProperties.CONFIG_PROPERTIES;
+        return IpAuthenticatorConfigProperties.CONFIG_PROPERTIES;
     }
 
     @Override

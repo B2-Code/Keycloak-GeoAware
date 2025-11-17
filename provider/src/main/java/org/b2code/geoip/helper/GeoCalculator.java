@@ -2,52 +2,41 @@ package org.b2code.geoip.helper;
 
 import lombok.experimental.UtilityClass;
 import org.b2code.geoip.persistence.entity.GeoIpInfo;
+import org.geotools.referencing.GeodeticCalculator;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Envelope;
 
 @UtilityClass
 public class GeoCalculator {
-    private static final double EARTH_RADIUS_KM = 6371.0;
-    private static final double MIN_RADIUS_KM = 25.0;
 
-    public static BoundingBox calculateBoundingBox(double latitude, double longitude, double radiusKm) {
-        double latRad = Math.toRadians(latitude);
+    private static final double FALLBACK_RADIUS_KM = 50;
 
-        double latDiff = Math.toDegrees(radiusKm / EARTH_RADIUS_KM);
-        double lonDiff = Math.toDegrees(Math.asin(Math.sin(radiusKm / EARTH_RADIUS_KM) / Math.cos(latRad)));
-
-        return new BoundingBox(
-                latitude - latDiff,
-                latitude + latDiff,
-                longitude - lonDiff,
-                longitude + lonDiff
-        );
+    public static BoundingBox calculateBoundingBox(double lat, double lon, Integer radiusKm) {
+        Envelope bbox = boundingBox(lat, lon, radiusKm);
+        return new BoundingBox(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX());
     }
 
-    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Haversine formula
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        return EARTH_RADIUS_KM * 2 * Math.asin(Math.sqrt(a));
+    public static boolean circlesOverlap(GeoIpInfo geoIp1, GeoIpInfo geoIp2) {
+        return circlesOverlap(geoIp1.getLatitude(), geoIp1.getLongitude(), geoIp1.getAccuracyRadius(), geoIp2.getLatitude(), geoIp2.getLongitude(), geoIp2.getAccuracyRadius());
     }
 
-    public static boolean isLocationWithinRadius(GeoIpInfo a, GeoIpInfo b) {
-        return isLocationWithinRadius(
-                a.getLatitude(), a.getLongitude(), a.getAccuracyRadius(),
-                b.getLatitude(), b.getLongitude(), b.getAccuracyRadius()
-        );
+    private static boolean circlesOverlap(Double lat1, Double lon1, Integer radiusKm1, Double lat2, Double lon2, Integer radiusKm2) {
+        if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) {
+            return false;
+        }
+        double rad1 = (radiusKm1 != null) ? radiusKm1 : FALLBACK_RADIUS_KM;
+        double rad2 = (radiusKm2 != null) ? radiusKm2 : FALLBACK_RADIUS_KM;
+        GeodeticCalculator calc = new GeodeticCalculator(DefaultGeographicCRS.WGS84);
+        calc.setStartingGeographicPoint(lon1, lat1);
+        calc.setDestinationGeographicPoint(lon2, lat2);
+        double distanceMeters = calc.getOrthodromicDistance();
+        return distanceMeters <= (rad1 + rad2) * 1000.0;
     }
 
-    public static boolean isLocationWithinRadius(
-            double lat1, double lon1, double radius1,
-            double lat2, double lon2, double radius2) {
-        double distance = calculateDistance(lat1, lon1, lat2, lon2);
-        double maxRadius = Math.max(Math.max(radius1, radius2), MIN_RADIUS_KM);
-        return distance <= maxRadius;
+    private static Envelope boundingBox(double lat, double lon, Integer radiusKm) {
+        double radius = (radiusKm != null) ? radiusKm : FALLBACK_RADIUS_KM;
+        double deltaDeg = radius / 111.32;
+        return new Envelope(lon - deltaDeg, lon + deltaDeg, lat - deltaDeg, lat + deltaDeg);
     }
+
 }

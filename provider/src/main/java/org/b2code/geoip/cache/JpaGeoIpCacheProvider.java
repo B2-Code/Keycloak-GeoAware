@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @JBossLog
 @RequiredArgsConstructor
-public class DefaultGeoIpCacheProvider implements GeoIpCacheProvider {
+public class JpaGeoIpCacheProvider implements GeoIpCacheProvider {
 
     private final KeycloakSession session;
     private final int cacheDurationMinutes;

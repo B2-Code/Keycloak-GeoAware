@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests [dev]" type="JUnit" factoryName="JUnit">
-    <module name="keycloak-geoaware" />
+    <module name="keycloak-geoaware-provider" />
+    <shortenClasspath name="ARGS_FILE" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="pattern" />
@@ -10,6 +11,7 @@
     </patterns>
     <method v="2">
       <option name="Make" enabled="true" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="clean install -DskipTests=true" />
     </method>
   </configuration>
 </component>

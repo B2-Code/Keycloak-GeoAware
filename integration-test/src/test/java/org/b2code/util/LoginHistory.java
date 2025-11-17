@@ -9,6 +9,7 @@ import org.b2code.geoip.persistence.entity.LoginRecordEntity;
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -77,6 +78,21 @@ public class LoginHistory implements AutoCloseable {
             throw new RuntimeException("Failed to fetch login history for userId=" + userId, e);
         }
         return results;
+    }
+
+    public void executeUpdate(String sql, Object... params) {
+        try {
+            Connection conn = getConnection();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (int i = 0; i < params.length; i++) {
+                    ps.setObject(i + 1, params[i]);
+                }
+                int affectedRows = ps.executeUpdate(sql);
+                log.debug("Executed update: {}, affected rows: {}", sql, affectedRows);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to execute update: " + sql, e);
+        }
     }
 
     @Override

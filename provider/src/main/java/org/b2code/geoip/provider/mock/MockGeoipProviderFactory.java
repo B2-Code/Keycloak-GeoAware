@@ -3,6 +3,7 @@ package org.b2code.geoip.provider.mock;
 import com.google.auto.service.AutoService;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.PluginConstants;
+import org.b2code.ServerInfoAwareFactory;
 import org.b2code.geoip.provider.GeoIpProvider;
 import org.b2code.geoip.provider.GeoIpProviderFactory;
 import org.b2code.geoip.provider.ipinfo.IpInfoProviderFactory;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @JBossLog
 @AutoService(GeoIpProviderFactory.class)
-public class MockGeoipProviderFactory implements GeoIpProviderFactory {
+public class MockGeoipProviderFactory extends ServerInfoAwareFactory implements GeoIpProviderFactory {
 
     private static final String PROVIDER_ID = "mock";
     private static final String PROVIDER_IMPL_NAME_CONFIG_PARM = "provider";

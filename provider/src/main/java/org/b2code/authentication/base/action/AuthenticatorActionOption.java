@@ -2,7 +2,7 @@ package org.b2code.authentication.base.action;
 
 import lombok.RequiredArgsConstructor;
 import org.b2code.authentication.device.action.SendDeviceWarningEmailAction;
-import org.b2code.authentication.unknownip.action.SendIpWarningEmailAction;
+import org.b2code.authentication.ip.action.SendIpWarningEmailAction;
 
 import java.util.Arrays;
 import java.util.Map;

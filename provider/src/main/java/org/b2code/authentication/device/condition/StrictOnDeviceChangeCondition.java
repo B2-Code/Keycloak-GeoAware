@@ -11,7 +11,7 @@ import org.keycloak.representations.account.DeviceRepresentation;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class StrictOnDeviceChangeCondition implements AuthenticatorCondition {
 
-    public static final String LABEL = "Device Changed";
+    public static final String LABEL = "Device changed";
 
     private static final StrictOnDeviceChangeCondition INSTANCE = new StrictOnDeviceChangeCondition();
 

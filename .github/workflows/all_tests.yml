@@ -18,7 +18,7 @@ jobs:
         keycloak_version: [ 26.4.0, 26.4.1, 26.4.2, 26.4.3, 26.4.4, 26.4.5 ]
     continue-on-error: false
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Cache Maven repository
         uses: actions/cache@v4

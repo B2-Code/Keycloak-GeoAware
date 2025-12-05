@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.keycloak>26.4.7</version.keycloak>
-        <version.geoip2>4.4.0</version.geoip2>
+        <version.geoip2>5.0.1</version.geoip2>
         <version.ipinfo>3.2.0</version.ipinfo>
         <version.lombok>1.18.42</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>

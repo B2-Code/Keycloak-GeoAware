@@ -3,16 +3,12 @@ package org.b2code.authentication;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.base.BaseTest;
-import org.jboss.logmanager.handlers.SyslogHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.representations.idm.*;
-import org.keycloak.testframework.annotations.InjectSysLogServer;
-import org.keycloak.testframework.events.SysLogServer;
-import org.keycloak.testframework.events.SysLogServerSupplier;
 import org.keycloak.testframework.mail.MailServer;
 import org.keycloak.testframework.mail.annotations.InjectMailServer;
 
@@ -51,17 +47,18 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
     }
 
     @Test
-    void testLoginAlwaysLogMessage()  {
+    void testLoginAlwaysLogMessage() {
         this.setConditionAndAction("Always", "Log");
         login();
     }
 
     @Test
-    void testLoginNeverLogMessage()  {
+    void testLoginNeverLogMessage() {
         this.setConditionAndAction("Never", "Log");
         login();
     }
-  
+
+    @Test
     void testLoginNeverDenyAccess() {
         this.setConditionAndAction("Never", "Deny Access");
         login();
@@ -70,7 +67,7 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
     @Test
     void testLoginAlwaysDenyAccess() {
         this.setConditionAndAction("Always", "Deny Access");
-        loginAndExpectFail();
+        Assertions.assertThrows(AssertionError.class, this::loginAndExpectFail);
     }
 
     @Test

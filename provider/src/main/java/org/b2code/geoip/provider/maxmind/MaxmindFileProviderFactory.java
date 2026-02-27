@@ -32,7 +32,7 @@ public class MaxmindFileProviderFactory extends MaxmindProviderFactory {
         }
         try {
             DatabaseReader newReader = new DatabaseReader.Builder(database).build();
-            log.infof("Loaded Database '%s' (built at %s)", newReader.getMetadata().getDatabaseType(), newReader.getMetadata().getBuildDate());
+            log.infof("Loaded Database '%s' (built at %s)", newReader.metadata().databaseType(), newReader.metadata().buildEpoch());
             return newReader;
         } catch (IOException e) {
             log.error("Failed to create Maxmind database reader", e);

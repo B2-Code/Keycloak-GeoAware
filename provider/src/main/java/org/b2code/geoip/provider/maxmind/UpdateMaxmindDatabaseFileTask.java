@@ -77,7 +77,7 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
             }
 
             Date remoteDate = DateUtils.parseDate(lastModified);
-            Date currentDate = reader.getMetadata().getBuildDate();
+            Date currentDate = new Date(reader.metadata().buildEpoch().longValue() * 1000);
             return remoteDate != null && remoteDate.after(currentDate);
         } catch (IOException e) {
             log.error("Failed to check for database update", e);

@@ -8,6 +8,42 @@
     <artifactId>keycloak-geoaware</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A Keycloak extension for GeoAware authentication and authorization.</description>
+    <url>https://github.com/b2-code/Keycloak-GeoAware</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>BenLad17</id>
+            <name>Benedikt Ladzik</name>
+            <email>deine-email@example.com</email>
+            <organization>b2-code</organization>
+            <organizationUrl>https://github.com/B2-Code</organizationUrl>
+        </developer>
+        <developer>
+            <id>NobelNerdBenne</id>
+            <name>Benedikt Rohlf</name>
+            <email>benne@b2code.org</email>
+            <organization>b2-code</organization>
+            <organizationUrl>https://github.com/B2-Code</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/B2-Code/keycloak-geoaware.git</connection>
+        <developerConnection>scm:git:https://github.com/B2-Code/keycloak-geoaware.git</developerConnection>
+        <url>https://github.com/B2-Code/keycloak-geoaware</url>
+    </scm>
+
     <modules>
         <module>provider</module>
         <module>integration-test</module>

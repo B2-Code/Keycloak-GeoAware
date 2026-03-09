@@ -31,7 +31,7 @@ jobs:
           mvn -B versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false
 
       - name: Deploy to Maven Central
-        run: mvn -B -DskipTests=true deploy -Prelease --file pom.xml
+        run: mvn -B -DskipTests=true deploy -Prelease --file provider/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}

@@ -38,7 +38,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Rename shaded JAR
-        run: mv provider/target/keycloak-geoaware-provider-shaded.jar provider/target/keycloak-geoaware.jar
+        run: mv provider/target/keycloak-geoaware-shaded.jar provider/target/keycloak-geoaware.jar
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v2

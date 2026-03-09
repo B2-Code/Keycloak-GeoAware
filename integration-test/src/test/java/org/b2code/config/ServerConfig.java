@@ -12,7 +12,7 @@ public abstract class ServerConfig implements KeycloakServerConfig {
     public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder keycloakServerConfigBuilder) {
         Map<String, String> options = new HashMap<>(getOptions());
         return keycloakServerConfigBuilder
-                .dependency("org.b2code", "keycloak-geoaware-provider")
+                .dependency("org.b2code", "keycloak-geoaware")
                 .options(options);
     }
 

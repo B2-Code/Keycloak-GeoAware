@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Set release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          mvn -B versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false
+
+      - name: Deploy to Maven Central
+        run: mvn -B -DskipTests=true deploy -Prelease --file pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Rename shaded JAR
+        run: mv provider/target/keycloak-geoaware-provider-shaded.jar provider/target/keycloak-geoaware.jar
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: provider/target/keycloak-geoaware.jar
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref, '-rc') }}
+          body: |
+            Release notes: https://b2-code.github.io/Keycloak-GeoAware/release-notes/${{ github.ref_name }}

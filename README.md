@@ -12,4 +12,4 @@ Keycloak-GeoAware is an advanced feature extension for [Keycloak](https://www.ke
 - [Documentation](https://b2-code.github.io/Keycloak-GeoAware)
 
 ## License
-This project is licensed under the terms of the **MIT** license. You can check out the full license [here](https://github.com/B2-Code/Keycloak-GeoAware/blob/main/LICENSE).
+This project is licensed under the terms of the **Apache 2** license. You can check out the full license [here](https://github.com/B2-Code/Keycloak-GeoAware/blob/main/LICENSE).

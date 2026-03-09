@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.b2code</groupId>
-        <artifactId>keycloak-geoaware</artifactId>
+        <artifactId>keycloak-geoaware-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>keycloak-geoaware-provider</artifactId>
+    <artifactId>keycloak-geoaware</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

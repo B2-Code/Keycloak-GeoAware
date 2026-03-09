@@ -22,7 +22,7 @@ services:
       - "8443:8443"
       - "8787:8787"
     volumes:
-      - ./provider/target/keycloak-geoaware-provider-shaded.jar:/opt/keycloak/providers/extension.jar
+      - ./provider/target/keycloak-geoaware-shaded.jar:/opt/keycloak/providers/extension.jar
       - ./provider/src/main/resources/dev/cfg/keycloak.conf:/opt/keycloak/conf/keycloak.conf
       - ./integration-test/src/test/resources/GeoIP2-City-Test.mmdb:/opt/keycloak/data/geoaware/GeoIP2-City-Test.mmdb
       - ./integration-test/src/test/resources/GeoLite2-City-Test.mmdb:/opt/keycloak/data/geoaware/GeoLite2-City-Test.mmdb

@@ -1,14 +1,21 @@
+---
+title: Maxmind File
+layout: default
+parent: Configuration
+nav_order: 2
+---
+
 # Maxmind File
 
 The Maxmind File GeoIP provider allows you to use Maxmind's GeoIP databases stored in local files to perform geolocation lookups. This provider is useful when you want to avoid external API calls and
 have the GeoIP data available locally.
-To use the Maxmind File GeoIP provider, you need to set the following configuration options:
 
-| Name                                      | Description                                                                                                                                                      |
-|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| spi-geoaware-geoip--provider              | Set to `maxmind-file`                                                                                                                                            |
-| spi-geoaware-geoip--maxmind-file--db-path | You need to specify the directory in which GeoAware should look for the database file. Set this variable to the relevant directory. Defaults to `data/geoaware`. |
-| spi-geoaware-geoip--maxmind-file--db-name | The name of the database file.                                                                                                                                   |
+To use this provider, set `spi-geoaware-geoip--provider` to `maxmind-file` and configure the following options:
+
+| Name                                      | Description                                                                                                                  |
+|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| spi-geoaware-geoip--maxmind-file--db-path | The directory in which GeoAware looks for the database file. Defaults to `data/geoaware`.                                    |
+| spi-geoaware-geoip--maxmind-file--db-name | Optional. The name of the database file. If not set, GeoAware uses the first `.mmdb` file found in the configured directory. |
 
 Make sure to download the appropriate Maxmind GeoIP database file (e.g., GeoLite2-City.mmdb) and place it in the specified directory.
 The file needs to be in the Maxmind DB format (MMDB).

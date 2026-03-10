@@ -1,7 +1,7 @@
 package org.b2code.authentication.base.condition;
 
-import org.b2code.authentication.device.condition.StrictOnDeviceChangeCondition;
-import org.b2code.authentication.device.condition.StrictOnUnknownDeviceCondition;
+import org.b2code.authentication.device.condition.OnDeviceChangeCondition;
+import org.b2code.authentication.device.condition.UnknownDeviceCondition;
 import org.b2code.authentication.ip.condition.OnIpChangeCondition;
 import org.b2code.authentication.ip.condition.UnknownIpCondition;
 import org.b2code.authentication.ip.condition.UnknownLocationCondition;
@@ -40,16 +40,16 @@ public enum AuthenticatorConditionOption {
             return UnknownIpCondition.instance();
         }
     },
-    STRICT_ON_DEVICE_CHANGE {
+    ON_DEVICE_CHANGE {
         @Override
         public AuthenticatorCondition getCondition() {
-            return StrictOnDeviceChangeCondition.instance();
+            return OnDeviceChangeCondition.instance();
         }
     },
-    STRICT_ON_UNKNOWN_DEVICE {
+    UNKNOWN_DEVICE {
         @Override
         public AuthenticatorCondition getCondition() {
-            return StrictOnUnknownDeviceCondition.instance();
+            return UnknownDeviceCondition.instance();
         }
     };
 

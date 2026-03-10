@@ -1,7 +1,7 @@
 ---
 title: Release Notes
 layout: default
-nav_order: 3
+nav_order: 5
 has_children: true
 child_nav_order: reversed
 ---

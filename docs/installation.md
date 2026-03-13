@@ -30,7 +30,7 @@ mvn dependency:copy \
   -DoutputDirectory=./providers
 ```
 
-Replace `VERSION` with the version you want to install, e.g. `0.0.1-rc`.
+Replace `VERSION` with the version you want to install, e.g. `1.0.0`.
 
 ## Installation
 

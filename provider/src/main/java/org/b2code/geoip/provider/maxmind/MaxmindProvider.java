@@ -3,6 +3,7 @@ package org.b2code.geoip.provider.maxmind;
 import com.maxmind.geoip2.GeoIp2Provider;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
+import com.maxmind.geoip2.model.CountryResponse;
 import lombok.extern.jbosslog.JBossLog;
 import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.cache.CachingGeoIpProvider;
@@ -16,13 +17,15 @@ import java.util.Optional;
 public class MaxmindProvider extends CachingGeoIpProvider {
 
     private final GeoIp2Provider geoIpProvider;
+    private final boolean isCountryDb;
 
-    protected MaxmindProvider(KeycloakSession session, GeoIp2Provider geoIpProvider) {
+    protected MaxmindProvider(KeycloakSession session, GeoIp2Provider geoIpProvider, boolean isCountryDb) {
         super(session);
         if (geoIpProvider == null) {
             throw new RuntimeException("GeoIp2Provider is not initialized");
         }
         this.geoIpProvider = geoIpProvider;
+        this.isCountryDb = isCountryDb;
     }
 
     @Override
@@ -34,8 +37,13 @@ public class MaxmindProvider extends CachingGeoIpProvider {
 
         InetAddress inetAddress = getInetAddress(ipAddress);
         try {
-            CityResponse maxmindInfo = geoIpProvider.city(inetAddress);
-            return Optional.ofNullable(MaxmindHelper.map(maxmindInfo, ipAddress));
+            if (isCountryDb) {
+                CountryResponse maxmindInfo = geoIpProvider.country(inetAddress);
+                return Optional.ofNullable(MaxmindHelper.map(maxmindInfo, ipAddress));
+            } else {
+                CityResponse maxmindInfo = geoIpProvider.city(inetAddress);
+                return Optional.ofNullable(MaxmindHelper.map(maxmindInfo, ipAddress));
+            }
         } catch (IOException e) {
             log.error("Error while performing GeoIP lookup", e);
         } catch (GeoIp2Exception e) {

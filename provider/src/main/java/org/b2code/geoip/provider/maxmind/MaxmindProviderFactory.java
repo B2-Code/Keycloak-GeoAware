@@ -5,6 +5,7 @@ import com.maxmind.geoip2.GeoIp2Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jbosslog.JBossLog;
+import org.keycloak.models.KeycloakSession;
 import org.apache.commons.io.FileUtils;
 import org.b2code.PluginConstants;
 import org.b2code.ServerInfoAwareFactory;
@@ -46,6 +47,12 @@ public abstract class MaxmindProviderFactory extends ServerInfoAwareFactory impl
     }
 
     public abstract GeoIp2Provider createReader();
+
+    protected MaxmindProvider createProvider(KeycloakSession session) {
+        boolean isCountryDb = reader instanceof DatabaseReader dr &&
+                dr.metadata().databaseType().contains("Country");
+        return new MaxmindProvider(session, reader, isCountryDb);
+    }
 
     protected Integer getMaxmindAccountId() {
         return config.getInt(MAXMIND_ACCOUNT_ID_CONFIG_PARM);

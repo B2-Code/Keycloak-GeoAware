@@ -18,7 +18,7 @@ public class MaxmindWebServiceProviderFactory extends MaxmindProviderFactory {
     @Override
     public MaxmindProvider create(KeycloakSession keycloakSession) {
         log.tracef("Creating new %s", MaxmindProvider.class.getSimpleName());
-        return new MaxmindProvider(keycloakSession, reader);
+        return createProvider(keycloakSession);
     }
 
     @Override

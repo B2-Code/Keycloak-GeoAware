@@ -41,7 +41,7 @@ public class IpAuthenticatorFactory extends ServerInfoAwareFactory implements Au
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return REQUIREMENT_CHOICES;
+        return REQUIREMENT_CHOICES.clone();
     }
 
     @Override

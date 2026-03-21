@@ -4,20 +4,14 @@ import jakarta.mail.internet.MimeMessage;
 import org.b2code.config.MaxmindGeoLiteFileServerConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.AuthenticationExecutionRepresentation;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
 class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
-    private static final String PROVIDER_ID = "geoaware-device";
-
     @Override
-    AuthenticationExecutionRepresentation getAuthenticatorToTest() {
-        AuthenticationExecutionRepresentation authenticatorToTest = new AuthenticationExecutionRepresentation();
-        authenticatorToTest.setAuthenticator(PROVIDER_ID);
-        authenticatorToTest.setRequirement("REQUIRED");
-        return authenticatorToTest;
+    String getAuthenticatorProviderToTest() {
+        return "geoaware-device";
     }
 
     @Test
@@ -52,7 +46,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
 
     @Test
     void testSendDeviceChangedEmail() throws Exception {
-        setConditionAndAction("Device changed", "Notification email (device)");
+        setConditionAndAction("On device change", "Notification email (device)");
 
         login();
         mailServer.waitForIncomingEmail(1);
@@ -68,7 +62,7 @@ class UnknownDeviceAuthenticatorProviderTest extends BaseAuthenticatorProviderTe
     }
 
     @Test
-    void testSendEmailStrictONUnknownDevice() throws Exception {
+    void testSendEmailStrictOnUnknownDevice() throws Exception {
         setConditionAndAction("Unknown device", "Notification email (device)");
 
         login();

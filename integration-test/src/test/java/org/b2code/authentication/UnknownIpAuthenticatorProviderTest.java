@@ -4,20 +4,14 @@ import jakarta.mail.internet.MimeMessage;
 import org.b2code.config.MaxmindGeoLiteFileServerConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.AuthenticationExecutionRepresentation;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
 class UnknownIpAuthenticatorProviderTest extends BaseAuthenticatorProviderTest {
 
-    private static final String PROVIDER_ID = "geoaware-ip";
-
     @Override
-    AuthenticationExecutionRepresentation getAuthenticatorToTest() {
-        AuthenticationExecutionRepresentation authenticatorToTest = new AuthenticationExecutionRepresentation();
-        authenticatorToTest.setAuthenticator(PROVIDER_ID);
-        authenticatorToTest.setRequirement("REQUIRED");
-        return authenticatorToTest;
+    String getAuthenticatorProviderToTest() {
+        return "geoaware-ip";
     }
 
     @Test

@@ -25,7 +25,7 @@ public abstract class MaxmindProviderFactory extends ServerInfoAwareFactory impl
     private static final String MAXMIND_LICENSE_KEY_CONFIG_PARM = "licenseKey";
 
     private static final String DB_PATH_CONFIG_PARM = "dbPath";
-    private static final String DB_PATH_DEFAULT = Environment.getDataDir() + File.separator + PluginConstants.PLUGIN_NAME_LOWER_CASE;
+    private static final String DB_PATH_DEFAULT = Environment.getDataDir().orElse(".") + File.separator + PluginConstants.PLUGIN_NAME_LOWER_CASE;
 
     private static final String DB_NAME_CONFIG_PARM = "dbName";
 

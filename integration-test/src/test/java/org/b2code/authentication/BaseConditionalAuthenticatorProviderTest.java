@@ -1,12 +1,10 @@
 package org.b2code.authentication;
 
-import lombok.extern.slf4j.Slf4j;
 import org.b2code.base.BaseTest;
 import org.b2code.config.TestRealmConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 
-@Slf4j
 abstract class BaseConditionalAuthenticatorProviderTest extends BaseTest {
 
     @BeforeEach

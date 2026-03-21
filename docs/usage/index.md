@@ -1,45 +1,46 @@
+---
+title: Usage
+layout: default
+nav_order: 4
+has_children: true
+---
+
 # Usage
 
 Once you have configured the GeoAware extension, you can start using its features to strengthen the security of your Keycloak authentication processes.
-This section provides an overview of how to use the GeoAware authenticators effectively.
 
-## How to Use GeoAware Authenticators
-The GeoAware authenticators operate according to the condition and action model.
-For each authenticator that you wish to use, you will need to configure a condition and one or more actions.
-However, the configuration process is straightforward and can be completed via the Keycloak Admin Console.
+## Two Ways to Use GeoAware
 
-## IP Authenticator
-The IP Authenticator allows you to enforce geolocation-based access control during the authentication process.
-Search for `GeoAware IP` in the list of authenticators when configuring your authentication flows.
+GeoAware offers two complementary approaches to integrating geolocation and device awareness into your authentication flows.
+Understanding the difference will help you choose the right tool for your use case.
 
-### Conditions
-You can choose from the following conditions to determine when the IP Authenticator should be triggered:
-- **Always**: The authenticator will always be executed.
-- **On IP change**: The authenticator will be executed only when the user's IP address has changed since their last login.
-- **Unknown IP**: The authenticator will be executed only when the user's IP address is not recognized from previous logins.
-- **Unknown location**: The authenticator will be executed only when the user's geolocation is not recognized from previous logins.
-- **Never**: The authenticator will never be executed.
+### GeoAware Authenticators (condition + action model)
 
-### Actions
-You can choose from the following actions to define what happens when the IP Authenticator is triggered:
-- **Notification email**: Sends a notification email to the user informing them of the login attempt from a new IP address or location.
-- **Deny Access**: Denies access to the user, preventing them from logging in.
-- **Log**: Logs the event.
-- **Disable user**: Disables the user's account. This will prevent the user from logging in until an administrator re-enables the account.
+The [IP Authenticator](./ip_authenticator.md) and [Device Authenticator](./device_authenticator.md) are self-contained authenticators that bundle a **condition** and an **action** into a single step.
+You add one of them to your flow, configure which condition should trigger it and what action to perform, and you are done.
+This approach is ideal when the built-in actions (send a notification email, deny access, log, or disable the user) cover your requirements.
 
-## Device Authenticator
-The Device Authenticator allows you to enforce device-based access control during the authentication process.
-Search for `GeoAware Device` in the list of authenticators when configuring your authentication flows.
+**Use this approach when:**
 
-### Conditions
-You can choose from the following conditions to determine when the Device Authenticator should be triggered:
-- **Always**: The authenticator will always be executed.
-- **Device changed**: The authenticator will be executed only when the user is logging in from a different device than their last login.
-- **Unknown device**: The authenticator will be executed only when the user is logging in from a device that is not recognized from previous logins.
-- **Never**: The authenticator will never be executed.
+- You want a quick setup with minimal flow configuration.
+- One of the built-in actions is sufficient for your use case.
 
-You can choose from the following actions to define what happens when the IP Authenticator is triggered:
-- **Notification email**: Sends a notification email to the user informing them of the login attempt from a new IP address or location.
-- **Deny Access**: Denies access to the user, preventing them from logging in.
-- **Log**: Logs the event.
-- **Disable user**: Disables the user's account. This will prevent the user from logging in until an administrator re-enables the account.
+### GeoAware Conditional Authenticators (Keycloak conditional sub-flow model)
+
+GeoAware also provides a set of [standalone conditional authenticators](./conditional_authenticators.md) that plug directly into Keycloak's native
+[conditional sub-flow](https://www.keycloak.org/docs/latest/server_admin/#conditions-in-conditional-flows) mechanism.
+In this model, a conditional sub-flow contains two parts: a **condition** step that decides whether the sub-flow runs,
+and one or more **action** steps that execute if the condition is met.
+The GeoAware conditional authenticators act as the condition step, while you are free to choose any Keycloak built-in
+or custom authenticator as the action.
+
+**Use this approach when:**
+
+- You need an action that is not covered by the built-in GeoAware actions, such as triggering an OTP challenge or a custom authenticator.
+- You want to combine a GeoAware condition with multiple action steps inside the same sub-flow.
+- You prefer to compose flows entirely from Keycloak-native building blocks.
+
+## Token Mappers
+
+In addition to authentication flow integration, GeoAware provides [OIDC protocol mappers](./token_mappers.md) that let you include geolocation and device information as claims in your access tokens,
+ID tokens, and userinfo responses.

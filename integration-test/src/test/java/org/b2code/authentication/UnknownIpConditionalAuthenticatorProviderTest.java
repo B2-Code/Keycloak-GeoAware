@@ -15,6 +15,6 @@ class UnknownIpConditionalAuthenticatorProviderTest extends BaseConditionalAuthe
 
     @Test
     void testDeniesOnFirstLogin() {
-        loginAndExpectDenied();
+        loginAndExpectFail();
     }
 }

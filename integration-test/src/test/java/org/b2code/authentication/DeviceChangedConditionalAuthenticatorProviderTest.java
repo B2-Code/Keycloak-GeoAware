@@ -15,6 +15,6 @@ class DeviceChangedConditionalAuthenticatorProviderTest extends BaseConditionalA
 
     @Test
     void testDeniesOnFirstLogin() {
-        loginAndExpectDenied();
+        loginAndExpectFail();
     }
 }

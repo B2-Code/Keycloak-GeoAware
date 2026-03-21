@@ -15,6 +15,6 @@ class OnIpChangeConditionalAuthenticatorProviderTest extends BaseConditionalAuth
 
     @Test
     void testDeniesOnFirstLogin() {
-        loginAndExpectDenied();
+        loginAndExpectFail();
     }
 }

@@ -15,6 +15,6 @@ class UnknownLocationConditionalAuthenticatorProviderTest extends BaseConditiona
 
     @Test
     void testDeniesOnFirstLogin() {
-        loginFromIpAndExpectDenied("2.125.160.217");
+        loginFromIpAndExpectFail("2.125.160.217");
     }
 }

@@ -15,6 +15,6 @@ class UnknownDeviceConditionalAuthenticatorProviderTest extends BaseConditionalA
 
     @Test
     void testDeniesOnFirstLogin() {
-        loginAndExpectDenied();
+        loginAndExpectFail();
     }
 }

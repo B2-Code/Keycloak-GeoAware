@@ -54,7 +54,7 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
     @Test
     void testLoginAlwaysDenyAccess() {
         this.setConditionAndAction("Always", "Deny Access");
-        Assertions.assertThrows(AssertionError.class, this::loginAndExpectFail);
+        loginAndExpectFail();
     }
 
     @Test

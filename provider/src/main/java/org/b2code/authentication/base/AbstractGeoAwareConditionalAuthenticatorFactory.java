@@ -36,7 +36,7 @@ public abstract class AbstractGeoAwareConditionalAuthenticatorFactory extends Se
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return REQUIREMENT_CHOICES;
+        return REQUIREMENT_CHOICES.clone();
     }
 
     @Override

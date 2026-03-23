@@ -3,47 +3,34 @@ package org.b2code.authentication;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.b2code.base.BaseTest;
+import org.b2code.config.TestRealmConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.authentication.AuthenticationFlow;
-import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
-import org.keycloak.representations.idm.*;
+import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
+import org.keycloak.representations.idm.AuthenticatorConfigRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testframework.mail.MailServer;
 import org.keycloak.testframework.mail.annotations.InjectMailServer;
+import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 abstract class BaseAuthenticatorProviderTest extends BaseTest {
-
-    private static final String FLOW_ALIAS = "test-flow";
 
     @InjectMailServer
     MailServer mailServer;
 
     @BeforeEach
     void setupFlow() {
-        log.info("Creating flow");
-        createFlow();
-
-        AuthenticationFlowRepresentation authenticationFlowRepresentation = getFlow();
-        Assertions.assertNotNull(authenticationFlowRepresentation);
-
-        for (AuthenticationExecutionRepresentation execution : createExecutions()) {
-            execution.setParentFlow(getFlow().getId());
-            try (Response response = realm.admin().flows().addExecution(execution)) {
-                Assertions.assertEquals(201, response.getStatus());
-            }
-        }
-        Assertions.assertEquals(2, getFlow().getAuthenticationExecutions().size());
-
         RealmRepresentation realmRep = realm.getCreatedRepresentation();
-        realmRep.setBrowserFlow(FLOW_ALIAS);
+        realmRep.setBrowserFlow(getFlowAlias());
         realm.admin().update(realmRep);
+    }
 
-        log.info("Flow created");
+    private String getFlowAlias() {
+        return TestRealmConfig.AUTHENTICATOR_FLOW_PREFIX + getAuthenticatorProviderToTest();
     }
 
     @Test
@@ -67,7 +54,7 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
     @Test
     void testLoginAlwaysDenyAccess() {
         this.setConditionAndAction("Always", "Deny Access");
-        Assertions.assertThrows(AssertionError.class, this::loginAndExpectFail);
+        loginAndExpectFail();
     }
 
     @Test
@@ -84,35 +71,8 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
         Assertions.assertFalse(user.admin().toRepresentation().isEnabled());
     }
 
-    private AuthenticationFlowRepresentation getFlow() {
-        return realm.admin().flows().getFlows().stream()
-                .filter(f -> f.getAlias().equals(FLOW_ALIAS)).findAny().orElseThrow();
-    }
-
-    private void createFlow() {
-        AuthenticationFlowRepresentation flow = new AuthenticationFlowRepresentation();
-        flow.setAlias(FLOW_ALIAS);
-        flow.setProviderId(AuthenticationFlow.BASIC_FLOW);
-        flow.setTopLevel(true);
-        flow.setBuiltIn(false);
-
-        try (Response response = realm.admin().flows().createFlow(flow)) {
-            Assertions.assertEquals(201, response.getStatus());
-        }
-    }
-
-    private List<AuthenticationExecutionRepresentation> createExecutions() {
-        AuthenticationExecutionRepresentation authenticatorToTest = getAuthenticatorToTest();
-
-        AuthenticationExecutionRepresentation usernamePasswordAuthenticator = new AuthenticationExecutionRepresentation();
-        usernamePasswordAuthenticator.setAuthenticator(UsernamePasswordFormFactory.PROVIDER_ID);
-        usernamePasswordAuthenticator.setRequirement("REQUIRED");
-
-        return List.of(usernamePasswordAuthenticator, authenticatorToTest);
-    }
-
     void setAuthenticatorConfig(Map<String, String> options) {
-        AuthenticationExecutionInfoRepresentation execution = realm.admin().flows().getExecutions(getFlow().getAlias()).getLast();
+        AuthenticationExecutionInfoRepresentation execution = realm.admin().flows().getExecutions(getFlowAlias()).getLast();
         AuthenticatorConfigRepresentation config = new AuthenticatorConfigRepresentation();
         config.setId(execution.getId());
         config.setAlias("execution-" + execution.getId());
@@ -126,6 +86,6 @@ abstract class BaseAuthenticatorProviderTest extends BaseTest {
         this.setAuthenticatorConfig(Map.of("condition", condition, "action", action));
     }
 
-    abstract AuthenticationExecutionRepresentation getAuthenticatorToTest();
+    abstract String getAuthenticatorProviderToTest();
 
 }

@@ -41,7 +41,7 @@ public class DeviceAuthenticatorFactory extends ServerInfoAwareFactory implement
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return REQUIREMENT_CHOICES;
+        return REQUIREMENT_CHOICES.clone();
     }
 
     @Override

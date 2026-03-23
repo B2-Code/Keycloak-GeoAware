@@ -6,11 +6,11 @@ import org.b2code.loginhistory.LoginHistoryProvider;
 import org.keycloak.models.KeycloakSession;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class StrictOnUnknownDeviceCondition implements AuthenticatorCondition {
+public class UnknownDeviceCondition implements AuthenticatorCondition {
 
     public static final String LABEL = "Unknown device";
 
-    private static final StrictOnUnknownDeviceCondition INSTANCE = new StrictOnUnknownDeviceCondition();
+    private static final UnknownDeviceCondition INSTANCE = new UnknownDeviceCondition();
 
     @Override
     public boolean check(KeycloakSession session) {
@@ -28,8 +28,7 @@ public class StrictOnUnknownDeviceCondition implements AuthenticatorCondition {
         return "Triggers when the device is unknown.";
     }
 
-    public static StrictOnUnknownDeviceCondition instance() {
+    public static UnknownDeviceCondition instance() {
         return INSTANCE;
     }
-
 }

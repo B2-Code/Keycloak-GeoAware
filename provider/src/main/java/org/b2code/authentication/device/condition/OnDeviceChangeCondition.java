@@ -9,11 +9,11 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.account.DeviceRepresentation;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class StrictOnDeviceChangeCondition implements AuthenticatorCondition {
+public class OnDeviceChangeCondition implements AuthenticatorCondition {
 
-    public static final String LABEL = "Device changed";
+    public static final String LABEL = "On device change";
 
-    private static final StrictOnDeviceChangeCondition INSTANCE = new StrictOnDeviceChangeCondition();
+    private static final OnDeviceChangeCondition INSTANCE = new OnDeviceChangeCondition();
 
     @Override
     public boolean check(KeycloakSession session) {
@@ -36,7 +36,7 @@ public class StrictOnDeviceChangeCondition implements AuthenticatorCondition {
         return "Triggers if the user agent has changed compared to the last login.";
     }
 
-    public static StrictOnDeviceChangeCondition instance() {
+    public static OnDeviceChangeCondition instance() {
         return INSTANCE;
     }
 }

@@ -10,7 +10,7 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 import java.util.List;
 
 public final class DeviceAuthenticatorConfigProperties {
-    private static final List<AuthenticatorConditionOption> CONDITION_OPTIONS = List.of(AuthenticatorConditionOption.ALWAYS, AuthenticatorConditionOption.STRICT_ON_DEVICE_CHANGE, AuthenticatorConditionOption.STRICT_ON_UNKNOWN_DEVICE, AuthenticatorConditionOption.NEVER);
+    private static final List<AuthenticatorConditionOption> CONDITION_OPTIONS = List.of(AuthenticatorConditionOption.ALWAYS, AuthenticatorConditionOption.ON_DEVICE_CHANGE, AuthenticatorConditionOption.UNKNOWN_DEVICE, AuthenticatorConditionOption.NEVER);
     private static final List<AuthenticatorActionOption> ACTION_OPTIONS = List.of(AuthenticatorActionOption.SEND_DEVICE_WARNING_EMAIL, AuthenticatorActionOption.DENY_ACCESS, AuthenticatorActionOption.LOG, AuthenticatorActionOption.DISABLE_USER);
 
     private static final ProviderConfigProperty CONDITION_PROPERTY = AuthenticatorConditionConfigPropertyBuilder.getChooseConditionConfigProperty(CONDITION_OPTIONS);

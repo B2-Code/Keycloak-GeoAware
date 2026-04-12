@@ -41,7 +41,7 @@ jobs:
         run: mv provider/target/keycloak-geoaware-shaded.jar provider/target/keycloak-geoaware.jar
 
       - name: GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: provider/target/keycloak-geoaware.jar
           fail_on_unmatched_files: true

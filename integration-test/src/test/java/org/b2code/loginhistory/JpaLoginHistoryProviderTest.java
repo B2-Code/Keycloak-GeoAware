@@ -1,5 +1,6 @@
 package org.b2code.loginhistory;
 
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import org.b2code.base.BaseTest;
 import org.b2code.config.MaxmindGeoLiteFileServerConfig;
@@ -41,7 +42,17 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
         int loginRecordsAfterDeletion = getLoginRecords().size();
         Assertions.assertEquals(0, loginRecordsAfterDeletion, "Login history records must be deleted after realm deletion");
 
-        // Re-create the realm to not confuse the test framework
+        // Re-create the realm to not confuse the test framework.
+        // Wait for deletion to be visible first — Keycloak 26.6+ deletes asynchronously.
+        long deadline = System.currentTimeMillis() + 30_000;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                adminClient.realm(realmRep.getRealm()).toRepresentation();
+                Thread.sleep(200);
+            } catch (NotFoundException e) {
+                break;
+            }
+        }
         adminClient.realms().create(realmRep);
     }
 

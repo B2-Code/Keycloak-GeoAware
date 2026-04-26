@@ -37,13 +37,12 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
         Assertions.assertEquals(1, loginRecordsBeforeDeletion, "Exactly one login history record is expected after initial login");
 
         RealmRepresentation realmRep = realm.getCreatedRepresentation();
+        // Save userId before deleting the realm — user.getId() may call Keycloak after deletion and get 404
+        String userId = user.getId();
         realm.admin().remove();
 
-        int loginRecordsAfterDeletion = getLoginRecords().size();
-        Assertions.assertEquals(0, loginRecordsAfterDeletion, "Login history records must be deleted after realm deletion");
-
-        // Re-create the realm to not confuse the test framework.
         // Wait for deletion to be visible first — Keycloak 26.6+ deletes asynchronously.
+        // Must complete before checking records or re-creating the realm.
         long deadline = System.currentTimeMillis() + 30_000;
         while (System.currentTimeMillis() < deadline) {
             try {
@@ -58,6 +57,12 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
                 break;
             }
         }
+
+        // Query the database directly using the saved userId to avoid HTTP calls to the deleted realm
+        int loginRecordsAfterDeletion = loginHistory.getAllByUserId(userId).size();
+        Assertions.assertEquals(0, loginRecordsAfterDeletion, "Login history records must be deleted after realm deletion");
+
+        // Re-create the realm to not confuse the test framework.
         adminClient.realms().create(realmRep);
     }
 

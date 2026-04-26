@@ -16,6 +16,8 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.timer.ScheduledTask;
 import org.keycloak.utils.KeycloakSessionUtil;
 
+import org.keycloak.quarkus.runtime.Environment;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +88,9 @@ public class UpdateMaxmindDatabaseFileTask implements ScheduledTask {
 
     private Optional<DatabaseReader> updateDatabase(KeycloakSession session, String accountId, String licenseKey) {
         try {
-            File tempDir = new File(System.getProperty("java.io.tmpdir"));
+            File tempDir = Environment.getDataDir()
+                    .map(dir -> new File(dir + File.separator + "tmp"))
+                    .orElseGet(() -> new File(System.getProperty("java.io.tmpdir")));
             if (!tempDir.exists()) {
                 if (!tempDir.mkdirs()) {
                     log.errorf("Temporary directory %s does not exist and could not be created.", tempDir.getAbsolutePath());

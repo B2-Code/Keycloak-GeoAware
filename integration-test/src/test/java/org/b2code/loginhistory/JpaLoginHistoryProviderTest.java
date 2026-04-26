@@ -48,8 +48,13 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
         while (System.currentTimeMillis() < deadline) {
             try {
                 adminClient.realm(realmRep.getRealm()).toRepresentation();
-                Thread.sleep(200);
             } catch (NotFoundException e) {
+                break;
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 break;
             }
         }

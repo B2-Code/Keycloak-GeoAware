@@ -90,14 +90,14 @@ public class LocationConditionalAuthenticatorFactory implements ConditionalAuthe
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
 
-        ProviderConfigProperty values_type = new ProviderConfigProperty();
-        values_type.setName(CONFIG_VALUE_TYPE);
-        values_type.setLabel("Values type");
-        values_type.setType(ProviderConfigProperty.LIST_TYPE);
-        values_type.setRequired(true);
-        values_type.setDefaultValue(COUNTRY_ISO_CODE);
-        values_type.setHelpText("Select the type of value.");
-        values_type.setOptions(CONDITION_OPTIONS);
+        ProviderConfigProperty valuesType = new ProviderConfigProperty();
+        valuesType.setName(CONFIG_VALUE_TYPE);
+        valuesType.setLabel("Values type");
+        valuesType.setType(ProviderConfigProperty.LIST_TYPE);
+        valuesType.setRequired(true);
+        valuesType.setDefaultValue(COUNTRY_ISO_CODE);
+        valuesType.setHelpText("Select the type of value.");
+        valuesType.setOptions(CONDITION_OPTIONS);
 
 
         ProviderConfigProperty values = new ProviderConfigProperty();
@@ -107,17 +107,17 @@ public class LocationConditionalAuthenticatorFactory implements ConditionalAuthe
         values.setDefaultValue("");
         values.setHelpText("List of the match values");
 
-        ProviderConfigProperty revert_decision = new ProviderConfigProperty();
-        revert_decision.setName(CONFIG_REVERT);
-        revert_decision.setLabel("Inverse decision");
-        revert_decision.setType(ProviderConfigProperty.BOOLEAN_TYPE);
-        revert_decision.setDefaultValue(false);
-        revert_decision.setHelpText("Revert the condition decision");
+        ProviderConfigProperty revertDecision = new ProviderConfigProperty();
+        revertDecision.setName(CONFIG_REVERT);
+        revertDecision.setLabel("Inverse decision");
+        revertDecision.setType(ProviderConfigProperty.BOOLEAN_TYPE);
+        revertDecision.setDefaultValue(false);
+        revertDecision.setHelpText("Revert the condition decision");
 
         return ProviderConfigurationBuilder.create()
-                .property(values_type)
+                .property(valuesType)
                 .property(values)
-                .property(revert_decision)
+                .property(revertDecision)
                 .build();
     }
 

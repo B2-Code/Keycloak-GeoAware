@@ -8,11 +8,11 @@ import org.b2code.geoip.persistence.entity.GeoIpInfo;
 import org.b2code.geoip.provider.GeoIpProvider;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.conditional.ConditionalAuthenticator;
+import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -29,7 +29,11 @@ public class LocationCondition implements ConditionalAuthenticator {
 
 
     @Override
-    public boolean matchCondition(AuthenticationFlowContext  context) {
+    public boolean matchCondition(AuthenticationFlowContext context) {
+        if (context.getAuthenticatorConfig() == null) {
+            log.warn("No authenticator config set for location condition — condition not matched");
+            return false;
+        }
 
         Map<String, String> config = context.getAuthenticatorConfig().getConfig();
         var session = context.getSession();
@@ -37,8 +41,8 @@ public class LocationCondition implements ConditionalAuthenticator {
         String ip = session.getContext().getConnection().getRemoteAddr();
 
         String valueType = config.getOrDefault(LocationConditionalAuthenticatorFactory.CONFIG_VALUE_TYPE, LocationConditionalAuthenticatorFactory.COUNTRY_ISO_CODE);
-        String values = config.get(LocationConditionalAuthenticatorFactory.CONFIG_VALUES);
-        boolean reveseDecision = Boolean.parseBoolean(config.getOrDefault(LocationConditionalAuthenticatorFactory.CONFIG_REVERT,"false"));
+        String values = config.getOrDefault(LocationConditionalAuthenticatorFactory.CONFIG_VALUES, "");
+        boolean reverseDecision = Boolean.parseBoolean(config.getOrDefault(LocationConditionalAuthenticatorFactory.CONFIG_REVERT, "false"));
 
         var value = "??";
         GeoIpInfo geoIpInfo = geoipProvider != null ? geoipProvider.getIpInfo(ip) : null;
@@ -52,10 +56,12 @@ public class LocationCondition implements ConditionalAuthenticator {
         } else {
             log.warnf("Checking location condition for IP: %s, can't get ip info", ip);
         }
-        var isMatch = Arrays.asList(values.split("##")).contains(value);
+
+        var configuredValues = Constants.CFG_DELIMITER_PATTERN.splitAsStream(values).toList();
+        var isMatch = configuredValues.contains(value);
         log.debugf("Checking location condition for IP: %s, Value: %s in Values %s => %s", ip, value, values, isMatch);
 
-        if (reveseDecision)
+        if (reverseDecision)
             return !isMatch;
         return isMatch;
     }

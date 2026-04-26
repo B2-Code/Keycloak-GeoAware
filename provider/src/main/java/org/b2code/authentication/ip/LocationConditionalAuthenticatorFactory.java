@@ -2,9 +2,6 @@ package org.b2code.authentication.ip;
 
 import com.google.auto.service.AutoService;
 import org.b2code.PluginConstants;
-import org.b2code.authentication.base.AbstractGeoAwareConditionalAuthenticatorFactory;
-import org.b2code.authentication.base.condition.AuthenticatorCondition;
-import org.b2code.authentication.device.DeviceAuthenticatorConfigProperties;
 import org.b2code.authentication.ip.condition.LocationCondition;
 import org.keycloak.Config;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -75,9 +72,14 @@ public class LocationConditionalAuthenticatorFactory implements ConditionalAuthe
         return true;
     }
 
+    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
+            AuthenticationExecutionModel.Requirement.REQUIRED,
+            AuthenticationExecutionModel.Requirement.DISABLED
+    };
+
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return new AuthenticationExecutionModel.Requirement[0];
+        return REQUIREMENT_CHOICES.clone();
     }
 
     @Override
@@ -94,7 +96,7 @@ public class LocationConditionalAuthenticatorFactory implements ConditionalAuthe
         values_type.setType(ProviderConfigProperty.LIST_TYPE);
         values_type.setRequired(true);
         values_type.setDefaultValue(COUNTRY_ISO_CODE);
-        values_type.setHelpText("Select the type of value.\n");
+        values_type.setHelpText("Select the type of value.");
         values_type.setOptions(CONDITION_OPTIONS);
 
 
@@ -102,15 +104,15 @@ public class LocationConditionalAuthenticatorFactory implements ConditionalAuthe
         values.setName(CONFIG_VALUES);
         values.setLabel("Values");
         values.setType(ProviderConfigProperty.MULTIVALUED_STRING_TYPE);
-        values.setDefaultValue(false);
-        values.setHelpText("List of the match values\n");
+        values.setDefaultValue("");
+        values.setHelpText("List of the match values");
 
         ProviderConfigProperty revert_decision = new ProviderConfigProperty();
         revert_decision.setName(CONFIG_REVERT);
         revert_decision.setLabel("Inverse decision");
         revert_decision.setType(ProviderConfigProperty.BOOLEAN_TYPE);
         revert_decision.setDefaultValue(false);
-        revert_decision.setHelpText("Revert de condition decision\n");
+        revert_decision.setHelpText("Revert the condition decision");
 
         return ProviderConfigurationBuilder.create()
                 .property(values_type)

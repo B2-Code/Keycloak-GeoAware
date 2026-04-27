@@ -32,7 +32,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.2'
+          ruby-version: '4.0.3'
           bundler-cache: true
           cache-version: 0 # Increment this number if you need to re-download cached gems
           working-directory: 'docs'
@@ -44,7 +44,7 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: 'docs/_site/'
 

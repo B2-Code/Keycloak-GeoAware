@@ -11,6 +11,11 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 import org.keycloak.testframework.util.ApiUtil;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.util.Map;
 import java.util.UUID;
 
 @KeycloakIntegrationTest(config = MaxmindGeoLiteFileServerConfig.class)
@@ -30,23 +35,52 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
     }
 
     @Test
-    void testLoginHistoryIsDeletedOnRealmDeletion() {
-        login();
+    void testLoginHistoryIsDeletedOnRealmDeletion() throws Exception {
+        // Use a throwaway realm so the framework-managed realm stays intact.
+        // Deleting the framework realm causes OAuthClient.close() to fail in afterEach
+        // (the re-created realm lacks the test OAuth client), aborting the destroy loop
+        // and cascading 409s to every subsequent test's beforeEach.
+        String tempRealmName = "temp-realm-" + UUID.randomUUID();
+        RealmRepresentation tempRealmRep = new RealmRepresentation();
+        tempRealmRep.setRealm(tempRealmName);
+        tempRealmRep.setEnabled(true);
+        adminClient.realms().create(tempRealmRep);
 
-        int loginRecordsBeforeDeletion = getLoginRecords().size();
-        Assertions.assertEquals(1, loginRecordsBeforeDeletion, "Exactly one login history record is expected after initial login");
+        // Create a real user in the temp realm — required because deleteByRealmId
+        // queries UserEntity.realmId to find which records to delete.
+        String tempUserId;
+        UserRepresentation tempUser = new UserRepresentation();
+        tempUser.setUsername("temp-user-" + UUID.randomUUID());
+        tempUser.setEnabled(true);
+        try (Response resp = adminClient.realm(tempRealmName).users().create(tempUser)) {
+            Assertions.assertEquals(201, resp.getStatus(), "Temp user must be created successfully");
+            tempUserId = ApiUtil.getCreatedId(resp);
+        }
 
-        RealmRepresentation realmRep = realm.getCreatedRepresentation();
-        // Save userId before deleting the realm — user.getId() may call Keycloak after deletion and get 404
-        String userId = user.getId();
-        realm.admin().remove();
+        // Insert a login record directly — the plugin uses event listeners for deletion,
+        // so a directly-inserted record still exercises the cascade correctly.
+        Map<String, String> dbConfig = testDatabase.serverConfig();
+        try (Connection conn = DriverManager.getConnection(
+                dbConfig.get("db-url"), dbConfig.get("db-username"), dbConfig.get("db-password"));
+             PreparedStatement ps = conn.prepareStatement(
+                     "INSERT INTO geoaware_login_record (ID, USER_ID, TIMESTAMP, IP_ADDRESS) VALUES (?, ?, ?, ?)")) {
+            ps.setString(1, UUID.randomUUID().toString());
+            ps.setString(2, tempUserId);
+            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            ps.setString(4, "127.0.0.1");
+            ps.executeUpdate();
+        }
 
-        // Wait for deletion to be visible first — Keycloak 26.6+ deletes asynchronously.
-        // Must complete before checking records or re-creating the realm.
+        Assertions.assertEquals(1, loginHistory.getAllByUserId(tempUserId).size(),
+                "Login record must exist before realm deletion");
+
+        adminClient.realm(tempRealmName).remove();
+
+        // Wait for deletion — Keycloak 26.6+ deletes asynchronously.
         long deadline = System.currentTimeMillis() + 30_000;
         while (System.currentTimeMillis() < deadline) {
             try {
-                adminClient.realm(realmRep.getRealm()).toRepresentation();
+                adminClient.realm(tempRealmName).toRepresentation();
             } catch (NotFoundException e) {
                 break;
             }
@@ -58,12 +92,8 @@ public class JpaLoginHistoryProviderTest extends BaseTest {
             }
         }
 
-        // Query the database directly using the saved userId to avoid HTTP calls to the deleted realm
-        int loginRecordsAfterDeletion = loginHistory.getAllByUserId(userId).size();
-        Assertions.assertEquals(0, loginRecordsAfterDeletion, "Login history records must be deleted after realm deletion");
-
-        // Re-create the realm to not confuse the test framework.
-        adminClient.realms().create(realmRep);
+        Assertions.assertEquals(0, loginHistory.getAllByUserId(tempUserId).size(),
+                "Login history records must be deleted after realm deletion");
     }
 
     @Test

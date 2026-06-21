@@ -55,7 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.keycloak>26.6.1</version.keycloak>
-        <version.geoip2>5.0.2</version.geoip2>
+        <version.geoip2>5.1.0</version.geoip2>
         <version.ipinfo>3.4.0</version.ipinfo>
         <version.lombok>1.18.46</version.lombok>
         <version.auto-service>1.1.1</version.auto-service>
@@ -64,7 +64,7 @@
         <version.apache-commons-lang>3.20.0</version.apache-commons-lang>
         <version.geotools>34.4</version.geotools>
 
-        <version.junit>6.0.3</version.junit>
+        <version.junit>6.1.0</version.junit>
         <version.restassured>5.5.1</version.restassured>
         <version.jboss.slf4j-logmanager>2.0.1.Final</version.jboss.slf4j-logmanager>
         <version.jacoco-maven-plugin>0.8.14</version.jacoco-maven-plugin>

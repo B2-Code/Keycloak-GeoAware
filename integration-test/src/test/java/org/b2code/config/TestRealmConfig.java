@@ -9,10 +9,12 @@ import org.b2code.authentication.ip.UnknownIpConditionalAuthenticatorFactory;
 import org.b2code.authentication.ip.UnknownLocationConditionalAuthenticatorFactory;
 import org.b2code.loginhistory.LoginTrackerEventListenerProviderFactory;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
-import org.keycloak.testframework.realm.AuthenticationFlowConfigBuilder;
+import org.keycloak.testframework.realm.AuthenticationExecutionExportBuilder;
+import org.keycloak.testframework.realm.AuthenticationFlowBuilder;
+import org.keycloak.testframework.realm.RealmBuilder;
 import org.keycloak.testframework.realm.RealmConfig;
-import org.keycloak.testframework.realm.RealmConfigBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestRealmConfig implements RealmConfig {
@@ -35,33 +37,43 @@ public class TestRealmConfig implements RealmConfig {
     );
 
     @Override
-    public RealmConfigBuilder configure(RealmConfigBuilder builder) {
+    public RealmBuilder configure(RealmBuilder builder) {
         builder.name("test-realm")
                 .eventsListeners(LoginTrackerEventListenerProviderFactory.ID)
                 .displayName("Test Realm");
 
+        List<AuthenticationFlowBuilder> flows = new ArrayList<>();
+
         for (String provider : AUTHENTICATOR_PROVIDERS) {
-            AuthenticationFlowConfigBuilder flow = builder.addAuthenticationFlow(
-                    AUTHENTICATOR_FLOW_PREFIX + provider, "", "basic-flow", true, false);
-            flow.addAuthenticationExecutionWithAuthenticator(
-                    UsernamePasswordFormFactory.PROVIDER_ID, "REQUIRED", 10, false);
-            flow.addAuthenticationExecutionWithAuthenticator(provider, "REQUIRED", 20, false);
+            flows.add(AuthenticationFlowBuilder.create(
+                            AUTHENTICATOR_FLOW_PREFIX + provider, "", "basic-flow", true, false)
+                    .authenticationExecutions(
+                            AuthenticationExecutionExportBuilder.authenticator(
+                                    UsernamePasswordFormFactory.PROVIDER_ID, "REQUIRED", 10, false),
+                            AuthenticationExecutionExportBuilder.authenticator(
+                                    provider, "REQUIRED", 20, false)
+                    ));
         }
 
         for (String provider : CONDITIONAL_PROVIDERS) {
             String subAlias = CONDITIONAL_SUB_FLOW_PREFIX + provider;
 
-            AuthenticationFlowConfigBuilder subFlow = builder.addAuthenticationFlow(
-                    subAlias, "", "basic-flow", false, false);
-            subFlow.addAuthenticationExecutionWithAuthenticator(provider, "CONDITIONAL", 10, false);
-            subFlow.addAuthenticationExecutionWithAuthenticator("deny-access-authenticator", "REQUIRED", 20, false);
+            flows.add(AuthenticationFlowBuilder.create(subAlias, "", "basic-flow", false, false)
+                    .authenticationExecutions(
+                            AuthenticationExecutionExportBuilder.authenticator(provider, "CONDITIONAL", 10, false),
+                            AuthenticationExecutionExportBuilder.authenticator("deny-access-authenticator", "REQUIRED", 20, false)
+                    ));
 
-            AuthenticationFlowConfigBuilder mainFlow = builder.addAuthenticationFlow(
-                    CONDITIONAL_FLOW_PREFIX + provider, "", "basic-flow", true, false);
-            mainFlow.addAuthenticationExecutionWithAuthenticator(
-                    UsernamePasswordFormFactory.PROVIDER_ID, "REQUIRED", 10, false);
-            mainFlow.addAuthenticationExecutionWithAliasFlow(subAlias, "CONDITIONAL", 20, false);
+            flows.add(AuthenticationFlowBuilder.create(
+                            CONDITIONAL_FLOW_PREFIX + provider, "", "basic-flow", true, false)
+                    .authenticationExecutions(
+                            AuthenticationExecutionExportBuilder.authenticator(
+                                    UsernamePasswordFormFactory.PROVIDER_ID, "REQUIRED", 10, false),
+                            AuthenticationExecutionExportBuilder.alias(subAlias, "CONDITIONAL", 20, false)
+                    ));
         }
+
+        builder.authenticationFlows(flows.toArray(new AuthenticationFlowBuilder[0]));
 
         return builder;
     }

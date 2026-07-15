@@ -2,5 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "org.keycloak:keycloak-parent",
+        "org.keycloak.testframework:keycloak-test-framework-bom",
+        "quay.io/keycloak/keycloak"
+      ],
+      "groupName": "keycloak"
+    }
   ]
 }

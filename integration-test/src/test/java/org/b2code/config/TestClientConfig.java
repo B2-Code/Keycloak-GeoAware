@@ -1,13 +1,13 @@
 package org.b2code.config;
 
+import org.keycloak.testframework.realm.ClientBuilder;
 import org.keycloak.testframework.realm.ClientConfig;
-import org.keycloak.testframework.realm.ClientConfigBuilder;
 
 public class TestClientConfig implements ClientConfig {
 
     @Override
-    public ClientConfigBuilder configure(ClientConfigBuilder clientConfigBuilder) {
-        return clientConfigBuilder
+    public ClientBuilder configure(ClientBuilder clientBuilder) {
+        return clientBuilder
                 .clientId("test-client")
                 .secret("test-secret")
                 .redirectUris("*")
